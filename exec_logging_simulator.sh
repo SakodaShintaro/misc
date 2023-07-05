@@ -21,4 +21,4 @@ ros2 launch autoware_launch logging_simulator.launch.xml \
 ros2 service call /localization/pose_estimator/trigger_node std_srvs/srv/SetBool "{data: false}"
 
 # rosbagをリプレイ
-ros2 bag play ~/autoware_map/sample-rosbag/sample.db3 -r 0.5 -s sqlite3
+ros2 bag play $HOME/autoware_map/sample-rosbag/sample.db3 -r 0.5 -s sqlite3
