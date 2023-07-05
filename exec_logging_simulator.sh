@@ -17,7 +17,8 @@ ros2 launch autoware_launch logging_simulator.launch.xml \
     sensor_model:=sample_sensor_kit &
 
 # 立ち上がるまで待つ
-sleep 20
+# サービス呼び出しを立ち上がりの確認とする
+ros2 service call /localization/pose_estimator/trigger_node std_srvs/srv/SetBool "{data: false}"
 
 # rosbagをリプレイ
 ros2 bag play ~/autoware_map/sample-rosbag/sample.db3 -r 0.5 -s sqlite3
