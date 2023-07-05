@@ -7,7 +7,7 @@ trap "kill 0" EXIT
 
 # 読み込み
 set +eux
-source ~/autoware/install/setup.bash
+source $HOME/autoware/install/setup.bash
 set -eux
 
 # Autowareをバックグラウンドで起動
