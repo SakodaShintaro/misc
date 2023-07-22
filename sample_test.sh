@@ -19,3 +19,6 @@ kill 0
 
 # ここでoutput.bagを適当にパースして評価値を出力する
 python3 parse_rosbag_output.py
+
+# 秒数表示
+echo "${SECONDS} sec"
