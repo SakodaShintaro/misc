@@ -1,0 +1,21 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gbd) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build-Debug/a.out",
+            "args": [
+                ""
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build-Debug",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb"
+        }
+    ]
+}
