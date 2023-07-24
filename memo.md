@@ -12,8 +12,6 @@ export CMAKE_EXPORT_COMPILE_COMMANDS=1
 
 colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 
-MAKEFLAGS="-j2" colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
-
 ## バージョン出力
 
 vcs export src --exact > my_autoware.repos
