@@ -15,3 +15,14 @@ colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 ## バージョン出力
 
 vcs export src --exact > my_autoware.repos
+
+## cspell
+
+```bash
+sudo apt install -y nodejs npm
+sudo npm install n -g
+sudo n stable
+sudo npm install -g cspell
+cspell "**/*"
+cspell "**/*.{hpp,cpp,md}"
+```
