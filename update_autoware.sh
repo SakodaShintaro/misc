@@ -4,6 +4,7 @@ set -eux
 
 git pull
 vcs import src < autoware.repos
+vcs import src < simulator.repos
 vcs pull src
 vcs export src --exact > my_autoware.repos
 rosdep update
