@@ -26,3 +26,12 @@ sudo npm install -g cspell
 cspell "**/*"
 cspell "**/*.{hpp,cpp,md}"
 ```
+
+## mcap
+
+<https://proc-cpuinfo.fixstars.com/2023/01/rosbag2_storage_mcap_usage/>
+
+```bash
+sudo apt install -y ros-humble-rosbag2-storage-mcap
+ros2 bag record -s mcap --all
+```
