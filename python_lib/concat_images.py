@@ -13,6 +13,14 @@ def parse_args():
     return parser.parse_args()
 
 
+def put_text(image, text, x, y, scale, color, outline_color=(0, 0, 0)):
+    cv2.putText(image, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX,
+                scale, outline_color, 4, cv2.LINE_AA)
+    cv2.putText(image, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX,
+                scale, color, 1, cv2.LINE_AA)
+    return image
+
+
 def pad_images(image1, image2):
     # 画像の高さが異なる場合、高さを揃える
     if image1.shape[0] != image2.shape[0]:
