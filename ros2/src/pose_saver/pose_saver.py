@@ -3,6 +3,7 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped
 import csv
+import os
 
 
 class PoseSaver(Node):
@@ -19,8 +20,12 @@ class PoseSaver(Node):
             self.localization_callback,
             10)
 
-        self.ground_truth_file = open('ground_truth.tsv', 'w', newline='')
-        self.localization_file = open('localization.tsv', 'w', newline='')
+        save_directory = self.declare_parameter("save_directory", ".").value
+        os.makedirs(save_directory, exist_ok=True)
+        ground_truth_path = os.path.join(save_directory, 'ground_truth.tsv')
+        localization_path = os.path.join(save_directory, 'localization.tsv')
+        self.ground_truth_file = open(ground_truth_path, 'w', newline='')
+        self.localization_file = open(localization_path, 'w', newline='')
         self.ground_truth_writer = csv.writer(
             self.ground_truth_file, delimiter='\t')
         self.localization_writer = csv.writer(

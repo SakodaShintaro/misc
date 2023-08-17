@@ -5,11 +5,14 @@ set -eux
 # スクリプトが終了する際にすべてのバックグラウンドプロセスを停止するためのトラップを設定
 trap "kill 0" EXIT
 
+# 結果を保存する位置
+SAVE_DIR=$(readlink -f $1)
+
 # このディレクトリに移動
 cd $(dirname $0)
 
 # saverを起動
-./build_and_exec_pose_saver.sh &
+./build_and_exec_pose_saver.sh $SAVE_DIR &
 
 # 読み込み
 set +eux
@@ -34,5 +37,5 @@ ros2 bag play $HOME/data/rosbag/AWSIM/rosbag2_2023_08_17-18_03_10_filtered -s sq
 
 # 評価
 python3 ../python/compare_trajectories.py \
-    ../localization.tsv \
-    ../ground_truth.tsv
+    $SAVE_DIR/localization.tsv \
+    $SAVE_DIR/ground_truth.tsv
