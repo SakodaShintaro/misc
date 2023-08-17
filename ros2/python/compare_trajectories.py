@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation, Slerp
 import os
+from calc_relative_pose import calc_relative_pose
 
 
 def parse_args():
@@ -123,3 +124,19 @@ if __name__ == "__main__":
     plt.ylabel('error [m]')
     plt.savefig(f'{save_dir}/compare_trajectories_error.png',
                 bbox_inches='tight', pad_inches=0.05, dpi=300)
+    plt.close()
+
+    # calc relative pose
+    df_relative = calc_relative_pose(df_pr, df_gt)
+    df_relative.to_csv(f'{save_dir}/relative_pose.tsv', sep='\t', index=False)
+
+    # plot (each axis)
+    plt.plot(df_relative['x'], label='x')
+    plt.plot(df_relative['y'], label='y')
+    plt.plot(df_relative['z'], label='z')
+    plt.legend()
+    plt.xlabel('frame number')
+    plt.ylabel('relative pose [m]')
+    plt.savefig(f'{save_dir}/relative_pose.png',
+                bbox_inches='tight', pad_inches=0.05, dpi=300)
+    plt.close()
