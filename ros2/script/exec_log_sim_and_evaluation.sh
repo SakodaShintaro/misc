@@ -27,7 +27,7 @@ ros2 launch autoware_launch logging_simulator.launch.xml \
 ros2 service call /localization/pose_estimator/trigger_node std_srvs/srv/SetBool "{data: false}"
 
 # rosbagをリプレイ
-ros2 bag play $HOME/data/rosbag/AWSIM/rosbag2_2023_08_10-09_09_07_use_sim_time_filtered -s sqlite3
+ros2 bag play $HOME/data/rosbag/AWSIM/rosbag2_2023_08_17-18_03_10_filtered -s sqlite3
 
 # 終了
 ../../kill_autoware.sh
