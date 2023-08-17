@@ -102,6 +102,23 @@ if __name__ == "__main__":
     df_pr = df_pr.drop(columns=['sec', 'nanosec'])
     df_gt = df_gt.drop(columns=['sec', 'nanosec'])
 
+    # plot differential of df_gt
+    diff_x = df_gt['x'].diff()
+    diff_y = df_gt['y'].diff()
+    diff_z = df_gt['z'].diff()
+    diff_time = df_gt['timestamp'].diff().dt.total_seconds()
+    plt.plot(diff_x, label='x')
+    plt.plot(diff_y, label='y')
+    plt.plot(diff_z, label='z')
+    plt.plot(diff_time, label='time')
+    plt.legend()
+    plt.title('differential of ground truth')
+    plt.xlabel('frame number')
+    plt.ylabel('differential [m]')
+    plt.savefig(f'{save_dir}/differential_of_gt.png',
+                bbox_inches='tight', pad_inches=0.05, dpi=300)
+    plt.close()
+
     # interpolate
     df_gt = interpolate_pose_in_time(df_gt, df_pr['timestamp'])
     assert len(df_pr) == len(df_gt)
