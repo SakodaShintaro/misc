@@ -13,3 +13,5 @@ ps aux | grep "AWSIM_demo.x86_64" | grep -v grep | awk '{ print "kill ", $2 }' |
 
 ros2 daemon stop
 ros2 daemon start
+
+ros2 topic list
