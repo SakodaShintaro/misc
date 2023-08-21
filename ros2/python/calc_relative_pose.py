@@ -11,7 +11,7 @@ def calc_relative_pose(df_pred: pd.DataFrame, df_true: pd.DataFrame) -> pd.DataF
     * df_predとdf_trueは同じフレーム数を持つ
     """
     POSITIONS_KEY = ['x', 'y', 'z']
-    ORIENTATIONS_KEY = ['qw', 'qx', 'qy', 'qz']
+    ORIENTATIONS_KEY = ['qx', 'qy', 'qz', 'qw']
     assert len(df_pred) == len(df_true)
     assert (df_pred.columns == df_true.columns).all()
 
