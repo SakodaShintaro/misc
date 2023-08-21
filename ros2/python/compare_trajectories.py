@@ -128,24 +128,28 @@ if __name__ == "__main__":
     diff_y = df_pr['y'].values - df_gt['y'].values
     diff_z = df_pr['z'].values - df_gt['z'].values
     diff_meter = (diff_x**2 + diff_y**2 + diff_z**2)**0.5
-    mean_error = diff_meter.mean()
-    print(f'mean error: {mean_error:.3f} m')
-
-    # plot
-    plt.plot(diff_x, label='x')
-    plt.plot(diff_y, label='y')
-    plt.plot(diff_z, label='z')
-    plt.legend()
-    plt.title(f'mean error: {mean_error:.3f} m')
-    plt.xlabel('frame number')
-    plt.ylabel('error [m]')
-    plt.savefig(f'{save_dir}/compare_trajectories_error.png',
-                bbox_inches='tight', pad_inches=0.05, dpi=300)
-    plt.close()
 
     # calc relative pose
     df_relative = calc_relative_pose(df_pr, df_gt)
     df_relative.to_csv(f'{save_dir}/relative_pose.tsv', sep='\t', index=False)
+
+    x_diff_mean = df_relative['x'].abs().mean()
+    y_diff_mean = df_relative['y'].abs().mean()
+    z_diff_mean = df_relative['z'].abs().mean()
+    error = (df_relative['x']**2 +
+             df_relative['y']**2 +
+             df_relative['z']**2)**0.5
+    df_summary = pd.DataFrame(
+        columns=['x_diff_mean', 'y_diff_mean', 'z_diff_mean', 'error_mean'])
+    df_summary = df_summary.append({
+        'x_diff_mean': x_diff_mean,
+        'y_diff_mean': y_diff_mean,
+        'z_diff_mean': z_diff_mean,
+        'error_mean': error.mean()
+    }, ignore_index=True)
+    df_summary.to_csv(
+        f'{save_dir}/relative_pose_summary.tsv', sep='\t', index=False)
+    print(f'mean error: { error.mean():.3f} m')
 
     # plot (each axis)
     plt.plot(df_relative['x'], label='x')
