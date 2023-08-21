@@ -53,6 +53,8 @@ if __name__ == "__main__":
     plt.plot(df['y'].diff(), label='y')
     plt.plot(df['z'].diff(), label='z')
     plt.plot(df['timestamp'].diff() / 1e9, label='timestamp')
+    plt.xlabel("Frame number")
+    plt.ylabel("diff (x,y,z[m], timestamp[sec])")
     plt.legend()
     plt.show()
     plt.close()
