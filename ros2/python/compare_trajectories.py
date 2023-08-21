@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation, Slerp
 import os
 from calc_relative_pose import calc_relative_pose
+import numpy as np
+from tqdm import tqdm
 
 
 def parse_args():
@@ -30,9 +32,9 @@ def interpolate_pose_in_time(df: pd.DataFrame, target_timestamp_list: pd.Series)
     target_index = 0
     df_index = 0
     while df_index < len(df) - 1 and target_index < len(target_timestamp_list):
-        curr_time = df.iloc[df_index]['timestamp'].timestamp()
-        next_time = df.iloc[df_index + 1]['timestamp'].timestamp()
-        target_time = target_timestamp_list[target_index].timestamp()
+        curr_time = df.iloc[df_index]['timestamp']
+        next_time = df.iloc[df_index + 1]['timestamp']
+        target_time = target_timestamp_list[target_index]
 
         # target_timeを挟み込むようなdf_indexを探す
         if not (curr_time <= target_time <= next_time):
@@ -95,10 +97,8 @@ if __name__ == "__main__":
     plt.close()
 
     # calc timestamp
-    df_pr['timestamp'] = pd.to_datetime(
-        df_pr['sec'] + df_pr['nanosec'] * 1e-9, unit='s')
-    df_gt['timestamp'] = pd.to_datetime(
-        df_gt['sec'] + df_gt['nanosec'] * 1e-9, unit='s')
+    df_pr['timestamp'] = df_pr['sec'] + df_pr['nanosec'] * 1e-9
+    df_gt['timestamp'] = df_gt['sec'] + df_gt['nanosec'] * 1e-9
     df_pr = df_pr.drop(columns=['sec', 'nanosec'])
     df_gt = df_gt.drop(columns=['sec', 'nanosec'])
 
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     diff_x = df_gt['x'].diff()
     diff_y = df_gt['y'].diff()
     diff_z = df_gt['z'].diff()
-    diff_time = df_gt['timestamp'].diff().dt.total_seconds()
+    diff_time = df_gt['timestamp'].diff()
     plt.plot(diff_x, label='x')
     plt.plot(diff_y, label='y')
     plt.plot(diff_z, label='z')
@@ -161,3 +161,40 @@ if __name__ == "__main__":
     plt.savefig(f'{save_dir}/relative_pose.png',
                 bbox_inches='tight', pad_inches=0.05, dpi=300)
     plt.close()
+
+    # plot (relative_pose of each frame)
+    df_image_timestamp = pd.read_csv(
+        f'{save_dir}/image_timestamps.tsv', sep='\t')
+    df_image_timestamp["timestamp"] *= 1e-9
+    os.makedirs(f'{save_dir}/relative_pose_plot', exist_ok=True)
+    df_index = 0
+    for i in tqdm(range(len(df_image_timestamp))):
+        target_time = df_image_timestamp.iloc[i]['timestamp']
+        while df_index < len(df_relative):
+            curr_time = df_relative.iloc[df_index]['timestamp']
+            if curr_time > target_time:
+                break
+            df_index += 1
+        # GTから見たpredictionの相対位置を矢印で描画
+        x = df_relative.iloc[i]['x']
+        y = df_relative.iloc[i]['y']
+        z = df_relative.iloc[i]['z']
+        r = Rotation.from_quat(df_relative.iloc[i][['qx', 'qy', 'qz', 'qw']])
+        direction = np.array([5, 0, 0])
+        plt.quiver(0, 0, direction[0], direction[1], angles='xy',
+                   scale_units='xy', scale=1, color='blue', label='ground truth')
+        direction = r.apply(direction)
+        plt.quiver(x, y, direction[0], direction[1], angles='xy',
+                   scale_units='xy', scale=1, color='red', label='prediction')
+        plt.axis('equal')
+        plt.xlim(-3, 7)
+        plt.ylim(-5, 5)
+        plt.xlabel('x [m]')
+        plt.ylabel('y [m]')
+        plt.legend()
+        plt.text(-2, 3, f'error_x = {x * 100:.1f} cm', fontsize=10)
+        plt.text(-2, 2, f'error_y = {y * 100:.1f} cm', fontsize=10)
+        plt.text(-2, 1, f'error_z = {z * 100:.1f} cm', fontsize=10)
+        plt.savefig(f'{save_dir}/relative_pose_plot/{i:08d}.png',
+                    bbox_inches='tight', pad_inches=0.05)
+        plt.close()
