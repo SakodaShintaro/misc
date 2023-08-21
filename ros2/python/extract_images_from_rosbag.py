@@ -7,6 +7,7 @@ import cv2
 from rclpy.serialization import deserialize_message
 import os
 import rosbag2_py
+import pandas as pd
 
 
 def create_reader(input_bag_dir: str, storage_id: str):
@@ -41,6 +42,7 @@ if __name__ == "__main__":
     bridge = CvBridge()
 
     index_images = 0
+    timestamp_list = []
     while reader.has_next():
         (topic, data, t) = reader.read_next()
         if topic != topic_name:
@@ -54,4 +56,10 @@ if __name__ == "__main__":
         os.makedirs(f"{output_dir}/images", exist_ok=True)
         save_path = f"{output_dir}/images/{index_images:08d}.png"
         cv2.imwrite(save_path, cv_image)
+        timestamp_list.append(t)
+        print(f"\rtimestamp = {t}", end="")
         index_images += 1
+
+    print()
+    df_timestamp = pd.DataFrame(timestamp_list, columns=["timestamp"])
+    df_timestamp.to_csv(f"{output_dir}/image_timestamps.tsv", index=False)
