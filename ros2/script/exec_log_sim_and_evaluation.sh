@@ -5,8 +5,11 @@ set -eux
 # スクリプトが終了する際にすべてのバックグラウンドプロセスを停止するためのトラップを設定
 trap "kill 0" EXIT
 
+# 実行するrosbagへのパス
+ROSBAG=$(readlink -f $1)
+
 # 結果を保存する位置
-SAVE_DIR=$(readlink -f $1)
+SAVE_DIR=$(readlink -f $2)
 
 # このディレクトリに移動
 cd $(dirname $0)
@@ -30,7 +33,7 @@ ros2 launch autoware_launch logging_simulator.launch.xml \
 ros2 service call /localization/pose_estimator/trigger_node std_srvs/srv/SetBool "{data: false}"
 
 # rosbagをリプレイ
-ros2 bag play $HOME/data/rosbag/AWSIM/rosbag2_2023_08_17-18_03_10_filtered -s sqlite3
+ros2 bag play ${ROSBAG} -r 0.75 -s sqlite3
 
 # 終了
 ../../kill_autoware.sh
