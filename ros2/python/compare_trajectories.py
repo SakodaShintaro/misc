@@ -163,6 +163,8 @@ if __name__ == "__main__":
     plt.close()
 
     # plot (relative_pose of each frame)
+    if not os.path.exists(f'{save_dir}/image_timestamps.tsv'):
+        exit(0)
     df_image_timestamp = pd.read_csv(
         f'{save_dir}/image_timestamps.tsv', sep='\t')
     df_image_timestamp["timestamp"] *= 1e-9
