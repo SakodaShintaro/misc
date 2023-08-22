@@ -9,4 +9,10 @@ set -eux
 
 TARGET=$(readlink -f $1)
 
-ros2 bag filter ${TARGET} -o ${TARGET}_filtered -x "/localization/.*" "/sensing/lidar/concatenated/pointcloud" "/tf"
+ros2 bag filter ${TARGET} -o ${TARGET}_filtered -x \
+    "/planning/.*" \
+    "/control/.*" \
+    "/perception/.*" \
+    "/localization/.*" \
+    "/sensing/lidar/concatenated/pointcloud" \
+    "/tf"
