@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
     # interpolate
     df_gt = interpolate_pose_in_time(df_gt, df_pr['timestamp'])
-    assert len(df_pr) == len(df_gt)
+    assert len(df_pr) == len(df_gt), f"len(df_pr)={len(df_pr)}, len(df_gt)={len(df_gt)}"
 
     # calc mean error
     diff_x = df_pr['x'].values - df_gt['x'].values
