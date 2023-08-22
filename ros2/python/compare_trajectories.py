@@ -134,6 +134,12 @@ if __name__ == "__main__":
     x_diff_mean = df_relative['x'].abs().mean()
     y_diff_mean = df_relative['y'].abs().mean()
     z_diff_mean = df_relative['z'].abs().mean()
+    # quaternion to euler
+    r = Rotation.from_quat(df_relative[['qx', 'qy', 'qz', 'qw']])
+    euler = r.as_euler('xyz', degrees=True)
+    roll_diff_mean = np.abs(euler[:, 0]).mean()
+    pitch_diff_mean = np.abs(euler[:, 1]).mean()
+    yaw_diff_mean = np.abs(euler[:, 2]).mean()
     error = (df_relative['x']**2 +
              df_relative['y']**2 +
              df_relative['z']**2)**0.5
@@ -143,20 +149,34 @@ if __name__ == "__main__":
         'x_diff_mean': x_diff_mean,
         'y_diff_mean': y_diff_mean,
         'z_diff_mean': z_diff_mean,
-        'error_mean': error.mean()
+        'error_mean': error.mean(),
+        'roll_diff_mean': roll_diff_mean,
+        'pitch_diff_mean': pitch_diff_mean,
+        'yaw_diff_mean': yaw_diff_mean,
     }, ignore_index=True)
     df_summary.to_csv(
         f'{save_dir}/relative_pose_summary.tsv', sep='\t', index=False)
-    print(f'mean error: { error.mean():.3f} m')
+    print(f'mean error: {error.mean():.3f} m')
 
-    # plot (each axis)
+    # plot (relative position)
     plt.plot(df_relative['x'], label='x')
     plt.plot(df_relative['y'], label='y')
     plt.plot(df_relative['z'], label='z')
     plt.legend()
     plt.xlabel('frame number')
-    plt.ylabel('relative pose [m]')
-    plt.savefig(f'{save_dir}/relative_pose.png',
+    plt.ylabel('relative position [m]')
+    plt.savefig(f'{save_dir}/relative_position.png',
+                bbox_inches='tight', pad_inches=0.05, dpi=300)
+    plt.close()
+
+    # plot (relative angle)
+    plt.plot(euler[:, 0], label='roll')
+    plt.plot(euler[:, 1], label='pitch')
+    plt.plot(euler[:, 2], label='yaw')
+    plt.legend()
+    plt.xlabel('frame number')
+    plt.ylabel('relative angle [degree]')
+    plt.savefig(f'{save_dir}/relative_angle.png',
                 bbox_inches='tight', pad_inches=0.05, dpi=300)
     plt.close()
 
