@@ -1,4 +1,4 @@
-""" AWSIMで作ったGT付きrosbagの正常性をチェックするためのスクリプト
+""" AWSIMで作ったGT付きrosbagからGTを抽出するスクリプト
 """
 
 import argparse
@@ -11,12 +11,14 @@ import matplotlib.pyplot as plt
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('rosbag_path', type=str)
+    parser.add_argument('output_dir', type=str)
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
+    output_dir = args.output_dir
 
     reader = Reader(rosbag_path)
     reader.open()
@@ -45,7 +47,8 @@ if __name__ == "__main__":
     plt.axis('equal')
     plt.xlabel('x[m]')
     plt.ylabel('y[m]')
-    plt.show()
+    plt.savefig(f'{output_dir}/ground_truth_trajectory.png',
+                bbox_inches='tight', pad_inches=0.05, dpi=300)
     plt.close()
 
     # plot differential
@@ -56,5 +59,13 @@ if __name__ == "__main__":
     plt.xlabel("Frame number")
     plt.ylabel("diff (x,y,z[m], timestamp[sec])")
     plt.legend()
-    plt.show()
+    plt.savefig(f'{output_dir}/ground_truth_differential.png',
+                bbox_inches='tight', pad_inches=0.05, dpi=300)
     plt.close()
+
+    df["sec"] = (df["timestamp"] * 1e-9).astype(int)
+    df["nanosec"] = (df["timestamp"] % 1e9).astype(int)
+    df = df.drop(columns=['timestamp'])
+    df = df.reindex(columns=['sec', 'nanosec', 'x', 'y', 'z', 'qx', 'qy', 'qz', 'qw'])
+    df.to_csv(f"{output_dir}/ground_truth_p.tsv", index=False, sep='\t')
+    print(df)
