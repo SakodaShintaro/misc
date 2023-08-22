@@ -70,5 +70,5 @@ if __name__ == "__main__":
     df["nanosec"] = (df["timestamp"] % 1e9).astype(int)
     df = df.drop(columns=['timestamp'])
     df = df.reindex(columns=['sec', 'nanosec', 'x', 'y', 'z', 'qx', 'qy', 'qz', 'qw'])
-    df.to_csv(f"{output_dir}/ground_truth_p.tsv", index=False, sep='\t')
+    df.to_csv(f"{output_dir}/ground_truth.tsv", index=False, sep='\t')
     print(df)

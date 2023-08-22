@@ -38,6 +38,13 @@ ros2 bag play ${ROSBAG} -r 0.75 -s sqlite3
 # 終了
 ../../kill_autoware.sh
 
+# gtが無ければgtを生成
+if [ ! -e $SAVE_DIR/ground_truth.tsv ]; then
+    python3 ../python/extract_gt_pose_from_rosbag.py \
+        $ROSBAG \
+        $SAVE_DIR
+fi
+
 # 評価
 python3 ../python/compare_trajectories.py \
     $SAVE_DIR/localization.tsv \
