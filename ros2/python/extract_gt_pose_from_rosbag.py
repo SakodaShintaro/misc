@@ -6,6 +6,7 @@ from rosbags.rosbag2 import Reader
 from rosbags.serde import deserialize_cdr
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
 
 def parse_args():
@@ -19,6 +20,8 @@ if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
     output_dir = args.output_dir
+
+    os.makedirs(output_dir, exist_ok=True)
 
     reader = Reader(rosbag_path)
     reader.open()
