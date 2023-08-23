@@ -26,11 +26,17 @@ set -eux
 ros2 launch autoware_launch logging_simulator.launch.xml \
     map_path:=$HOME/Downloads/nishishinjuku_autoware_map \
     vehicle_model:=sample_vehicle \
-    sensor_model:=awsim_sensor_kit &
+    sensor_model:=awsim_sensor_kit \
+    perception:=false \
+    planning:=false \
+    control:=false &
 
 # 立ち上がるまで待つ
 # サービス呼び出しを立ち上がりの確認とする
 ros2 service call /localization/pose_estimator/trigger_node std_srvs/srv/SetBool "{data: false}"
+
+# 安定性のため少し待つ
+sleep 5
 
 # rosbagをリプレイ
 ros2 bag play ${ROSBAG} -r 0.75 -s sqlite3
