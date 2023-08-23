@@ -53,5 +53,5 @@ fi
 
 # 評価
 python3 ../python/compare_trajectories.py \
-    $SAVE_DIR/localization.tsv \
+    $SAVE_DIR/ekf_pose.tsv \
     $SAVE_DIR/ground_truth.tsv
