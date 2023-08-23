@@ -121,6 +121,18 @@ if __name__ == "__main__":
     assert len(df_pr) == len(df_gt), \
         f"len(df_pr)={len(df_pr)}, len(df_gt)={len(df_gt)}"
 
+    # calc differential
+    plt.plot(df_pr['x'].diff(), label='x')
+    plt.plot(df_pr['y'].diff(), label='y')
+    plt.plot(df_pr['z'].diff(), label='z')
+    plt.plot(df_pr['timestamp'].diff() / 1e9, label='timestamp')
+    plt.xlabel("Frame number")
+    plt.ylabel("diff (x,y,z[m], timestamp[sec])")
+    plt.legend()
+    plt.savefig(f'{save_dir}/prediction_differential.png',
+                bbox_inches='tight', pad_inches=0.05, dpi=300)
+    plt.close()
+
     # calc mean error
     diff_x = df_pr['x'].values - df_gt['x'].values
     diff_y = df_pr['y'].values - df_gt['y'].values
