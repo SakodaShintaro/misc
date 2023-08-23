@@ -125,7 +125,7 @@ if __name__ == "__main__":
     plt.plot(df_pr['x'].diff(), label='x')
     plt.plot(df_pr['y'].diff(), label='y')
     plt.plot(df_pr['z'].diff(), label='z')
-    plt.plot(df_pr['timestamp'].diff() / 1e9, label='timestamp')
+    plt.plot(df_pr['timestamp'].diff(), label='timestamp')
     plt.xlabel("Frame number")
     plt.ylabel("diff (x,y,z[m], timestamp[sec])")
     plt.legend()
