@@ -13,6 +13,7 @@ TOPICS=(
     "/sensing/imu/tamagawa/imu_raw"
     "/sensing/lidar/top/pointcloud_raw"
     "/sensing/lidar/top/pointcloud_raw_ex"
+    "/vehicle/status/velocity_status"
     "/awsim/ground_truth/localization/kinematic_state"
     "/awsim/ground_truth/vehicle/pose"
     "/clock"
