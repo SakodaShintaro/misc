@@ -70,7 +70,9 @@ if __name__ == "__main__":
     prediction_tsv = args.prediction_tsv
     ground_truth_tsv = args.ground_truth_tsv
 
-    save_dir = os.path.dirname(prediction_tsv)
+    result_name = os.path.basename(prediction_tsv)[:-4]
+    save_dir = f"{os.path.dirname(prediction_tsv)}/{result_name}_result/"
+    os.makedirs(save_dir, exist_ok=True)
 
     df_pr = pd.read_csv(prediction_tsv, sep='\t')
     df_gt = pd.read_csv(ground_truth_tsv, sep='\t')

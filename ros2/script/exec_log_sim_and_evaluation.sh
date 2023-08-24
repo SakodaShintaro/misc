@@ -55,3 +55,6 @@ fi
 python3 ../python/compare_trajectories.py \
     $SAVE_DIR/ekf_pose.tsv \
     $SAVE_DIR/ground_truth.tsv
+python3 ../python/compare_trajectories.py \
+    $SAVE_DIR/ndt_pose.tsv \
+    $SAVE_DIR/ground_truth.tsv
