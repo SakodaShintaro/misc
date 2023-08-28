@@ -8,7 +8,7 @@ function check_git_diff() {
 
     if [ -n "$git_diff_output" ]; then
       echo "Diff found in $(readlink -f $dir)"
-      echo $git_diff_output
+      echo "--$git_diff_output"
     fi
   fi
 }
