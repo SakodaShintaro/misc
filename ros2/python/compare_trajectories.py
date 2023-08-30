@@ -157,8 +157,7 @@ if __name__ == "__main__":
     error = (df_relative['x']**2 +
              df_relative['y']**2 +
              df_relative['z']**2)**0.5
-    df_summary = pd.DataFrame(
-        columns=['x_diff_mean', 'y_diff_mean', 'z_diff_mean', 'error_mean'])
+    df_summary = pd.DataFrame()
     df_summary = df_summary.append({
         'x_diff_mean': x_diff_mean,
         'y_diff_mean': y_diff_mean,
