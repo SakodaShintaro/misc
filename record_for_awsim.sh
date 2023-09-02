@@ -16,8 +16,10 @@ TOPICS=(
     "/vehicle/status/velocity_status"
     "/awsim/ground_truth/localization/kinematic_state"
     "/awsim/ground_truth/vehicle/pose"
+    "/localization/pose_twist_fusion_filter/biased_pose_with_covariance"
+    "/tf_static"
     "/clock"
 )
 
 CURRENT_TIME=$(date +"%Y%m%d_%H%M%S")
-ros2 bag record -o "$CURRENT_TIME" --use-sim-time "${TOPICS[@]}"
+ros2 bag record -o "$CURRENT_TIME" "${TOPICS[@]}"
