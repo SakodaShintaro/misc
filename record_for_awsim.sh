@@ -22,4 +22,4 @@ TOPICS=(
 )
 
 CURRENT_TIME=$(date +"%Y%m%d_%H%M%S")
-ros2 bag record -o "$CURRENT_TIME" "${TOPICS[@]}"
+ros2 bag record -o "$CURRENT_TIME" --use-sim-time "${TOPICS[@]}"
