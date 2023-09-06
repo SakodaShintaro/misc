@@ -4,6 +4,7 @@
 import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
 from scipy.spatial.transform import Rotation, Slerp
 import os
 from calc_relative_pose import calc_relative_pose
@@ -205,6 +206,10 @@ if __name__ == "__main__":
     df_image_timestamp["timestamp"] *= 1e-9
     os.makedirs(f'{save_dir}/relative_pose_plot', exist_ok=True)
     df_index = 0
+
+    # 等幅化
+    font = FontProperties(family='monospace')
+
     for i in tqdm(range(len(df_image_timestamp))):
         target_time = df_image_timestamp.iloc[i]['timestamp']
         while df_index < len(df_relative):
@@ -217,6 +222,7 @@ if __name__ == "__main__":
         y = df_relative.iloc[i]['y']
         z = df_relative.iloc[i]['z']
         r = Rotation.from_quat(df_relative.iloc[i][['qx', 'qy', 'qz', 'qw']])
+        euler = r.as_euler('xyz', degrees=True)
         direction = np.array([5, 0, 0])
         plt.quiver(0, 0, direction[0], direction[1], angles='xy',
                    scale_units='xy', scale=1, color='blue', label='ground truth')
@@ -229,9 +235,12 @@ if __name__ == "__main__":
         plt.xlabel('x [m]')
         plt.ylabel('y [m]')
         plt.legend()
-        plt.text(-2, 3, f'error_x = {x * 100:.1f} cm', fontsize=10)
-        plt.text(-2, 2, f'error_y = {y * 100:.1f} cm', fontsize=10)
-        plt.text(-2, 1, f'error_z = {z * 100:.1f} cm', fontsize=10)
+        plt.text(-2, 3.0, f'error_x = {x * 100:+.1f} cm', fontsize=10, fontproperties=font)
+        plt.text(-2, 2.5, f'error_y = {y * 100:+.1f} cm', fontsize=10, fontproperties=font)
+        plt.text(-2, 2.0, f'error_z = {z * 100:+.1f} cm', fontsize=10, fontproperties=font)
+        plt.text(-2, 1.5, f'roll    = {euler[0]:+.2f} deg', fontsize=10, fontproperties=font)
+        plt.text(-2, 1.0, f'pitch   = {euler[1]:+.2f} deg', fontsize=10, fontproperties=font)
+        plt.text(-2, 0.5, f'yaw     = {euler[2]:+.2f} deg', fontsize=10, fontproperties=font)
         plt.savefig(f'{save_dir}/relative_pose_plot/{i:08d}.png',
                     bbox_inches='tight', pad_inches=0.05)
         plt.close()
