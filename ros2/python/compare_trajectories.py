@@ -149,12 +149,9 @@ if __name__ == "__main__":
     x_diff_mean = df_relative['x'].abs().mean()
     y_diff_mean = df_relative['y'].abs().mean()
     z_diff_mean = df_relative['z'].abs().mean()
-    # quaternion to euler
-    r = Rotation.from_quat(df_relative[['qx', 'qy', 'qz', 'qw']])
-    euler = r.as_euler('xyz', degrees=True)
-    roll_diff_mean = np.abs(euler[:, 0]).mean()
-    pitch_diff_mean = np.abs(euler[:, 1]).mean()
-    yaw_diff_mean = np.abs(euler[:, 2]).mean()
+    angle_x_diff_mean = df_relative["angle_x"].abs().mean()
+    angle_y_diff_mean = df_relative["angle_y"].abs().mean()
+    angle_z_diff_mean = df_relative["angle_z"].abs().mean()
     error = (df_relative['x']**2 +
              df_relative['y']**2 +
              df_relative['z']**2)**0.5
@@ -164,9 +161,9 @@ if __name__ == "__main__":
         'y_diff_mean': y_diff_mean,
         'z_diff_mean': z_diff_mean,
         'error_mean': error.mean(),
-        'roll_diff_mean': roll_diff_mean,
-        'pitch_diff_mean': pitch_diff_mean,
-        'yaw_diff_mean': yaw_diff_mean,
+        'roll_diff_mean': angle_x_diff_mean,
+        'pitch_diff_mean': angle_y_diff_mean,
+        'yaw_diff_mean': angle_z_diff_mean,
     }, ignore_index=True)
     df_summary.to_csv(
         f'{save_dir}/relative_pose_summary.tsv', sep='\t', index=False)
@@ -186,9 +183,9 @@ if __name__ == "__main__":
     plt.close()
 
     # plot (relative angle)
-    plt.plot(euler[:, 0], label='roll')
-    plt.plot(euler[:, 1], label='pitch')
-    plt.plot(euler[:, 2], label='yaw')
+    plt.plot(df_relative["angle_x"], label='roll')
+    plt.plot(df_relative["angle_y"], label='pitch')
+    plt.plot(df_relative["angle_z"], label='yaw')
     bottom, top = plt.ylim()
     plt.ylim(bottom=min(bottom, -1), top=max(top, 1))
     plt.legend()
@@ -221,11 +218,13 @@ if __name__ == "__main__":
         x = df_relative.iloc[i]['x']
         y = df_relative.iloc[i]['y']
         z = df_relative.iloc[i]['z']
-        r = Rotation.from_quat(df_relative.iloc[i][['qx', 'qy', 'qz', 'qw']])
-        euler = r.as_euler('xyz', degrees=True)
+        angle_x = df_relative.iloc[i]['angle_x']
+        angle_y = df_relative.iloc[i]['angle_y']
+        angle_z = df_relative.iloc[i]['angle_z']
         direction = np.array([5, 0, 0])
         plt.quiver(0, 0, direction[0], direction[1], angles='xy',
                    scale_units='xy', scale=1, color='blue', label='ground truth')
+        r = Rotation.from_euler('xyz', [angle_x, angle_y, angle_z], degrees=True)
         direction = r.apply(direction)
         plt.quiver(x, y, direction[0], direction[1], angles='xy',
                    scale_units='xy', scale=1, color='red', label='prediction')
@@ -238,9 +237,9 @@ if __name__ == "__main__":
         plt.text(-2, 3.0, f'error_x = {x * 100:+.1f} cm', fontsize=10, fontproperties=font)
         plt.text(-2, 2.5, f'error_y = {y * 100:+.1f} cm', fontsize=10, fontproperties=font)
         plt.text(-2, 2.0, f'error_z = {z * 100:+.1f} cm', fontsize=10, fontproperties=font)
-        plt.text(-2, 1.5, f'roll    = {euler[0]:+.2f} deg', fontsize=10, fontproperties=font)
-        plt.text(-2, 1.0, f'pitch   = {euler[1]:+.2f} deg', fontsize=10, fontproperties=font)
-        plt.text(-2, 0.5, f'yaw     = {euler[2]:+.2f} deg', fontsize=10, fontproperties=font)
+        plt.text(-2, 1.5, f'roll    = {angle_x:+.2f} deg', fontsize=10, fontproperties=font)
+        plt.text(-2, 1.0, f'pitch   = {angle_y:+.2f} deg', fontsize=10, fontproperties=font)
+        plt.text(-2, 0.5, f'yaw     = {angle_z:+.2f} deg', fontsize=10, fontproperties=font)
         plt.savefig(f'{save_dir}/relative_pose_plot/{i:08d}.png',
                     bbox_inches='tight', pad_inches=0.05)
         plt.close()
