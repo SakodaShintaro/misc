@@ -198,10 +198,10 @@ if __name__ == "__main__":
     plt.close()
 
     # plot (relative_pose of each frame)
-    if not os.path.exists(f'{save_dir}/image_timestamps.tsv'):
+    if not os.path.exists(f'{save_dir}/../image_timestamps.tsv'):
         exit(0)
     df_image_timestamp = pd.read_csv(
-        f'{save_dir}/image_timestamps.tsv', sep='\t')
+        f'{save_dir}/../image_timestamps.tsv', sep='\t')
     df_image_timestamp["timestamp"] *= 1e-9
     os.makedirs(f'{save_dir}/relative_pose_plot', exist_ok=True)
     df_index = 0
