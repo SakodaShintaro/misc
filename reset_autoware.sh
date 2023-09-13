@@ -19,4 +19,3 @@ done
 
 # 変更ファイルを差し戻す
 cp $(dirname $0)/simulator.repos ./
-cp $(dirname $0)/autoware.rviz ./src/launcher/autoware_launch/autoware_launch/rviz/autoware.rviz
