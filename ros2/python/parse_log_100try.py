@@ -93,3 +93,17 @@ if __name__ == "__main__":
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     print(f"Saved to {save_path}")
     plt.close()
+
+    # 以下全てを満たす数をカウント
+    # (1) scoreが6以上
+    # (2) diff_positionが1m以下
+    # (3) diff_rotationが1deg以下
+    score_list = np.array(score_list)
+    diff_position_list = np.array(diff_position_list)
+    diff_rotation_list = np.array(diff_rotation_list)
+    score_list = (score_list >= 6.0)
+    diff_position_list = (diff_position_list <= 1.0)
+    diff_rotation_list = (diff_rotation_list <= 1.0)
+    ok = score_list * diff_position_list * diff_rotation_list
+    ok_num = np.sum(ok)
+    print(f"ok_num: {ok_num} / {len(ok)} = ({ok_num / len(ok) * 100:.1f}%)")
