@@ -10,4 +10,9 @@ if [[ ! $(basename $(pwd)) =~ ^autoware ]]; then
     exit 1
 fi
 
-MAKEFLAGS="-j${JOB_COUNT}" colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+MAKEFLAGS="-j${JOB_COUNT}" colcon build \
+  --symlink-install \
+  --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF \
+  --continue-on-error
+cp $(dirname $0)/autoware.rviz ./src/launcher/autoware_launch/autoware_launch/rviz/autoware.rviz
+$(dirname $0)/check_git_diff.sh
