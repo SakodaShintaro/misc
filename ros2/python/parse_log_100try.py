@@ -32,6 +32,7 @@ if __name__ == "__main__":
     rotation_list = []
     diff_position_list = []
     diff_rotation_list = []
+    elapsed_time_list = []
     for line in lines:
         line = line.strip()
         elements = line.split(' ')
@@ -44,7 +45,12 @@ if __name__ == "__main__":
             print(contents)
             score = float(contents[1])
             score_list.append(score)
+        elif contents[0] == "align_using_monte_carlo_input":
+            start_time = float(elements[3][1:-1])
         elif contents[0] == "align_using_monte_carlo_output":
+            end_time = float(elements[3][1:-1])
+            elapsed = end_time - start_time
+            elapsed_time_list.append(elapsed)
             position = np.array([float(contents[1]), float(contents[2]), float(contents[3])])
             quaternion = np.array([float(contents[4]), float(contents[5]), float(contents[6]), float(contents[7])])
             rotation = R.from_quat(quaternion)
@@ -107,3 +113,7 @@ if __name__ == "__main__":
     ok = score_list * diff_position_list * diff_rotation_list
     ok_num = np.sum(ok)
     print(f"ok_num: {ok_num} / {len(ok)} = ({ok_num / len(ok) * 100:.1f}%)")
+
+    mean_elapsed_time = np.mean(elapsed_time_list)
+    stddev_elapsed_time = np.std(elapsed_time_list)
+    print(f"mean_elapsed_time: {mean_elapsed_time:.3f} pm {stddev_elapsed_time:.3f} [sec]")
