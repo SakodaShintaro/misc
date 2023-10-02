@@ -73,8 +73,12 @@ if __name__ == "__main__":
     })
     df.to_csv(f"{save_dir}/{filename}.tsv", sep="\t")
 
+    n = len(score_list)
+
     # plot histogram score
     plt.hist(score_list)
+    plt.xlim((0, 6.5))
+    plt.ylim((0, n))
     plt.xlabel("score")
     plt.ylabel("frequency")
     save_path = f"{save_dir}/{filename}_histogram.png"
@@ -84,6 +88,7 @@ if __name__ == "__main__":
 
     # plot histogram diff_position
     plt.hist(diff_position_list)
+    plt.ylim((0, n))
     plt.xlabel("diff_position[m]")
     plt.ylabel("frequency")
     save_path = f"{save_dir}/{filename}_histogram_diff_position.png"
@@ -93,6 +98,7 @@ if __name__ == "__main__":
 
     # plot histogram diff_rotation
     plt.hist(diff_rotation_list)
+    plt.ylim((0, n))
     plt.xlabel("diff_rotation[deg]")
     plt.ylabel("frequency")
     save_path = f"{save_dir}/{filename}_histogram_diff_rotation.png"
