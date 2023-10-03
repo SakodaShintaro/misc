@@ -106,6 +106,11 @@ if __name__ == "__main__":
     print(f"Saved to {save_path}")
     plt.close()
 
+    # スコアの平均と標準偏差
+    mean_score = np.mean(score_list)
+    stddev_score = np.std(score_list)
+    print(f"mean_score: {mean_score:.3f} ± {stddev_score:.3f}")
+
     # 以下全てを満たす数をカウント
     # (1) scoreが6以上
     # (2) diff_positionが1m以下
@@ -122,4 +127,4 @@ if __name__ == "__main__":
 
     mean_elapsed_time = np.mean(elapsed_time_list)
     stddev_elapsed_time = np.std(elapsed_time_list)
-    print(f"mean_elapsed_time: {mean_elapsed_time:.3f} pm {stddev_elapsed_time:.3f} [sec]")
+    print(f"mean_elapsed_time: {mean_elapsed_time:.3f} ± {stddev_elapsed_time:.3f} [sec]")
