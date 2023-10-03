@@ -43,7 +43,7 @@ if __name__ == "__main__":
         contents = elements[5].split(',')
         if contents[0] == "best_score":
             print(contents)
-            score = float(contents[1])
+            score = float(contents[1].replace('\x1b[0m', ''))
             score_list.append(score)
         elif contents[0] == "align_using_monte_carlo_input":
             start_time = float(elements[3][1:-1])
