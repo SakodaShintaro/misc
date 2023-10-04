@@ -42,7 +42,6 @@ if __name__ == "__main__":
             continue
         contents = elements[5].split(',')
         if contents[0] == "best_score":
-            print(contents)
             score = float(contents[1].replace('\x1b[0m', ''))
             score_list.append(score)
         elif contents[0] == "align_using_monte_carlo_input":
@@ -106,10 +105,13 @@ if __name__ == "__main__":
     print(f"Saved to {save_path}")
     plt.close()
 
+    f = open(f"{save_dir}/result.txt", "w")
+
     # スコアの平均と標準偏差
     mean_score = np.mean(score_list)
     stddev_score = np.std(score_list)
     print(f"mean_score: {mean_score:.3f} ± {stddev_score:.3f}")
+    f.write(f"mean_score: {mean_score:.3f} ± {stddev_score:.3f}\n")
 
     # 以下全てを満たす数をカウント
     # (1) scoreが6以上
@@ -124,7 +126,9 @@ if __name__ == "__main__":
     ok = score_list * diff_position_list * diff_rotation_list
     ok_num = np.sum(ok)
     print(f"ok_num: {ok_num} / {len(ok)} = ({ok_num / len(ok) * 100:.1f}%)")
+    f.write(f"ok_num: {ok_num} / {len(ok)} = ({ok_num / len(ok) * 100:.1f}%)\n")
 
     mean_elapsed_time = np.mean(elapsed_time_list)
     stddev_elapsed_time = np.std(elapsed_time_list)
     print(f"mean_elapsed_time: {mean_elapsed_time:.3f} ± {stddev_elapsed_time:.3f} [sec]")
+    f.write(f"mean_elapsed_time: {mean_elapsed_time:.3f} ± {stddev_elapsed_time:.3f} [sec]\n")
