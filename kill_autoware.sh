@@ -10,6 +10,7 @@ ps aux | grep robot_state_publisher | grep -v grep | awk '{ print "kill ", $2 }'
 ps aux | grep topic_tools/relay | grep -v grep | awk '{ print "kill ", $2 }' | sh
 ps aux | grep "ros-args" | grep -v grep | awk '{ print "kill ", $2 }' | sh
 ps aux | grep "AWSIM_demo.x86_64" | grep -v grep | awk '{ print "kill ", $2 }' | sh
+ps aux | grep "rosbridge_websocket" | grep -v grep | awk '{ print "kill -9", $2 }' | sh
 
 ros2 daemon stop
 ros2 daemon start
