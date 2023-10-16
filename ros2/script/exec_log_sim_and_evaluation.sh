@@ -40,7 +40,7 @@ ros2 service call /localization/pose_twist_fusion_filter/trigger_node std_srvs/s
 sleep 5
 
 # rosbagをリプレイ
-ros2 bag play ${ROSBAG} -r 0.75 -s sqlite3
+ros2 bag play ${ROSBAG} -r 0.75 -s sqlite3 --remap /localization/pose_twist_fusion_filter/biased_pose_with_covariance:=/null
 
 # 終了
 ../../kill_autoware.sh
