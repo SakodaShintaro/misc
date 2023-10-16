@@ -25,6 +25,7 @@ set -eux
 # Autowareをバックグラウンドで起動
 ros2 launch autoware_launch logging_simulator.launch.xml \
     map_path:=$HOME/Downloads/nishishinjuku_autoware_map \
+    pose_source:=ndt \
     vehicle_model:=sample_vehicle \
     sensor_model:=awsim_sensor_kit \
     perception:=false \
