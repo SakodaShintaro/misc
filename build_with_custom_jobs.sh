@@ -15,5 +15,9 @@ MAKEFLAGS="-j${JOB_COUNT}" colcon build \
   --symlink-install \
   --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF \
   --continue-on-error
-cp $(dirname $0)/autoware.rviz ./src/launcher/autoware_launch/autoware_launch/rviz/autoware.rviz
+
+# 後処理
+if [[ $current_dir =~ ^(autoware) ]]; then
+  cp $(dirname $0)/autoware.rviz ./src/launcher/autoware_launch/autoware_launch/rviz/autoware.rviz
+fi
 $(dirname $0)/check_git_diff.sh

@@ -19,4 +19,6 @@ for git_dir in $REPOSITORIES; do
 done
 
 # 変更ファイルを差し戻す
-cp $(dirname $0)/simulator.repos ./
+if [[ $current_dir =~ ^(autoware) ]]; then
+    cp $(dirname $0)/simulator.repos ./
+fi
