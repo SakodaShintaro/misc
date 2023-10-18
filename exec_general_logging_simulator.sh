@@ -5,8 +5,9 @@ set -eux
 # スクリプトが終了する際にすべてのバックグラウンドプロセスを停止するためのトラップを設定
 trap "kill 0" EXIT
 
-# 実行するrosbagへのパス
-ROSBAG=$(readlink -f $1)
+# 実行するmap・rosbagへのパス
+MAP=$(readlink -f $1)
+ROSBAG=$(readlink -f $2)
 
 # このディレクトリに移動
 cd $(dirname $0)
@@ -18,7 +19,7 @@ set -eux
 
 # Autowareをバックグラウンドで起動
 ros2 launch autoware_launch logging_simulator.launch.xml \
-    map_path:=$HOME/Downloads/nishishinjuku_autoware_map \
+    map_path:=$MAP \
     pose_source:=ndt \
     vehicle_model:=sample_vehicle \
     sensor_model:=sample_sensor_kit \
@@ -39,7 +40,7 @@ ros2 service call /localization/pose_twist_fusion_filter/trigger_node std_srvs/s
 sleep 3
 
 # rosbagをリプレイ
-ros2 bag play ${ROSBAG} -r 1.0 -s sqlite3
+ros2 bag play ${ROSBAG} -r 1.0 --clock
 
 # 終了
 ./kill_autoware.sh
