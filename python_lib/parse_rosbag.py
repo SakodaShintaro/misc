@@ -49,32 +49,38 @@ if __name__ == "__main__":
 
     time_list = []
     gyro_bias_message = []
-    estimated_gyro_bias_x = [0]
-    estimated_gyro_bias_y = [0]
-    estimated_gyro_bias_z = [0]
+    estimated_gyro_bias_x = []
+    estimated_gyro_bias_y = []
+    estimated_gyro_bias_z = []
+    t0 = None
     while reader.has_next():
         (topic, data, t) = reader.read_next()
+        if t0 is None:
+            t0 = t
         msg_type = get_message(type_map[topic])
         msg = deserialize_message(data, msg_type)
-        skip = False
+        skip = (len(msg.status) == 0)
         for status in msg.status:
-            skip = "bias" not in status.name
+            skip = skip or ("bias" not in status.name)
         if skip:
             continue
 
-        assert len(msg.status) == 1
+        assert len(msg.status) == 1, f"{msg}, {skip}"
         message = msg.status[0].message
         key_value_map = {kv.key: kv.value for kv in msg.status[0].values}
+
+        if "estimated_gyro_bias_x" not in key_value_map:
+            continue
 
         t /= 1e9
         time_list.append(t)
         gyro_bias_message.append(key_value_map["gyro_bias"])
         estimated_gyro_bias_x.append(
-            float(key_value_map.get("estimated_gyro_bias_x", estimated_gyro_bias_x[-1])))
+            float(key_value_map["estimated_gyro_bias_x"]))
         estimated_gyro_bias_y.append(
-            float(key_value_map.get("estimated_gyro_bias_y", estimated_gyro_bias_y[-1])))
+            float(key_value_map["estimated_gyro_bias_y"]))
         estimated_gyro_bias_z.append(
-            float(key_value_map.get("estimated_gyro_bias_z", estimated_gyro_bias_z[-1])))
+            float(key_value_map["estimated_gyro_bias_z"]))
 
     time_list = np.array(time_list)
     gyro_bias_message = np.array(gyro_bias_message)
@@ -82,20 +88,19 @@ if __name__ == "__main__":
     estimated_gyro_bias_y = np.array(estimated_gyro_bias_y)
     estimated_gyro_bias_z = np.array(estimated_gyro_bias_z)
 
-    estimated_gyro_bias_x = estimated_gyro_bias_x[1:]
-    estimated_gyro_bias_y = estimated_gyro_bias_y[1:]
-    estimated_gyro_bias_z = estimated_gyro_bias_z[1:]
-
-    time_list -= time_list[0]
+    time_list -= (t0 / 1e9)
 
     plt.plot(time_list, estimated_gyro_bias_x, label="estimated gyro bias x")
     plt.plot(time_list, estimated_gyro_bias_y, label="estimated gyro bias y")
     plt.plot(time_list, estimated_gyro_bias_z, label="estimated gyro bias z")
 
     THRESHOLD = 0.0015
-    plt.plot(time_list, +np.ones_like(time_list) * THRESHOLD, "--", color="red", label="threshold")
-    plt.plot(time_list, -np.ones_like(time_list) * THRESHOLD, "--", color="red", label="threshold")
+    plt.plot(time_list, +np.ones_like(time_list) *
+             THRESHOLD, "--", color="red", label="threshold")
+    plt.plot(time_list, -np.ones_like(time_list) *
+             THRESHOLD, "--", color="red", label="threshold")
 
+    plt.xlim(left=0)
     plt.legend()
     plt.xlabel("time [s]")
     plt.ylabel("gyro bias diff [rad/s]")
