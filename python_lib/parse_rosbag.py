@@ -96,12 +96,12 @@ if __name__ == "__main__":
 
     THRESHOLD = 0.0015
     plt.plot(time_list, +np.ones_like(time_list) *
-             THRESHOLD, "--", color="red", label="threshold")
+             THRESHOLD, "--", color="red", label=f"threshold(+{THRESHOLD})")
     plt.plot(time_list, -np.ones_like(time_list) *
-             THRESHOLD, "--", color="red", label="threshold")
+             THRESHOLD, "--", color="red", label=f"threshold(-{THRESHOLD})")
 
     plt.xlim(left=0)
-    plt.legend()
+    plt.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
     plt.xlabel("time [s]")
     plt.ylabel("gyro bias diff [rad/s]")
     save_dir = os.path.dirname(rosbag_path)
