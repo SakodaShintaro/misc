@@ -35,3 +35,8 @@ cspell "**/*.{hpp,cpp,md}"
 sudo apt install -y ros-humble-rosbag2-storage-mcap
 ros2 bag record -s mcap --all
 ```
+
+## gitのエディタをvimにする
+```bash
+git config --global core.editor "vim"
+```
