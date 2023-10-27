@@ -14,4 +14,5 @@ set +eux
 export CPLUS_INCLUDE_PATH=/usr/include/c++/11:/usr/include/x86_64-linux-gnu/c++/11:$CPLUS_INCLUDE_PATH
 set -eux
 
+fdfind -e cpp -e hpp --full-path ${TARGET_DIR} | xargs -P $(nproc) -I{} cpplint {}
 fdfind -e cpp -e hpp --full-path ${TARGET_DIR} | xargs -P $(nproc) -I{} clang-tidy -p build/ {}
