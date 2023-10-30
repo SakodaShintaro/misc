@@ -11,6 +11,6 @@ colcon build --symlink-install \
     -DCMAKE_CXX_FLAGS='-fprofile-arcs -ftest-coverage' \
     -DCMAKE_C_FLAGS='-fprofile-arcs -ftest-coverage' \
   --packages-select $1
-colcon test --packages-select $1
+colcon test --return-code-on-test-failure --packages-select $1
 colcon lcov-result --packages-select $1
 colcon test-result --all --verbose | grep $1
