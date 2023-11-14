@@ -39,6 +39,9 @@ ros2 service call /localization/pose_twist_fusion_filter/trigger_node std_srvs/s
 # 安定性のため少し待つ
 sleep 3
 
+# 保存
+ros2 bag record -o "$HOME/data/misc/ekf_$(date +"%Y%m%d_%H%M%S")" --use-sim-time /localization/pose_twist_fusion_filter/kinematic_state &
+
 # rosbagをリプレイ
 ros2 bag play ${ROSBAG} -r 1.0 --clock
 
