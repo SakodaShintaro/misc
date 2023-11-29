@@ -5,11 +5,17 @@ set -eux
 # スクリプトが終了する際にすべてのバックグラウンドプロセスを停止するためのトラップを設定
 trap "kill 0" EXIT
 
+# 実行するmapへのパス
+MAP=$(readlink -f $1)
+
 # 実行するrosbagへのパス
-ROSBAG=$(readlink -f $1)
+ROSBAG=$(readlink -f $2)
+
+# 実行する手法(ndt or artag)
+METHOD=$3
 
 # 結果を保存する位置
-SAVE_DIR=$(readlink -f $2)
+SAVE_DIR=$(readlink -f $4)
 
 # このディレクトリに移動
 cd $(dirname $0)
@@ -21,8 +27,8 @@ set -eux
 
 # Autowareをバックグラウンドで起動
 ros2 launch autoware_launch logging_simulator.launch.xml \
-    map_path:=$HOME/Downloads/nishishinjuku_autoware_map \
-    pose_source:=ndt \
+    map_path:=$MAP \
+    pose_source:=$METHOD \
     vehicle_model:=sample_vehicle \
     sensor_model:=awsim_sensor_kit \
     perception:=false \
