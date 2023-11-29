@@ -47,18 +47,18 @@ ros2 bag play ${ROSBAG} -r 0.75 -s sqlite3 --remap /localization/pose_twist_fusi
 
 # gtが無ければgtを生成
 if [ ! -e $SAVE_DIR/ground_truth.tsv ]; then
-    python3 python_lib/extract_gt_pose_from_rosbag.py \
+    python3 python_lib/extract_pose_from_rosbag.py \
         --rosbag_path=$ROSBAG \
         --target_topic="/awsim/ground_truth/vehicle/pose" \
         --output_dir=$SAVE_DIR
 fi
 
 # rosbagからtsvに変換
-python3 python_lib/extract_gt_pose_from_rosbag.py \
+python3 python_lib/extract_pose_from_rosbag.py \
     --rosbag_path=$SAVE_DIR/result_rosbag \
     --target_topic="/localization/pose_twist_fusion_filter/pose" \
     --output_dir=$SAVE_DIR
-python3 python_lib/extract_gt_pose_from_rosbag.py \
+python3 python_lib/extract_pose_from_rosbag.py \
     --rosbag_path=$SAVE_DIR/result_rosbag \
     --target_topic="/localization/pose_estimator/pose" \
     --output_dir=$SAVE_DIR
