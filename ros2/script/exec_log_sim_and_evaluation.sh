@@ -14,9 +14,6 @@ SAVE_DIR=$(readlink -f $2)
 # このディレクトリに移動
 cd $(dirname $0)
 
-# saverを起動
-./build_and_exec_pose_saver.sh $SAVE_DIR &
-
 # 読み込み
 set +eux
 source $HOME/autoware/install/setup.bash
@@ -51,14 +48,25 @@ ros2 bag play ${ROSBAG} -r 0.75 -s sqlite3 --remap /localization/pose_twist_fusi
 # gtが無ければgtを生成
 if [ ! -e $SAVE_DIR/ground_truth.tsv ]; then
     python3 ../python/extract_gt_pose_from_rosbag.py \
-        $ROSBAG \
-        $SAVE_DIR
+        --rosbag_path=$ROSBAG \
+        --target_topic="/awsim/ground_truth/vehicle/pose" \
+        --output_dir=$SAVE_DIR
 fi
+
+# rosbagからtsvに変換
+python3 ../python/extract_gt_pose_from_rosbag.py \
+    --rosbag_path=$SAVE_DIR/result_rosbag \
+    --target_topic="/localization/pose_twist_fusion_filter/pose" \
+    --output_dir=$SAVE_DIR
+python3 ../python/extract_gt_pose_from_rosbag.py \
+    --rosbag_path=$SAVE_DIR/result_rosbag \
+    --target_topic="/localization/pose_estimator/pose" \
+    --output_dir=$SAVE_DIR
 
 # 評価
 python3 ../python/compare_trajectories.py \
-    $SAVE_DIR/ekf_pose.tsv \
-    $SAVE_DIR/ground_truth.tsv
+    $SAVE_DIR/localization__pose_twist_fusion_filter__pose.tsv \
+    $SAVE_DIR/awsim__ground_truth__vehicle__pose.tsv
 python3 ../python/compare_trajectories.py \
-    $SAVE_DIR/ndt_pose.tsv \
-    $SAVE_DIR/ground_truth.tsv
+    $SAVE_DIR/localization__pose_estimator__pose.tsv \
+    $SAVE_DIR/awsim__ground_truth__vehicle__pose.tsv

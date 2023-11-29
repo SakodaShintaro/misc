@@ -11,14 +11,16 @@ import os
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('rosbag_path', type=str)
-    parser.add_argument('output_dir', type=str)
+    parser.add_argument('--rosbag_path', type=str, required=True)
+    parser.add_argument('--target_topic', type=str, required=True)
+    parser.add_argument('--output_dir', type=str, required=True)
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
+    target_topic = args.target_topic
     output_dir = args.output_dir
 
     os.makedirs(output_dir, exist_ok=True)
@@ -29,7 +31,7 @@ if __name__ == "__main__":
                       'z', 'qw', 'qx', 'qy', 'qz'])
     for connection, timestamp, raw_data in reader.messages():
         topic_name = connection.topic
-        if topic_name != "/awsim/ground_truth/vehicle/pose":
+        if topic_name != target_topic:
             continue
         msg = deserialize_cdr(raw_data, connection.msgtype)
         df = df.append({
@@ -45,12 +47,14 @@ if __name__ == "__main__":
 
     print(df.head())
 
+    save_name = "__".join(target_topic.split('/')[1:])
+
     # plot xy
     plt.plot(df['x'], df['y'])
     plt.axis('equal')
     plt.xlabel('x[m]')
     plt.ylabel('y[m]')
-    plt.savefig(f'{output_dir}/ground_truth_trajectory.png',
+    plt.savefig(f'{output_dir}/{save_name}_trajectory.png',
                 bbox_inches='tight', pad_inches=0.05, dpi=300)
     plt.close()
 
@@ -62,7 +66,7 @@ if __name__ == "__main__":
     plt.xlabel("Frame number")
     plt.ylabel("diff (x,y,z[m], timestamp[sec])")
     plt.legend()
-    plt.savefig(f'{output_dir}/ground_truth_differential.png',
+    plt.savefig(f'{output_dir}/{save_name}_differential.png',
                 bbox_inches='tight', pad_inches=0.05, dpi=300)
     plt.close()
 
@@ -70,5 +74,5 @@ if __name__ == "__main__":
     df["nanosec"] = (df["timestamp"] % 1e9).astype(int)
     df = df.drop(columns=['timestamp'])
     df = df.reindex(columns=['sec', 'nanosec', 'x', 'y', 'z', 'qx', 'qy', 'qz', 'qw'])
-    df.to_csv(f"{output_dir}/ground_truth.tsv", index=False, sep='\t')
+    df.to_csv(f"{output_dir}/{save_name}.tsv", index=False, sep='\t')
     print(df)
