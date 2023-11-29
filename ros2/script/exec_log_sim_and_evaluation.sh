@@ -39,6 +39,9 @@ ros2 service call /localization/pose_twist_fusion_filter/trigger_node std_srvs/s
 # 安定性のため少し待つ
 sleep 5
 
+# 保存
+ros2 bag record -o $SAVE_DIR/result_rosbag --use-sim-time /localization/pose_twist_fusion_filter/pose /localization/pose_estimator/pose &
+
 # rosbagをリプレイ
 ros2 bag play ${ROSBAG} -r 0.75 -s sqlite3 --remap /localization/pose_twist_fusion_filter/biased_pose_with_covariance:=/null
 
