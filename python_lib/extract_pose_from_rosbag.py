@@ -1,4 +1,4 @@
-""" AWSIMで作ったGT付きrosbagからGTを抽出するスクリプト
+""" rosbagからPoseStampedのPoseを抽出するスクリプト
 """
 
 import argparse
@@ -45,7 +45,6 @@ if __name__ == "__main__":
             'qz': msg.pose.orientation.z,
         }, ignore_index=True)
 
-    print(df.head())
 
     save_name = "__".join(target_topic.split('/')[1:])
 
@@ -75,4 +74,3 @@ if __name__ == "__main__":
     df = df.drop(columns=['timestamp'])
     df = df.reindex(columns=['sec', 'nanosec', 'x', 'y', 'z', 'qx', 'qy', 'qz', 'qw'])
     df.to_csv(f"{output_dir}/{save_name}.tsv", index=False, sep='\t')
-    print(df)
