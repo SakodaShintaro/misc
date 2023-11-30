@@ -46,7 +46,11 @@ sleep 5
 mkdir -p $SAVE_DIR
 
 # 保存
-ros2 bag record -o $SAVE_DIR/result_rosbag --use-sim-time /localization/pose_twist_fusion_filter/pose /localization/pose_estimator/pose &
+ros2 bag record -o $SAVE_DIR/result_rosbag --use-sim-time \
+    /localization/pose_twist_fusion_filter/pose \
+    /localization/pose_estimator/pose \
+    /localization/pose_estimator/iteration_num \
+    /localization/pose_estimator/exe_time_ms &
 
 # CPU利用率の表示
 mpstat 1 > $SAVE_DIR/cpu_usage.txt &
