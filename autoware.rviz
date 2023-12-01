@@ -662,11 +662,11 @@ Visualization Manager:
               Enabled: true
               Name: MonteCarloInitialPose
               Namespaces:
-                initial_pose_index_color_marker: true
-                initial_pose_iteration_color_marker: true
-                initial_pose_transform_probability_color_marker: true
-                result_pose_index_color_marker: true
-                result_pose_iteration_color_marker: true
+                initial_pose_index_color_marker: false
+                initial_pose_iteration_color_marker: false
+                initial_pose_transform_probability_color_marker: false
+                result_pose_index_color_marker: false
+                result_pose_iteration_color_marker: false
                 result_pose_transform_probability_color_marker: true
               Topic:
                 Depth: 5
