@@ -27,15 +27,20 @@ if __name__ == "__main__":
 
     reader = Reader(rosbag_path)
     reader.open()
-    df = pd.DataFrame(columns=['timestamp', 'x', 'y',
+    df = pd.DataFrame(columns=['timestamp', 'sec', 'nanosec', 'x', 'y',
                       'z', 'qw', 'qx', 'qy', 'qz'])
-    for connection, timestamp, raw_data in reader.messages():
+    for connection, _timestamp, raw_data in reader.messages():
         topic_name = connection.topic
         if topic_name != target_topic:
             continue
         msg = deserialize_cdr(raw_data, connection.msgtype)
+        sec = msg.header.stamp.sec
+        nanosec = msg.header.stamp.nanosec
+        timestamp = sec + nanosec / 1e9
         df = df.append({
             'timestamp': timestamp,
+            'sec': sec,
+            'nanosec': nanosec,
             'x': msg.pose.position.x,
             'y': msg.pose.position.y,
             'z': msg.pose.position.z,
@@ -44,7 +49,6 @@ if __name__ == "__main__":
             'qy': msg.pose.orientation.y,
             'qz': msg.pose.orientation.z,
         }, ignore_index=True)
-
 
     save_name = "__".join(target_topic.split('/')[1:])
 
@@ -61,7 +65,7 @@ if __name__ == "__main__":
     plt.plot(df['x'].diff(), label='x')
     plt.plot(df['y'].diff(), label='y')
     plt.plot(df['z'].diff(), label='z')
-    plt.plot(df['timestamp'].diff() / 1e9, label='timestamp')
+    plt.plot(df['timestamp'].diff(), label='timestamp')
     plt.xlabel("Frame number")
     plt.ylabel("diff (x,y,z[m], timestamp[sec])")
     plt.legend()
@@ -69,8 +73,7 @@ if __name__ == "__main__":
                 bbox_inches='tight', pad_inches=0.05, dpi=300)
     plt.close()
 
-    df["sec"] = (df["timestamp"] * 1e-9).astype(int)
-    df["nanosec"] = (df["timestamp"] % 1e9).astype(int)
     df = df.drop(columns=['timestamp'])
-    df = df.reindex(columns=['sec', 'nanosec', 'x', 'y', 'z', 'qx', 'qy', 'qz', 'qw'])
+    df = df.reindex(columns=['sec', 'nanosec', 'x',
+                    'y', 'z', 'qx', 'qy', 'qz', 'qw'])
     df.to_csv(f"{output_dir}/{save_name}.tsv", index=False, sep='\t')
