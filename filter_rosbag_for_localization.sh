@@ -28,5 +28,4 @@ ros2 bag filter ${TARGET} -o ${TARGET}_filtered --include \
     "/vehicle/status/velocity_status" \
     "/awsim/ground_truth/localization/kinematic_state" \
     "/awsim/ground_truth/vehicle/pose" \
-    "/initialpose" \
-    "/clock"
+    "/initialpose"
