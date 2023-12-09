@@ -37,6 +37,15 @@ ros2 bag record -s mcap --all
 ```
 
 ## gitのエディタをvimにする
+
 ```bash
 git config --global core.editor "vim"
+```
+
+## Dockerメモ
+
+```bash
+docker system df
+docker builder prune
+docker system prune -a
 ```
