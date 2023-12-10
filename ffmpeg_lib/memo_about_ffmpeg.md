@@ -27,3 +27,10 @@ ffmpeg -i filename.webm filename.mp4
 ffmpeg -i filename.mp4 -vf scale=-1:540 -crf 32 output.mp4
 ffmpeg -i filename.mp4 -vf scale=-1:540 -vf setpts=PTS/2 -crf 32 output.mp4
 ```
+
+## カット
+
+```bash
+ffmpeg -ss [duration] -to [hh:mm:ss] -i input.mp4 -c copy output.mp4
+ffmpeg -ss [duration] -i input.mp4 -t [duration] -c copy output.mp4
+```
