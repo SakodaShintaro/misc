@@ -57,6 +57,11 @@ mpstat 1 > $SAVE_DIR/cpu_usage.txt &
 
 # rosbagをリプレイ
 ros2 bag play ${ROSBAG} -r 0.75 -s sqlite3 --remap /localization/pose_twist_fusion_filter/biased_pose_with_covariance:=/null
+# 将来clockに変える場合
+# ros2 bag play ${ROSBAG} --rate 0.75 \
+#   --storage sqlite3 \
+#   --clock 200 \
+#   --remap /localization/pose_twist_fusion_filter/biased_pose_with_covariance:=/null
 
 # 終了
 ./kill_autoware.sh
