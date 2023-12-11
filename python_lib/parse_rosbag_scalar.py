@@ -52,7 +52,8 @@ if __name__ == "__main__":
     df['value'] = value_list
     df['time'] -= df['time'][0]
 
-    save_dir = os.path.dirname(rosbag_path)
+    save_dir = os.path.dirname(rosbag_path) if os.path.isfile(
+        rosbag_path) else rosbag_path
     save_name = target_topic[1:].replace('/', '__')
     df.to_csv(f'{save_dir}/{save_name}.csv', index=False)
 
