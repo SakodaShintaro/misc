@@ -40,14 +40,7 @@ ros2 service call /localization/pose_twist_fusion_filter/trigger_node std_srvs/s
 sleep 3
 
 # 保存
-ros2 bag record -o "$HOME/data/misc/$(date +"%Y%m%d_%H%M%S")_general_logging" --use-sim-time \
-  /localization/pose_estimator/exe_time_ms \
-  /localization/pose_estimator/iteration_num \
-  /localization/pose_estimator/pose \
-  /localization/pose_estimator/transform_probability \
-  /localization/pose_estimator/nearest_voxel_transformation_likelihood \
-  /localization/pose_estimator/initial_to_result_relative_pose \
-  /localization/pose_twist_fusion_filter/kinematic_state &
+./record_localization_result.sh "$HOME/data/misc/$(date +"%Y%m%d_%H%M%S")_general_logging" &
 
 # rosbagをリプレイ
 ros2 bag play ${ROSBAG} -r 1.0 --clock
