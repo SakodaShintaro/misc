@@ -8,6 +8,7 @@ source $HOME/autoware/install/setup.bash
 set -eux
 
 ros2 bag record -o "$SAVE_DIR" --use-sim-time \
+  /diagnostics \
   /localization/pose_estimator/exe_time_ms \
   /localization/pose_estimator/iteration_num \
   /localization/pose_estimator/pose \
