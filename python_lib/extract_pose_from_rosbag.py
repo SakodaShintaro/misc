@@ -37,7 +37,7 @@ if __name__ == "__main__":
         sec = msg.header.stamp.sec
         nanosec = msg.header.stamp.nanosec
         timestamp = sec + nanosec / 1e9
-        df = df.append({
+        new_row = pd.DataFrame([{
             'timestamp': timestamp,
             'sec': sec,
             'nanosec': nanosec,
@@ -48,7 +48,8 @@ if __name__ == "__main__":
             'qx': msg.pose.orientation.x,
             'qy': msg.pose.orientation.y,
             'qz': msg.pose.orientation.z,
-        }, ignore_index=True)
+        }])
+        df = pd.concat([df, new_row], ignore_index=True)
 
     save_name = "__".join(target_topic.split('/')[1:])
 

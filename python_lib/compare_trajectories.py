@@ -29,9 +29,18 @@ def interpolate_pose_in_time(df: pd.DataFrame, target_timestamp_list: pd.Series)
     """
     POSITIONS_KEY = ['x', 'y', 'z']
     ORIENTATIONS_KEY = ['qw', 'qx', 'qy', 'qz']
-    result_df = pd.DataFrame(columns=df.columns)
     target_index = 0
     df_index = 0
+    data_dict = {
+        'x': [],
+        'y': [],
+        'z': [],
+        'qx': [],
+        'qy': [],
+        'qz': [],
+        'qw': [],
+        'timestamp': [],
+    }
     while df_index < len(df) - 1 and target_index < len(target_timestamp_list):
         curr_time = df.iloc[df_index]['timestamp']
         next_time = df.iloc[df_index + 1]['timestamp']
@@ -57,12 +66,16 @@ def interpolate_pose_in_time(df: pd.DataFrame, target_timestamp_list: pd.Series)
                       Rotation.concatenate([curr_r, next_r]))
         target_orientation = slerp([target_time]).as_quat()[0]
 
-        target_row = df.iloc[df_index].copy()
-        target_row['timestamp'] = target_timestamp_list[target_index]
-        target_row[POSITIONS_KEY] = target_position
-        target_row[ORIENTATIONS_KEY] = target_orientation
-        result_df = result_df.append(target_row)
+        data_dict['timestamp'].append(target_timestamp_list[target_index])
+        data_dict['x'].append(target_position[0])
+        data_dict['y'].append(target_position[1])
+        data_dict['z'].append(target_position[2])
+        data_dict['qw'].append(target_orientation[0])
+        data_dict['qx'].append(target_orientation[1])
+        data_dict['qy'].append(target_orientation[2])
+        data_dict['qz'].append(target_orientation[3])
         target_index += 1
+    result_df = pd.DataFrame(data_dict)
     return result_df
 
 
@@ -155,16 +168,15 @@ if __name__ == "__main__":
     error = (df_relative['x']**2 +
              df_relative['y']**2 +
              df_relative['z']**2)**0.5
-    df_summary = pd.DataFrame()
-    df_summary = df_summary.append({
-        'x_diff_mean': x_diff_mean,
-        'y_diff_mean': y_diff_mean,
-        'z_diff_mean': z_diff_mean,
-        'error_mean': error.mean(),
-        'roll_diff_mean': angle_x_diff_mean,
-        'pitch_diff_mean': angle_y_diff_mean,
-        'yaw_diff_mean': angle_z_diff_mean,
-    }, ignore_index=True)
+    df_summary = pd.DataFrame({
+        'x_diff_mean': [x_diff_mean],
+        'y_diff_mean': [y_diff_mean],
+        'z_diff_mean': [z_diff_mean],
+        'error_mean': [error.mean()],
+        'roll_diff_mean': [angle_x_diff_mean],
+        'pitch_diff_mean': [angle_y_diff_mean],
+        'yaw_diff_mean': [angle_z_diff_mean],
+    })
     df_summary.to_csv(
         f'{save_dir}/relative_pose_summary.tsv', sep='\t', index=False)
     print(f'mean error: {error.mean():.3f} m')
