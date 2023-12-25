@@ -15,6 +15,6 @@ $HOME/Downloads/AWSIM_v1.2.0/AWSIM_v1.2.0.x86_64 &
 
 # Autowareを起動
 ros2 launch autoware_launch e2e_simulator.launch.xml \
-    map_path:=$HOME/Downloads/nishishinjuku_autoware_map \
+    map_path:=$HOME/Downloads/nishishinjuku_autoware_map_divided \
     vehicle_model:=sample_vehicle \
     sensor_model:=awsim_sensor_kit
