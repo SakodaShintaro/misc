@@ -49,3 +49,8 @@ docker system df
 docker builder prune
 docker system prune -a
 ```
+
+## AWSIMで信号を無視する方法
+
+autoware/src/universe/autoware.universe/launch/tier4_planning_launch/launch/scenario_planning/lane_driving/behavior_planning/behavior_planning.launch.xml
+の3行目あたりにある変数input_traffic_light_topic_nameを適当に書き換える（suffixに_dummyと付けるなど）
