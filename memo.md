@@ -12,10 +12,6 @@ export CMAKE_EXPORT_COMPILE_COMMANDS=1
 
 colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to
 
-## バージョン出力
-
-vcs export src --exact > my_autoware.repos
-
 ## cspell
 
 ```bash
