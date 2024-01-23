@@ -21,4 +21,9 @@ ros2 launch autoware_launch logging_simulator.launch.xml \
 ros2 service call /localization/pose_twist_fusion_filter/trigger_node std_srvs/srv/SetBool "{data: false}"
 
 # 経過時間の計算
-echo "${SECONDS}秒"
+ELAPSED=${SECONDS}
+echo "${ELAPSED}秒"
+
+sleep 3
+
+echo "${ELAPSED}秒"
