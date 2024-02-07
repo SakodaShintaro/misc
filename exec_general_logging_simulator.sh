@@ -43,7 +43,7 @@ sleep 3
 ./record_localization_result.sh "$HOME/data/misc/$(date +"%Y%m%d_%H%M%S")_general_logging" &
 
 # rosbagをリプレイ
-ros2 bag play ${ROSBAG} -r 1.0 --clock
+ros2 bag play ${ROSBAG} -r 1.0 --clock 200
 
 # 終了
 ./kill_autoware.sh
