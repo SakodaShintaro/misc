@@ -40,8 +40,7 @@ if __name__ == "__main__":
 
     reader = Reader(rosbag_path)
     reader.open()
-    df = pd.DataFrame(columns=['timestamp', 'sec', 'nanosec', 'x', 'y',
-                      'z', 'qw', 'qx', 'qy', 'qz'])
+    data_list = list()
     for connection, _timestamp, raw_data in reader.messages():
         topic_name = connection.topic
         if topic_name != target_topic:
@@ -51,10 +50,8 @@ if __name__ == "__main__":
         nanosec = msg.header.stamp.nanosec
         timestamp = sec + nanosec / 1e9
         pose = extract_pose_data(msg, connection.msgtype)
-        new_row = pd.DataFrame([{
+        data_list.append({
             'timestamp': timestamp,
-            'sec': sec,
-            'nanosec': nanosec,
             'x': pose.position.x,
             'y': pose.position.y,
             'z': pose.position.z,
@@ -62,9 +59,10 @@ if __name__ == "__main__":
             'qx': pose.orientation.x,
             'qy': pose.orientation.y,
             'qz': pose.orientation.z,
-        }])
-        df = pd.concat([df, new_row], ignore_index=True)
+        })
 
+    df = pd.DataFrame(data_list,
+                      columns=['timestamp', 'x', 'y', 'z', 'qw', 'qx', 'qy', 'qz'])
     save_name = "__".join(target_topic.split('/')[1:])
 
     # plot xy
@@ -88,7 +86,5 @@ if __name__ == "__main__":
                 bbox_inches='tight', pad_inches=0.05, dpi=300)
     plt.close()
 
-    df = df.drop(columns=['timestamp'])
-    df = df.reindex(columns=['sec', 'nanosec', 'x',
-                    'y', 'z', 'qx', 'qy', 'qz', 'qw'])
-    df.to_csv(f"{output_dir}/{save_name}.tsv", index=False, sep='\t', float_format='%.9f')
+    df.to_csv(f"{output_dir}/{save_name}.tsv",
+              index=False, sep='\t', float_format='%.9f')

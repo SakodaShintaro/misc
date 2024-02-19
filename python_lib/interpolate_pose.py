@@ -17,14 +17,14 @@ def interpolate_pose(df_pose: pd.DataFrame, target_timestamp: pd.Series) -> pd.D
     target_index = 0
     df_index = 0
     data_dict = {
+        'timestamp': [],
         'x': [],
         'y': [],
         'z': [],
+        'qw': [],
         'qx': [],
         'qy': [],
         'qz': [],
-        'qw': [],
-        'timestamp': [],
     }
     while df_index < len(df_pose) - 1 and target_index < len(target_timestamp):
         curr_time = df_pose.iloc[df_index]['timestamp']
