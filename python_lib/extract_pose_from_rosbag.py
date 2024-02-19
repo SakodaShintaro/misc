@@ -17,6 +17,19 @@ def parse_args():
     return parser.parse_args()
 
 
+def extract_pose_data(msg, msg_type):
+    if msg_type == 'geometry_msgs/msg/Pose':
+        return msg
+    elif msg_type == 'geometry_msgs/msg/PoseStamped':
+        return msg.pose
+    elif msg_type == 'geometry_msgs/msg/PoseWithCovarianceStamped':
+        return msg.pose.pose
+    elif msg_type == 'nav_msgs/msg/Odometry':
+        return msg.pose.pose
+    else:
+        raise ValueError(f"Unsupported message type: {msg_type}")
+
+
 if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
@@ -37,17 +50,18 @@ if __name__ == "__main__":
         sec = msg.header.stamp.sec
         nanosec = msg.header.stamp.nanosec
         timestamp = sec + nanosec / 1e9
+        pose = extract_pose_data(msg, connection.msgtype)
         new_row = pd.DataFrame([{
             'timestamp': timestamp,
             'sec': sec,
             'nanosec': nanosec,
-            'x': msg.pose.position.x,
-            'y': msg.pose.position.y,
-            'z': msg.pose.position.z,
-            'qw': msg.pose.orientation.w,
-            'qx': msg.pose.orientation.x,
-            'qy': msg.pose.orientation.y,
-            'qz': msg.pose.orientation.z,
+            'x': pose.position.x,
+            'y': pose.position.y,
+            'z': pose.position.z,
+            'qw': pose.orientation.w,
+            'qx': pose.orientation.x,
+            'qy': pose.orientation.y,
+            'qz': pose.orientation.z,
         }])
         df = pd.concat([df, new_row], ignore_index=True)
 
@@ -77,4 +91,4 @@ if __name__ == "__main__":
     df = df.drop(columns=['timestamp'])
     df = df.reindex(columns=['sec', 'nanosec', 'x',
                     'y', 'z', 'qx', 'qy', 'qz', 'qw'])
-    df.to_csv(f"{output_dir}/{save_name}.tsv", index=False, sep='\t')
+    df.to_csv(f"{output_dir}/{save_name}.tsv", index=False, sep='\t', float_format='%.9f')
