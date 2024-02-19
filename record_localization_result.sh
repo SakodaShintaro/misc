@@ -18,4 +18,5 @@ ros2 bag record -o "$SAVE_DIR" --use-sim-time \
   /localization/pose_estimator/initial_to_result_relative_pose \
   /localization/pose_estimator/ndt_marker \
   /localization/pose_twist_fusion_filter/pose \
-  /localization/pose_twist_fusion_filter/kinematic_state
+  /localization/pose_twist_fusion_filter/kinematic_state \
+  /localization/pose_twist_fusion_filter/pose_instability_detector/debug/diff_pose
