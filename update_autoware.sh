@@ -8,6 +8,7 @@ $(dirname $0)/reset_autoware.sh
 git pull
 vcs import src < autoware.repos
 vcs import src < simulator.repos
+vcs import src < tools.repos
 vcs pull src
 vcs export src --exact > my_autoware.repos
 rosdep update
