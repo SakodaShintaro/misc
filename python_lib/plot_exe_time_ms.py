@@ -78,8 +78,13 @@ if __name__ == "__main__":
     df_ndt_exe_time_ms = pd.DataFrame(ndt_exe_time_ms)
     df_ndt_pose = pd.DataFrame(ndt_pose_list)
 
-    df_ndt_pose = interpolate_pose(
-        df_ndt_pose, df_ndt_exe_time_ms["timestamp"])
+    # timestampが揃っているものだけ残す
+    df_ndt_exe_time_ms = df_ndt_exe_time_ms[
+        df_ndt_exe_time_ms["timestamp"].isin(df_ndt_pose["timestamp"])
+    ]
+    df_ndt_pose = df_ndt_pose[
+        df_ndt_pose["timestamp"].isin(df_ndt_exe_time_ms["timestamp"])
+    ]
 
     # rosbag path may be the path to the db3 file, or it may be the path to the directory containing it
     save_dir = (
