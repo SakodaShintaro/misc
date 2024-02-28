@@ -51,7 +51,7 @@ def interpolate_pose(df_pose: pd.DataFrame, target_timestamp: pd.Series) -> pd.D
                       Rotation.concatenate([curr_r, next_r]))
         target_orientation = slerp([target_time]).as_quat()[0]
 
-        data_dict['timestamp'].append(target_timestamp[target_index])
+        data_dict['timestamp'].append(target_time)
         data_dict['x'].append(target_position[0])
         data_dict['y'].append(target_position[1])
         data_dict['z'].append(target_position[2])
