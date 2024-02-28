@@ -88,3 +88,6 @@ python3 python_lib/compare_trajectories.py \
 python3 python_lib/compare_trajectories.py \
     $SAVE_DIR/localization__pose_estimator__pose.tsv \
     $SAVE_DIR/awsim__ground_truth__vehicle__pose.tsv
+
+# exe_time_msをプロット
+python3 python_lib/plot_exe_time_ms.py $SAVE_DIR/result_rosbag
