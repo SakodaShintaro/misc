@@ -116,4 +116,5 @@ if __name__ == "__main__":
     save_path = save_dir / "exe_time_ms_on_ndt_pose.png"
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     print(f"Saved to {save_path}")
+    print(f"Averaged exe_time_ms: {df_ndt_exe_time_ms['value'].mean():.1f} [ms]")
     plt.close()
