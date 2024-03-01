@@ -50,6 +50,10 @@ if __name__ == "__main__":
         time = df_time['value'].mean()
         time_list.append(time)
 
+    if len(date_list) == 0:
+        print("no data")
+        exit(0)
+
     plt.figure(figsize=(6.4, 4.8 * 1.5))
 
     # plot error
