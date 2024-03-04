@@ -113,7 +113,7 @@ if __name__ == "__main__":
         'yaw_diff_mean': [angle_z_diff_mean],
     })
     df_summary.to_csv(
-        f'{save_dir}/relative_pose_summary.tsv', sep='\t', index=False)
+        f'{save_dir}/relative_pose_summary.tsv', sep='\t', index=False, float_format='%.4f')
     print(f'mean error: {error.mean():.3f} m')
 
     # plot (relative position)
@@ -172,7 +172,8 @@ if __name__ == "__main__":
         direction = np.array([5, 0, 0])
         plt.quiver(0, 0, direction[0], direction[1], angles='xy',
                    scale_units='xy', scale=1, color='blue', label='ground truth')
-        r = Rotation.from_euler('xyz', [angle_x, angle_y, angle_z], degrees=True)
+        r = Rotation.from_euler(
+            'xyz', [angle_x, angle_y, angle_z], degrees=True)
         direction = r.apply(direction)
         plt.quiver(x, y, direction[0], direction[1], angles='xy',
                    scale_units='xy', scale=1, color='red', label='prediction')
@@ -182,12 +183,18 @@ if __name__ == "__main__":
         plt.xlabel('x [m]')
         plt.ylabel('y [m]')
         plt.legend()
-        plt.text(-2, 3.0, f'error_x = {x * 100:+.1f} cm', fontsize=10, fontproperties=font)
-        plt.text(-2, 2.5, f'error_y = {y * 100:+.1f} cm', fontsize=10, fontproperties=font)
-        plt.text(-2, 2.0, f'error_z = {z * 100:+.1f} cm', fontsize=10, fontproperties=font)
-        plt.text(-2, 1.5, f'roll    = {angle_x:+.2f} deg', fontsize=10, fontproperties=font)
-        plt.text(-2, 1.0, f'pitch   = {angle_y:+.2f} deg', fontsize=10, fontproperties=font)
-        plt.text(-2, 0.5, f'yaw     = {angle_z:+.2f} deg', fontsize=10, fontproperties=font)
+        plt.text(-2, 3.0, f'error_x = {x * 100:+.1f} cm',
+                 fontsize=10, fontproperties=font)
+        plt.text(-2, 2.5, f'error_y = {y * 100:+.1f} cm',
+                 fontsize=10, fontproperties=font)
+        plt.text(-2, 2.0, f'error_z = {z * 100:+.1f} cm',
+                 fontsize=10, fontproperties=font)
+        plt.text(-2, 1.5, f'roll    = {angle_x:+.2f} deg',
+                 fontsize=10, fontproperties=font)
+        plt.text(-2, 1.0, f'pitch   = {angle_y:+.2f} deg',
+                 fontsize=10, fontproperties=font)
+        plt.text(-2, 0.5, f'yaw     = {angle_z:+.2f} deg',
+                 fontsize=10, fontproperties=font)
         plt.savefig(f'{save_dir}/relative_pose_plot/{i:08d}.png',
                     bbox_inches='tight', pad_inches=0.05)
         plt.close()
@@ -200,7 +207,8 @@ if __name__ == "__main__":
         plt.plot(df_relative['x'], label='x')
         plt.plot(df_relative['y'], label='y')
         plt.plot(df_relative['z'], label='z')
-        plt.plot([df_index, df_index], [-1, 1], color='black', linestyle='dashed')
+        plt.plot([df_index, df_index], [-1, 1],
+                 color='black', linestyle='dashed')
         plt.ylim((-1, 1))
         plt.legend()
         plt.xlabel('frame number')
@@ -211,12 +219,14 @@ if __name__ == "__main__":
         plt.plot(df_relative["angle_x"], label='roll')
         plt.plot(df_relative["angle_y"], label='pitch')
         plt.plot(df_relative["angle_z"], label='yaw')
-        plt.plot([df_index, df_index], [-1, 1], color='black', linestyle='dashed')
+        plt.plot([df_index, df_index], [-1, 1],
+                 color='black', linestyle='dashed')
         plt.ylim((-1, 1))
         plt.legend()
         plt.xlabel('frame number')
         plt.ylabel('relative angle [degree]')
 
         plt.tight_layout()
-        plt.savefig(f'{save_dir}/combined_plot/{i:08d}.png', bbox_inches='tight', pad_inches=0.05, dpi=150)
+        plt.savefig(f'{save_dir}/combined_plot/{i:08d}.png',
+                    bbox_inches='tight', pad_inches=0.05, dpi=150)
         plt.close()
