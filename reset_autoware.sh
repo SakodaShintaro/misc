@@ -13,7 +13,7 @@ for git_dir in $REPOSITORIES; do
     repo_dir=$(dirname "$git_dir")
     (
         cd "$repo_dir"
-        git reset --hard HEAD
+        git reset --hard @{u}
         git clean -df
     )
 done
