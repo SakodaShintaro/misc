@@ -96,6 +96,10 @@ if __name__ == "__main__":
     df_ndt_exe_time_ms.to_csv(
         save_dir / "exe_time_ms.tsv", index=False, sep="\t", float_format="%.9f")
 
+    # save mean
+    with open(save_dir / "exe_time_ms_mean.txt", "w") as f:
+        f.write(f"{df_ndt_exe_time_ms['value'].mean():.1f} [ms]")
+
     # plot exe_time_ms
     plt.plot(df_ndt_exe_time_ms["timestamp"], df_ndt_exe_time_ms["value"])
     plt.xlabel("timestamp")
