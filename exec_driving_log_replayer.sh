@@ -2,4 +2,4 @@
 
 set -eux
 
-dlr simulation run -p localization -l "play_rate:=0.5"
+dlr simulation run -p localization -l "play_rate:=1.0"
