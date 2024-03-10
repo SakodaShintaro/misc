@@ -3,6 +3,7 @@ import os
 import argparse
 from glob import glob
 import numpy as np
+from tqdm import tqdm
 
 
 def parse_args():
@@ -10,14 +11,21 @@ def parse_args():
     parser.add_argument('dir1', type=str)
     parser.add_argument('dir2', type=str)
     parser.add_argument('output_dir', type=str)
+    parser.add_argument('--text1', type=str, default="")
+    parser.add_argument('--text2', type=str, default="")
     return parser.parse_args()
 
 
-def put_text(image, text, x, y, scale, color, outline_color=(0, 0, 0)):
-    cv2.putText(image, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX,
-                scale, outline_color, 4, cv2.LINE_AA)
-    cv2.putText(image, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX,
-                scale, color, 1, cv2.LINE_AA)
+def put_text(image, text, outline_color=(0, 0, 0)):
+    scale = 1
+    color = (128, 255, 128)
+    face = cv2.FONT_HERSHEY_SIMPLEX
+    text_pixel = image.shape[0] // 16
+    scale = cv2.getFontScaleFromHeight(face, text_pixel)
+    x = 0
+    y = text_pixel
+    cv2.putText(image, text, (x, y), face, scale, outline_color, 4, cv2.LINE_AA)
+    cv2.putText(image, text, (x, y), face, scale, color, 1, cv2.LINE_AA)
     return image
 
 
@@ -49,13 +57,22 @@ def main():
 
     files1 = sorted(glob(f"{dir1}/*.png"))
     files2 = sorted(glob(f"{dir2}/*.png"))
+    assert len(files1) == len(files1)
+    progress = tqdm(total=len(files1))
 
     for file1, file2 in zip(files1, files2):
+        progress.update(1)
         image1 = cv2.imread(os.path.join(dir1, file1))
         image2 = cv2.imread(os.path.join(dir2, file2))
 
         # 画像の高さを揃える
         image1, image2 = pad_images(image1, image2)
+
+        # 文字を入れる
+        filename1 = os.path.basename(file1)
+        filename2 = os.path.basename(file2)
+        put_text(image1, f"{args.text1}_{filename1}")
+        put_text(image2, f"{args.text2}_{filename2}")
 
         # 連結
         new_image = cv2.hconcat([image1, image2])
@@ -63,7 +80,6 @@ def main():
         # 保存
         output_path = f"{output_dir}/{os.path.basename(file1)}"
         cv2.imwrite(output_path, new_image)
-        print(f"Saved {output_path}")
 
 
 if __name__ == "__main__":
