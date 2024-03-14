@@ -7,11 +7,12 @@ import os
 import pandas as pd
 import numpy as np
 from scipy.spatial.transform import Rotation
+from pathlib import Path
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('rosbag_path', type=str)
+    parser.add_argument('rosbag_path', type=Path)
     return parser.parse_args()
 
 
@@ -21,7 +22,7 @@ if __name__ == "__main__":
 
     serialization_format = 'cdr'
     storage_options = rosbag2_py.StorageOptions(
-        uri=rosbag_path, storage_id='sqlite3')
+        uri=str(rosbag_path), storage_id='sqlite3')
     converter_options = rosbag2_py.ConverterOptions(
         input_serialization_format=serialization_format,
         output_serialization_format=serialization_format)
@@ -48,6 +49,8 @@ if __name__ == "__main__":
 
     time_nvtl_list = []
     value_nvtl_list = []
+    time_tp_list = []
+    value_tp_list = []
     time_itr_list = []
     value_itr_list = []
     time_exe_list = []
@@ -66,6 +69,11 @@ if __name__ == "__main__":
             t_from_msg /= 1e9
             time_nvtl_list.append(t_from_msg)
             value_nvtl_list.append(msg.data)
+        elif topic == '/localization/pose_estimator/transform_probability':
+            t_from_msg = msg.stamp.sec * 1e9 + msg.stamp.nanosec
+            t_from_msg /= 1e9
+            time_tp_list.append(t_from_msg)
+            value_tp_list.append(msg.data)
         elif topic == '/localization/pose_estimator/iteration_num':
             t_from_msg = msg.stamp.sec * 1e9 + msg.stamp.nanosec
             t_from_msg /= 1e9
@@ -102,41 +110,51 @@ if __name__ == "__main__":
 
     # 時刻を0からの相対時刻に変換
     time_nvtl_list = [t - time_nvtl_list[0] for t in time_nvtl_list]
+    time_tp_list = [t - time_tp_list[0] for t in time_tp_list]
     time_itr_list = [t - time_itr_list[0] for t in time_itr_list]
     time_exe_list = [t - time_exe_list[0] for t in time_exe_list]
     time_diff_position_list = [
         t - time_diff_position_list[0] for t in time_diff_position_list]
 
-    save_dir = os.path.dirname(rosbag_path) if os.path.isfile(
-        rosbag_path) else rosbag_path
-    save_name = "localization_result"
+    # rosbag path may be the path to the db3 file, or it may be the path to the directory containing it
+    save_dir = (
+        rosbag_path.parent if rosbag_path.is_dir() else rosbag_path.parent.parent
+    ) / "localization_result"
+    save_dir.mkdir(exist_ok=True)
 
     # plotの縦サイズを大きくする
     plt.rcParams['figure.figsize'] = 9, 12
 
     # plot
-    plt.subplot(4, 1, 1)
+    plt.subplot(5, 1, 1)
     plt.plot(time_itr_list, value_itr_list)
     plt.xlabel('time [s]')
     plt.ylabel('iteration_num')
     plt.ylim(bottom=0)
     plt.grid()
 
-    plt.subplot(4, 1, 2)
+    plt.subplot(5, 1, 2)
     plt.plot(time_exe_list, value_exe_list)
     plt.xlabel('time [s]')
     plt.ylabel('exe_time [ms]')
     plt.ylim(bottom=0)
     plt.grid()
 
-    plt.subplot(4, 1, 3)
+    plt.subplot(5, 1, 3)
     plt.plot(time_nvtl_list, value_nvtl_list)
     plt.xlabel('time [s]')
     plt.ylabel('NVTL')
     plt.ylim(bottom=0)
     plt.grid()
 
-    plt.subplot(4, 1, 4)
+    plt.subplot(5, 1, 4)
+    plt.plot(time_tp_list, value_tp_list)
+    plt.xlabel('time [s]')
+    plt.ylabel('TP')
+    plt.ylim(bottom=0)
+    plt.grid()
+
+    plt.subplot(5, 1, 5)
     plt.plot(time_diff_position_list, value_diff_position_list)
     plt.xlabel('time [s]')
     plt.ylabel('diff_position [m]')
@@ -144,16 +162,17 @@ if __name__ == "__main__":
     plt.grid()
 
     plt.tight_layout()
-    plt.savefig(f'{save_dir}/{save_name}.png')
+    save_path = save_dir / "localization_result.png"
+    plt.savefig(save_path, bbox_inches='tight', pad_inches=0.05)
     plt.close()
-    print(f'saved {save_dir}/{save_name}.png')
+    print(f'saved to {save_path}')
 
     # pose_arrayを気合で可視化
     plt.rcParams['figure.figsize'] = 9, 9
-    pose_array_result_dir = f'{save_dir}/{save_name}_pose_array'
-    yaw_array_result_dir = f'{save_dir}/{save_name}_yaw_array'
-    os.makedirs(pose_array_result_dir, exist_ok=True)
-    os.makedirs(yaw_array_result_dir, exist_ok=True)
+    pose_array_result_dir = save_dir / 'pose_array'
+    yaw_array_result_dir = save_dir / 'yaw_array'
+    pose_array_result_dir.mkdir(exist_ok=True)
+    yaw_array_result_dir.mkdir(exist_ok=True)
     for i, (time, pose_array) in enumerate(zip(time_pose_array_list, value_pose_array_list)):
         if len(pose_array) < 30:
             continue
@@ -174,7 +193,7 @@ if __name__ == "__main__":
         plt.xlim(-lim, lim)
         plt.ylim(-lim, lim)
         plt.grid()
-        plt.savefig(f'{pose_array_result_dir}/{i:08d}.png')
+        plt.savefig(f'{str(pose_array_result_dir/ f"{i:08d}.png")}')
         plt.close()
 
         # quaternionを気合で可視化
@@ -204,5 +223,5 @@ if __name__ == "__main__":
         plt.ylim(-1, 1)
         plt.grid()
         plt.legend()
-        plt.savefig(f'{yaw_array_result_dir}/{i:08d}_yaw.png')
+        plt.savefig(f'{str(yaw_array_result_dir/ f"{i:08d}.png")}')
         plt.close()
