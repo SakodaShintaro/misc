@@ -91,3 +91,6 @@ python3 python_lib/compare_trajectories.py \
 
 # exe_time_msをプロット
 python3 python_lib/plot_exe_time_ms.py $SAVE_DIR/result_rosbag
+
+# その他プロット
+python3 python_lib/plot_localization_result.py $SAVE_DIR/result_rosbag
