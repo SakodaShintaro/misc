@@ -17,6 +17,9 @@ METHOD=$3
 # 結果を保存する位置
 SAVE_DIR=$(readlink -f $4)
 
+# rviz
+LAUNCH_RVIZ=${5:-true}
+
 # このディレクトリに移動
 cd $(dirname $0)
 
@@ -31,6 +34,7 @@ ros2 launch autoware_launch logging_simulator.launch.xml \
     pose_source:=$METHOD \
     vehicle_model:=sample_vehicle \
     sensor_model:=awsim_sensor_kit \
+    rviz:=${LAUNCH_RVIZ} \
     perception:=false \
     planning:=false \
     control:=false &
