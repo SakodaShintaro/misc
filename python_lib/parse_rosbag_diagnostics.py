@@ -67,12 +67,6 @@ if __name__ == "__main__":
     # ndt_scan_matcher
     df = pd.DataFrame(data_dict["ndt_scan_matcher"])
     """
-    Index(['execution_time', 'is_local_optimal_solution_oscillation',
-        'iteration_num', 'lidar_topic_delay_time_sec',
-        'nearest_voxel_transformation_likelihood', 'oscillation_count',
-        'skipping_publish_num', 'state', 'transform_probability',
-        'timestamp_rosbag', 'timestamp_header'],
-        dtype='object')
     execution_time is_local_optimal_solution_oscillation iteration_num lidar_topic_delay_time_sec  ...    state transform_probability timestamp_rosbag timestamp_header
     0       0.720000                                     0             1                   0.127052  ...  Aligned              6.466093      29410390260      29410390260
     1       0.771000                                     0             1                   0.107068  ...  Aligned              6.449519      29490406369      29490406369
@@ -115,28 +109,6 @@ if __name__ == "__main__":
     df = pd.DataFrame(data_dict["ekf_localizer"])
     df = df[df["is_activated"] == "True"]
     """
-    Index(['is_activated', 'timestamp_rosbag', 'timestamp_header',
-        'pose_no_update_count', 'pose_no_update_count_threshold_warn',
-        'pose_no_update_count_threshold_error', 'pose_queue_size',
-        'pose_is_passed_delay_gate', 'pose_delay_time',
-        'pose_delay_time_threshold', 'pose_is_passed_mahalanobis_gate',
-        'pose_mahalanobis_distance', 'pose_mahalanobis_distance_threshold',
-        'pose_is_passed_mahalanobis_lat', 'pose_mahalanobis_lat',
-        'pose_mahalanobis_lat_threshold', 'pose_is_passed_mahalanobis_lon',
-        'pose_mahalanobis_lon', 'pose_mahalanobis_lon_threshold',
-        'pose_is_passed_mahalanobis_yaw', 'pose_mahalanobis_yaw',
-        'pose_mahalanobis_yaw_threshold', 'twist_no_update_count',
-        'twist_no_update_count_threshold_warn',
-        'twist_no_update_count_threshold_error', 'twist_queue_size',
-        'twist_is_passed_delay_gate', 'twist_delay_time',
-        'twist_delay_time_threshold', 'twist_is_passed_mahalanobis_gate',
-        'twist_mahalanobis_distance', 'twist_mahalanobis_distance_threshold',
-        'twist_is_passed_mahalanobis_lat', 'twist_mahalanobis_lat',
-        'twist_mahalanobis_lat_threshold', 'twist_is_passed_mahalanobis_lon',
-        'twist_mahalanobis_lon', 'twist_mahalanobis_lon_threshold',
-        'twist_is_passed_mahalanobis_yaw', 'twist_mahalanobis_yaw',
-        'twist_mahalanobis_yaw_threshold'],
-        dtype='object')
     is_activated  timestamp_rosbag  timestamp_header  ... twist_is_passed_mahalanobis_yaw twist_mahalanobis_yaw twist_mahalanobis_yaw_threshold
     68         True       29220424288       29220424288  ...                            True              0.000000                    10000.000000
     69         True       29240390636       29240390636  ...                            True              0.000000                    10000.000000
@@ -153,27 +125,35 @@ if __name__ == "__main__":
     # plot
     y_values = [
         "pose_mahalanobis_distance",
-        "pose_mahalanobis_lon",
-        "pose_mahalanobis_lat",
-        "pose_mahalanobis_yaw",
+        "pose_mahalanobis_distance_lon",
+        "pose_mahalanobis_distance_lat",
+        "pose_mahalanobis_distance_yaw",
+        "pose_euclidean_distance",
+        "pose_euclidean_distance_lon",
+        "pose_euclidean_distance_lat",
+        "pose_euclidean_distance_yaw",
         "twist_mahalanobis_distance",
-        "twist_mahalanobis_lon",
-        "twist_mahalanobis_lat",
-        "twist_mahalanobis_yaw",
+        "twist_mahalanobis_distance_lon",
+        "twist_mahalanobis_distance_lat",
+        "twist_mahalanobis_distance_yaw",
+        "twist_euclidean_distance",
+        "twist_euclidean_distance_lon",
+        "twist_euclidean_distance_lat",
+        "twist_euclidean_distance_yaw",
     ]
 
     plt.figure(figsize=(6.4 * 2, 4.8 * 2))
-    y_max = [0, 0]
-    y_min = [0, 0]
+    y_max = [0, 0, 0, 0]
+    y_min = [0, 0, 0, 0]
     for i, y_value in enumerate(y_values):
         df[y_value] = df[y_value].astype(float)
         div = i // 4
         mod = i % 4
-        area = mod * 2 + div
+        area = mod * 4 + div
         y_max[div] = max(y_max[div], df[y_value].max())
         y_min[div] = min(y_min[div], df[y_value].min())
         print(f"{i=}, {div=}, {mod=}, {area=}")
-        plt.subplot(4, 2, (area + 1))
+        plt.subplot(4, 4, (area + 1))
         plt.plot(df["timestamp_header"], df[y_value], label=y_value)
         plt.xlabel("time [s]")
         plt.title(f"{y_value}")
