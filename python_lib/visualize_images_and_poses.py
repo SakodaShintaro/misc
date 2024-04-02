@@ -33,11 +33,11 @@ if __name__ == "__main__":
     save_dir = target_dir / "images_with_poses"
     save_dir.mkdir(exist_ok=True)
 
-    mileage = 0
+    travel_distance = 0
 
     for image_path, (i, row) in zip(image_paths, df.iterrows()):
         if i > 0:
-            mileage += (
+            travel_distance += (
                 (row["x"] - df.loc[i - 1, "x"]) ** 2
                 + (row["y"] - df.loc[i - 1, "y"]) ** 2
             ) ** 0.5
@@ -52,6 +52,6 @@ if __name__ == "__main__":
         ax[1].set_xlabel("x [m]")
         ax[1].set_ylabel("y [m]")
         ax[1].grid()
-        ax[1].set_title(f"mileage = {mileage:.1f} m")
+        ax[1].set_title(f"travel_distance = {travel_distance:.1f} m")
         plt.savefig(save_dir / f"{i:08d}.png")
         plt.close()
