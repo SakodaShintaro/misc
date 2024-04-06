@@ -33,6 +33,9 @@ ffmpeg -i filename.mp4 -vf scale=-1:540 -vf setpts=PTS/2 -crf 32 output.mp4
 ```bash
 ffmpeg -ss [duration] -to [hh:mm:ss] -i input.mp4 -c copy output.mp4
 ffmpeg -ss [duration] -i input.mp4 -t [duration] -c copy output.mp4
+
+冒頭5秒をカット
+ffmpeg -i input.mp4 -ss 5 -c copy output.mp4
 ```
 
 ## git
