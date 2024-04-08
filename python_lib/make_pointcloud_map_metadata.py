@@ -28,9 +28,8 @@ if __name__ == "__main__":
     x_list = []
     y_list = []
     for pcd_path in pcd_list:
-        filename = pcd_path.stem
-        filename_list.append(filename)
-        x, y = filename.split("_")[-2:]
+        filename_list.append(pcd_path.name)
+        x, y = pcd_path.stem.split("_")[-2:]
         x = int(x)
         y = int(y)
         x_list.append(x)
