@@ -38,7 +38,7 @@ ffmpeg -ss [duration] -i input.mp4 -t [duration] -c copy output.mp4
 ffmpeg -i input.mp4 -ss 5 -c copy output.mp4
 ```
 
-## git
+## gif
 
 ```bash
 ffmpeg -r 4 -i dir/%05d.png output.gif
