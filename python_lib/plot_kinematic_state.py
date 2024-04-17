@@ -31,9 +31,8 @@ if __name__ == "__main__":
     type_map = {
         topic_types[i].name: topic_types[i].type for i in range(len(topic_types))}
 
-    target_topics = [
-        "/localization/pose_twist_fusion_filter/kinematic_state",
-    ]
+    TOPIC_NAME = "/localization/pose_twist_fusion_filter/kinematic_state"
+    target_topics = [TOPIC_NAME]
     storage_filter = rosbag2_py.StorageFilter(topics=target_topics)
     reader.set_filter(storage_filter)
 
@@ -45,7 +44,7 @@ if __name__ == "__main__":
         msg = deserialize_message(data, msg_type)
         timestamp_header = int(msg.header.stamp.sec) + \
             int(msg.header.stamp.nanosec) * 1e-9
-        if topic == "/localization/pose_twist_fusion_filter/kinematic_state":
+        if topic == TOPIC_NAME:
             pose = msg.pose.pose
             twist = msg.twist.twist
             ekf_pose_list.append({
