@@ -8,6 +8,10 @@ trap "kill 0" EXIT
 # 実行するmap・rosbagへのパス
 MAP=$(readlink -f $1)
 ROSBAG=$(readlink -f $2)
+SAVE_DIR=${3:-$HOME/data/misc/$(date +"%Y%m%d_%H%M%S")_general_logging}
+
+mkdir -p $SAVE_DIR
+SAVE_DIR=$(realpath $SAVE_DIR)
 
 # このディレクトリに移動
 cd $(dirname $0)
@@ -40,7 +44,7 @@ ros2 service call /localization/pose_twist_fusion_filter/trigger_node std_srvs/s
 sleep 3
 
 # 保存
-./record_localization_result.sh "$HOME/data/misc/$(date +"%Y%m%d_%H%M%S")_general_logging/lsim_result" &
+./record_localization_result.sh $SAVE_DIR/lsim_result &
 
 # rosbagをリプレイ
 ros2 bag play ${ROSBAG} -r 1.0 --clock 200
