@@ -5,8 +5,9 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Sensing1/LiDAR1/ConcatenatePointCloud1/Autocompute Value Bounds1
+        - /Localization1/NDT1
       Splitter Ratio: 0.557669460773468
-    Tree Height: 271
+    Tree Height: 274
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -81,137 +82,6 @@ Visualization Manager:
                 Expand Link Details: false
                 Expand Tree: false
                 Link Tree Style: Links in Alphabetic Order
-                base_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                camera0/camera_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                camera0/camera_optical_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                camera1/camera_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                camera1/camera_optical_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                camera2/camera_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                camera2/camera_optical_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                camera3/camera_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                camera3/camera_optical_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                camera4/camera_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                camera4/camera_optical_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                camera5/camera_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                camera5/camera_optical_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                gnss_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                sensor_kit_base_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                tamagawa/imu_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                traffic_light_left_camera/camera_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                traffic_light_left_camera/camera_optical_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                traffic_light_right_camera/camera_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                traffic_light_right_camera/camera_optical_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                velodyne_left:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                velodyne_left_base_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                velodyne_rear:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                velodyne_rear_base_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                velodyne_right:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                velodyne_right_base_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                velodyne_top:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
-                velodyne_top_base_link:
-                  Alpha: 1
-                  Show Axes: false
-                  Show Trail: false
-                  Value: true
               Mass Properties:
                 Inertia: false
                 Mass: false
@@ -310,31 +180,7 @@ Visualization Manager:
           Enabled: true
           Name: Lanelet2VectorMap
           Namespaces:
-            center_lane_line: false
-            center_line_arrows: false
-            crosswalk_lanelet_id: true
-            crosswalk_lanelets: true
-            detection_area: true
-            detection_area_stopline: true
-            lane_start_bound: false
-            lanelet direction: true
-            lanelet_id: false
-            left_lane_bound: true
-            pedestrian_polygon_marking: true
-            right_lane_bound: true
-            road_lanelets: false
-            shoulder_center_lane_line: false
-            shoulder_center_line_arrows: true
-            shoulder_lane_start_bound: true
-            shoulder_left_lane_bound: true
-            shoulder_right_lane_bound: true
-            shoulder_road_lanelets: false
-            stop_lines: true
-            traffic_light: true
-            traffic_light_id: false
-            traffic_light_reg_elem_id: false
-            traffic_light_triangle: true
-            walkway_lanelets: true
+            {}
           Topic:
             Depth: 5
             Durability Policy: Transient Local
@@ -575,7 +421,7 @@ Visualization Manager:
               Color: 85; 255; 0
               Color Transformer: FlatColor
               Decay Time: 0
-              Enabled: false
+              Enabled: true
               Invert Rainbow: false
               Max Color: 85; 255; 127
               Max Intensity: 0
@@ -596,7 +442,7 @@ Visualization Manager:
                 Value: /localization/pose_estimator/points_aligned
               Use Fixed Frame: true
               Use rainbow: true
-              Value: false
+              Value: true
             - Class: rviz_default_plugins/MarkerArray
               Enabled: true
               Name: MonteCarloInitialPose
@@ -2968,44 +2814,14 @@ Visualization Manager:
                 Debug:
                   Control: true
                   Localization:
-                    EKFPoseHistory: true
-                    NDT pointclouds: true
-                    NDTLoadedPCDMap: true
-                    NDTPoseHistory: true
+                    "": true
                     Value: true
                   Map: true
                   Perception:
-                    CameraLidarFusion(purple): true
-                    Centerpoint(red1): true
-                    CenterpointROIFusion(red2): true
-                    CenterpointValidator(red3): true
-                    Detection(yellow): true
-                    DetectionByTracker(orange): true
-                    PointPainting(light_green1): true
-                    PointPaintingROIFusion(light_green2): true
-                    PointPaintingValidator(light_green3): true
-                    Prediction(light_blue): true
-                    RadarFarObjects(white): true
-                    Tracking(green): true
+                    "": true
                     Value: true
                   Planning:
-                    Objects Of Interest:
-                      AvoidanceByLCLeft: true
-                      AvoidanceByLCRight: true
-                      AvoidanceLeft: true
-                      AvoidanceRight: true
-                      BlindSpot: true
-                      Crosswalk: true
-                      DetectionArea: true
-                      GoalPlanner: true
-                      Intersection: true
-                      LaneChangeLeft: true
-                      LaneChangeRight: true
-                      NoStoppingArea: true
-                      StartPlanner: true
-                      TrafficLight: true
-                      Value: true
-                    StringStampedOverlayDisplay: true
+                    "": true
                     Value: true
                   Sensing:
                     ConcatenatePointCloud: true
@@ -4396,7 +4212,7 @@ Window Geometry:
   Hide Right Dock: false
   PointcloudOnCamera:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000002d500000506fc0200000010fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d0000014c000000c900fffffffc0000018f00000120000000c10100001cfa000000000100000002fb0000000a0056006900650077007301000000000000033c0000010000fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000000ffffffff0000009d00fffffffc000002b5000002260000018d0100001cfa000000000100000002fb00000034004100750074006f0077006100720065004100750074006f006d00610074006900630047006f0061006c00500061006e0065006c0100000000ffffffff000001c100fffffffb00000024004100750074006f00770061007200650053007400610074006500500061006e0065006c0100000000000002d5000001cd00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d0065007200610100000682000000eb0000000000000000fb0000000a0049006d0061006700650100000505000002680000000000000000fb0000002c0049006e0069007400690061006c0050006f007300650042007500740074006f006e00500061006e0065006c000000068f000000de0000000000000000fb0000002c0049006e0069007400690061006c0050006f007300650042007500740074006f006e00500061006e0065006c000000068f000000de0000000000000000fb00000030005200650063006f0067006e006900740069006f006e0052006500730075006c0074004f006e0049006d0061006700650000000361000000e80000002800fffffffb0000002a004100750074006f0077006100720065004400610074006500540069006d006500500061006e0065006c01000004e1000000620000004100fffffffb000000240050006f0069006e00740063006c006f00750064004f006e00430061006d006500720061000000046e000000d50000002800ffffff000000010000015f000006fffc0200000002fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000e7a0000005afc0100000001fb0000000a00560069006500770073030000004e00000080000002e1000001970000000300000e7a0000005afc0100000002fb0000000800540069006d0065010000000000000e7a0000000000000000fb0000000800540069006d00650100000000000004500000000000000000000006df0000050600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000001fa00000506fc0200000010fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d0000014f000000c900fffffffc0000019200000122000000c10100001cfa000000000100000002fb0000000a0056006900650077007301000000000000033c0000010000fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000000ffffffff0000009d00fffffffc000002ba0000022b0000018f0100001cfa000000000100000002fb00000034004100750074006f0077006100720065004100750074006f006d00610074006900630047006f0061006c00500061006e0065006c0100000000ffffffff000001c100fffffffb00000024004100750074006f00770061007200650053007400610074006500500061006e0065006c0100000000000002d5000001cd00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d0065007200610100000682000000eb0000000000000000fb0000000a0049006d0061006700650100000505000002680000000000000000fb0000002c0049006e0069007400690061006c0050006f007300650042007500740074006f006e00500061006e0065006c000000068f000000de0000000000000000fb0000002c0049006e0069007400690061006c0050006f007300650042007500740074006f006e00500061006e0065006c000000068f000000de0000000000000000fb00000030005200650063006f0067006e006900740069006f006e0052006500730075006c0074004f006e0049006d0061006700650000000361000000e80000002800fffffffb0000002a004100750074006f0077006100720065004400610074006500540069006d006500500061006e0065006c01000004eb000000580000004100fffffffb000000240050006f0069006e00740063006c006f00750064004f006e00430061006d006500720061000000046e000000d50000002800ffffff000000010000015f000006fffc0200000002fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000e7a0000005afc0100000001fb0000000a00560069006500770073030000004e00000080000002e1000001970000000300000e7a0000005afc0100000002fb0000000800540069006d0065010000000000000e7a0000000000000000fb0000000800540069006d00650100000000000004500000000000000000000007ba0000050600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   RecognitionResultOnImage:
     collapsed: false
   Selection:
