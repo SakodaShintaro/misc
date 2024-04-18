@@ -9,6 +9,7 @@ set -eux
 
 ros2 bag record -o "$SAVE_DIR" --use-sim-time \
   /diagnostics \
+  /localization/kinematic_state \
   /localization/pose_estimator/exe_time_ms \
   /localization/pose_estimator/iteration_num \
   /localization/pose_estimator/pose \
@@ -19,4 +20,5 @@ ros2 bag record -o "$SAVE_DIR" --use-sim-time \
   /localization/pose_estimator/ndt_marker \
   /localization/pose_twist_fusion_filter/pose \
   /localization/pose_twist_fusion_filter/kinematic_state \
-  /localization/pose_twist_fusion_filter/pose_instability_detector/debug/diff_pose
+  /localization/pose_twist_fusion_filter/pose_instability_detector/debug/diff_pose \
+  /localization/util/downsample/pointcloud
