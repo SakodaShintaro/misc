@@ -29,7 +29,9 @@ if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
     serialization_format = "cdr"
-    storage_options = rosbag2_py.StorageOptions(uri=str(rosbag_path), storage_id="sqlite3")
+    storage_options = rosbag2_py.StorageOptions(
+        uri=str(rosbag_path), storage_id="sqlite3"
+    )
     converter_options = rosbag2_py.ConverterOptions(
         input_serialization_format=serialization_format,
         output_serialization_format=serialization_format,
