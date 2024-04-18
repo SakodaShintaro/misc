@@ -4,6 +4,7 @@ set -eux
 # 実行するディレクトリ
 TARGET_DIR=$(readlink -f $1)
 # 保存先
+mkdir -p $2
 SAVE_DIR=$(readlink -f $2)
 
 # 読み込み
