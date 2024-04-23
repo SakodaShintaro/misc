@@ -13,18 +13,6 @@ def parse_args():
     return parser.parse_args()
 
 
-def pretty_print_diagnostics(msg):
-    print(f"\n[Diagnostic Message @ {msg.header.stamp.sec}.{msg.header.stamp.nanosec}]")
-    for status in msg.status:
-        print(f"  - Level: {status.level}")
-        print(f"    Name: {status.name}")
-        print(f"    Message: {status.message}")
-        print(f"    Hardware ID: {status.hardware_id}")
-        print(f"    Key-Value Pairs:")
-        for kv in status.values:
-            print(f"      {kv.key}: {kv.value}")
-
-
 if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
@@ -82,7 +70,7 @@ if __name__ == "__main__":
     df["timestamp_header"] /= 1e9
 
     # plot
-    y_values = [
+    key_list = [
         "execution_time",
         "iteration_num",
         "lidar_topic_delay_time_sec",
@@ -93,12 +81,12 @@ if __name__ == "__main__":
         "nearest_voxel_transformation_likelihood",
     ]
     plt.figure(figsize=(6.4 * 2, 4.8 * 2))
-    for i, y_value in enumerate(y_values):
-        df[y_value] = df[y_value].astype(float)
+    for i, key in enumerate(key_list):
+        df[key] = df[key].astype(float)
         plt.subplot(4, 2, i + 1)
-        plt.plot(df["timestamp_header"], df[y_value], label=y_value)
+        plt.plot(df["timestamp_header"], df[key], label=key)
         plt.xlabel("time [s]")
-        plt.title(f"{y_value}")
+        plt.title(f"{key}")
         plt.ylim(bottom=0)
         plt.grid()
 
@@ -125,41 +113,30 @@ if __name__ == "__main__":
     df["timestamp_header"] /= 1e9
 
     # plot
-    y_values = [
-        "pose_mahalanobis_distance",
-        "pose_mahalanobis_distance_lon",
-        "pose_mahalanobis_distance_lat",
-        "pose_mahalanobis_distance_yaw",
-        "pose_euclidean_distance",
-        "pose_euclidean_distance_lon",
-        "pose_euclidean_distance_lat",
-        "pose_euclidean_distance_yaw",
-        "twist_mahalanobis_distance",
-        "twist_mahalanobis_distance_lon",
-        "twist_mahalanobis_distance_lat",
-        "twist_mahalanobis_distance_yaw",
-        "twist_euclidean_distance",
-        "twist_euclidean_distance_lon",
-        "twist_euclidean_distance_lat",
+    key_list = [
+        "pose_distance_xy",
+        "pose_distance_yaw",
+        "twist_distance_xy",
         "twist_euclidean_distance_yaw",
     ]
 
-    plt.figure(figsize=(6.4 * 2, 4.8 * 2))
+    plt.figure(figsize=(6.4 * 1, 4.8 * 1))
     y_max = [0, 0, 0, 0]
     y_min = [0, 0, 0, 0]
-    for i, y_value in enumerate(y_values):
-        df[y_value] = df[y_value].astype(float)
-        div = i // 4
-        mod = i % 4
-        area = mod * 4 + div
-        y_max[div] = max(y_max[div], df[y_value].max())
-        y_min[div] = min(y_min[div], df[y_value].min())
-        print(f"{i=}, {div=}, {mod=}, {area=}")
-        plt.subplot(4, 4, (area + 1))
-        plt.plot(df["timestamp_header"], df[y_value], label=y_value)
+    for i, key in enumerate(key_list):
+        df[key] = df[key].astype(float)
+        key_threshold = key + "_threshold"
+        df[key_threshold] = df[key_threshold].astype(float)
+        div = i // 2
+        mod = i % 2
+        area = mod * 2 + div
+        y_max[div] = max(y_max[div], df[key].max())
+        y_min[div] = min(y_min[div], df[key].min())
+        plt.subplot(2, 2, (area + 1))
+        plt.plot(df["timestamp_header"], df[key], label=key)
+        plt.plot(df["timestamp_header"], df[key_threshold], label=key_threshold)
         plt.xlabel("time [s]")
-        plt.title(f"{y_value}")
-        plt.ylim(bottom=y_min[div] * 1.1, top=y_max[div] * 1.1)
+        plt.title(f"{key}")
         plt.grid()
 
     plt.tight_layout()
