@@ -51,3 +51,9 @@ docker system prune -a
 ```bash
 find target_dir -mindepth 1 -maxdepth 1 | sort | xargs -Ipath echo path
 ```
+
+## ファイル名をユニークに変更
+
+```bash
+find target_dir -name "*.png" | sort | xargs -I{} sh -c 'dir=$(dirname "{}"); prefix=$(basename "$dir"); orig=$(basename "{}"); echo "${dir}/${prefix}_${orig}"'
+```
