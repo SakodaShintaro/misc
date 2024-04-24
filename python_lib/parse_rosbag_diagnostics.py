@@ -114,10 +114,8 @@ if __name__ == "__main__":
 
     # plot
     key_list = [
-        "pose_distance_xy",
-        "pose_distance_yaw",
-        "twist_distance_xy",
-        "twist_euclidean_distance_yaw",
+        "pose_mahalanobis_distance",
+        "twist_mahalanobis_distance",
     ]
 
     plt.figure(figsize=(6.4 * 1, 4.8 * 1))
