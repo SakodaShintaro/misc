@@ -12,5 +12,5 @@ vcs import src < tools.repos
 vcs pull src
 vcs export src --exact > my_autoware.repos
 rosdep update
-rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO
+# rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO
 $(dirname $0)/build_with_custom_jobs.sh ${JOB_COUNT}
