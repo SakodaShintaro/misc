@@ -13,7 +13,9 @@ def calc_relative_pose(df_pred: pd.DataFrame, df_true: pd.DataFrame) -> pd.DataF
     POSITIONS_KEY = ['x', 'y', 'z']
     ORIENTATIONS_KEY = ['qx', 'qy', 'qz', 'qw']
     assert len(df_pred) == len(df_true)
-    assert (df_pred.columns == df_true.columns).all(), f"df_pred.columns: {df_pred.columns}, df_true.columns: {df_true.columns}"
+    assert (
+        sorted(df_pred.columns) == sorted(df_true.columns)
+    ), f"df_pred.columns: {sorted(df_pred.columns)}, df_true.columns: {sorted(df_true.columns)}"
 
     df_relative = df_pred.copy()
     df_relative[POSITIONS_KEY] = df_pred[POSITIONS_KEY].values - df_true[POSITIONS_KEY].values
