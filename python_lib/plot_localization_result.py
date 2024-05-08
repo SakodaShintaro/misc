@@ -49,8 +49,6 @@ if __name__ == "__main__":
     storage_filter = rosbag2_py.StorageFilter(topics=target_topics)
     reader.set_filter(storage_filter)
 
-    time_nvtl_list = []
-    value_nvtl_list = []
     time_tp_list = []
     value_tp_list = []
     time_itr_list = []
@@ -61,16 +59,14 @@ if __name__ == "__main__":
     value_pose_array_list = []
     value_quat_array_list = []
     exe_time_ms_array = []
+    nearest_voxel_transformation_likelihood_array = []
     pose_array = []
     while reader.has_next():
         (topic, data, t) = reader.read_next()
         msg_type = get_message(type_map[topic])
         msg = deserialize_message(data, msg_type)
         if topic == '/localization/pose_estimator/nearest_voxel_transformation_likelihood':
-            t_from_msg = msg.stamp.sec * 1e9 + msg.stamp.nanosec
-            t_from_msg /= 1e9
-            time_nvtl_list.append(t_from_msg)
-            value_nvtl_list.append(msg.data)
+            nearest_voxel_transformation_likelihood_array.append(parse_Float32Stamped(msg))
         elif topic == '/localization/pose_estimator/transform_probability':
             t_from_msg = msg.stamp.sec * 1e9 + msg.stamp.nanosec
             t_from_msg /= 1e9
@@ -110,10 +106,10 @@ if __name__ == "__main__":
             pose_array.append(parse_PoseStamped(msg))
 
     df_exe_time_ms = pd.DataFrame(exe_time_ms_array)
+    df_nearest_voxel_transformation_likelihood = pd.DataFrame(nearest_voxel_transformation_likelihood_array)
     df_pose = pd.DataFrame(pose_array)
 
     # 時刻を0からの相対時刻に変換
-    time_nvtl_list = [t - time_nvtl_list[0] for t in time_nvtl_list]
     time_tp_list = [t - time_tp_list[0] for t in time_tp_list]
     time_itr_list = [t - time_itr_list[0] for t in time_itr_list]
     time_diff_position_list = [
@@ -144,7 +140,8 @@ if __name__ == "__main__":
     plt.grid()
 
     plt.subplot(5, 1, 3)
-    plt.plot(time_nvtl_list, value_nvtl_list)
+    plt.plot(df_nearest_voxel_transformation_likelihood["timestamp"],
+             df_nearest_voxel_transformation_likelihood["data"])
     plt.xlabel('time [s]')
     plt.ylabel('NVTL')
     plt.ylim(bottom=0)
@@ -182,7 +179,6 @@ if __name__ == "__main__":
     print(f'saved to {save_path}')
 
     # 色つきposeの可視化
-    # (1) exe_time_ms
     df_renamed = df_pose.rename(
         columns={
             "position.x": "x",
@@ -194,6 +190,7 @@ if __name__ == "__main__":
             "orientation.w": "qw",
         }
     )
+    # (1) exe_time_ms
     df = interpolate_pose(df_renamed, df_exe_time_ms["timestamp"].values)
     plt.scatter(df["x"], df["y"], c=df_exe_time_ms["data"])
     plt.colorbar()
@@ -202,6 +199,19 @@ if __name__ == "__main__":
     plt.ylabel('y [m]')
     plt.grid()
     save_path = save_dir / "pose_exe_time_ms.png"
+    plt.savefig(save_path, bbox_inches='tight', pad_inches=0.05)
+    plt.close()
+    print(f'saved to {save_path}')
+
+    # (2) nearest_voxel_transformation_likelihood
+    df = interpolate_pose(df_renamed, df_nearest_voxel_transformation_likelihood["timestamp"].values)
+    plt.scatter(df["x"], df["y"], c=df_nearest_voxel_transformation_likelihood["data"])
+    plt.colorbar()
+    plt.axis('equal')
+    plt.xlabel('x [m]')
+    plt.ylabel('y [m]')
+    plt.grid()
+    save_path = save_dir / "pose_nearest_voxel_transformation_likelihood.png"
     plt.savefig(save_path, bbox_inches='tight', pad_inches=0.05)
     plt.close()
     print(f'saved to {save_path}')
