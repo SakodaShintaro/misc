@@ -181,6 +181,31 @@ if __name__ == "__main__":
     plt.close()
     print(f'saved to {save_path}')
 
+    # 色つきposeの可視化
+    # (1) exe_time_ms
+    df_renamed = df_pose.rename(
+        columns={
+            "position.x": "x",
+            "position.y": "y",
+            "position.z": "z",
+            "orientation.x": "qx",
+            "orientation.y": "qy",
+            "orientation.z": "qz",
+            "orientation.w": "qw",
+        }
+    )
+    df = interpolate_pose(df_renamed, df_exe_time_ms["timestamp"].values)
+    plt.scatter(df["x"], df["y"], c=df_exe_time_ms["data"])
+    plt.colorbar()
+    plt.axis('equal')
+    plt.xlabel('x [m]')
+    plt.ylabel('y [m]')
+    plt.grid()
+    save_path = save_dir / "pose_exe_time_ms.png"
+    plt.savefig(save_path, bbox_inches='tight', pad_inches=0.05)
+    plt.close()
+    print(f'saved to {save_path}')
+
     # pose_arrayを気合で可視化
     plt.rcParams['figure.figsize'] = 9, 9
     pose_array_result_dir = save_dir / 'pose_array'
