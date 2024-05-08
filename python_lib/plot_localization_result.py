@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 from scipy.spatial.transform import Rotation
 from pathlib import Path
+from parse_functions import parse_PoseStamped
 
 
 def parse_args():
@@ -60,6 +61,7 @@ if __name__ == "__main__":
     time_pose_array_list = []
     value_pose_array_list = []
     value_quat_array_list = []
+    pose_array = []
     while reader.has_next():
         (topic, data, t) = reader.read_next()
         msg_type = get_message(type_map[topic])
@@ -107,6 +109,10 @@ if __name__ == "__main__":
             time_pose_array_list.append(t_from_msg)
             value_pose_array_list.append(curr_pose_array)
             value_quat_array_list.append(curr_quat_array)
+        elif topic == '/localization/pose_estimator/pose':
+            pose_array.append(parse_PoseStamped(msg))
+
+    df_pose = pd.DataFrame(pose_array)
 
     # 時刻を0からの相対時刻に変換
     time_nvtl_list = [t - time_nvtl_list[0] for t in time_nvtl_list]
@@ -163,6 +169,17 @@ if __name__ == "__main__":
 
     plt.tight_layout()
     save_path = save_dir / "localization_result.png"
+    plt.savefig(save_path, bbox_inches='tight', pad_inches=0.05)
+    plt.close()
+    print(f'saved to {save_path}')
+
+    # poseの可視化
+    plt.scatter(df_pose["position.x"], df_pose["position.y"], s=1)
+    plt.axis('equal')
+    plt.xlabel('x [m]')
+    plt.ylabel('y [m]')
+    plt.grid()
+    save_path = save_dir / "pose.png"
     plt.savefig(save_path, bbox_inches='tight', pad_inches=0.05)
     plt.close()
     print(f'saved to {save_path}')
