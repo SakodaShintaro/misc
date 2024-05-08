@@ -8,7 +8,8 @@ import pandas as pd
 import numpy as np
 from scipy.spatial.transform import Rotation
 from pathlib import Path
-from parse_functions import parse_PoseStamped
+from parse_functions import parse_PoseStamped, parse_Float32Stamped
+from interpolate_pose import interpolate_pose
 
 
 def parse_args():
@@ -36,13 +37,13 @@ if __name__ == "__main__":
         topic_types[i].name: topic_types[i].type for i in range(len(topic_types))}
 
     target_topics = [
-        '/localization/pose_estimator/pose',
-        '/localization/pose_estimator/initial_to_result_relative_pose',
-        '/localization/pose_estimator/transform_probability',
-        '/localization/pose_estimator/nearest_voxel_transformation_likelihood',
-        '/localization/pose_estimator/iteration_num',
-        '/localization/pose_estimator/exe_time_ms',
-        '/localization/pose_estimator/ndt_marker',
+        "/localization/pose_estimator/exe_time_ms",
+        "/localization/pose_estimator/initial_to_result_relative_pose",
+        "/localization/pose_estimator/iteration_num",
+        "/localization/pose_estimator/ndt_marker",
+        "/localization/pose_estimator/nearest_voxel_transformation_likelihood",
+        "/localization/pose_estimator/pose",
+        "/localization/pose_estimator/transform_probability",
     ]
 
     storage_filter = rosbag2_py.StorageFilter(topics=target_topics)
@@ -54,13 +55,12 @@ if __name__ == "__main__":
     value_tp_list = []
     time_itr_list = []
     value_itr_list = []
-    time_exe_list = []
-    value_exe_list = []
     time_diff_position_list = []
     value_diff_position_list = []
     time_pose_array_list = []
     value_pose_array_list = []
     value_quat_array_list = []
+    exe_time_ms_array = []
     pose_array = []
     while reader.has_next():
         (topic, data, t) = reader.read_next()
@@ -82,10 +82,7 @@ if __name__ == "__main__":
             time_itr_list.append(t_from_msg)
             value_itr_list.append(msg.data)
         elif topic == '/localization/pose_estimator/exe_time_ms':
-            t_from_msg = msg.stamp.sec * 1e9 + msg.stamp.nanosec
-            t_from_msg /= 1e9
-            time_exe_list.append(t_from_msg)
-            value_exe_list.append(msg.data)
+            exe_time_ms_array.append(parse_Float32Stamped(msg))
         elif topic == '/localization/pose_estimator/initial_to_result_relative_pose':
             t_from_msg = msg.header.stamp.sec * 1e9 + msg.header.stamp.nanosec
             t_from_msg /= 1e9
@@ -112,13 +109,13 @@ if __name__ == "__main__":
         elif topic == '/localization/pose_estimator/pose':
             pose_array.append(parse_PoseStamped(msg))
 
+    df_exe_time_ms = pd.DataFrame(exe_time_ms_array)
     df_pose = pd.DataFrame(pose_array)
 
     # 時刻を0からの相対時刻に変換
     time_nvtl_list = [t - time_nvtl_list[0] for t in time_nvtl_list]
     time_tp_list = [t - time_tp_list[0] for t in time_tp_list]
     time_itr_list = [t - time_itr_list[0] for t in time_itr_list]
-    time_exe_list = [t - time_exe_list[0] for t in time_exe_list]
     time_diff_position_list = [
         t - time_diff_position_list[0] for t in time_diff_position_list]
 
@@ -140,7 +137,7 @@ if __name__ == "__main__":
     plt.grid()
 
     plt.subplot(5, 1, 2)
-    plt.plot(time_exe_list, value_exe_list)
+    plt.plot(df_exe_time_ms["timestamp"], df_exe_time_ms["data"])
     plt.xlabel('time [s]')
     plt.ylabel('exe_time [ms]')
     plt.ylim(bottom=0)

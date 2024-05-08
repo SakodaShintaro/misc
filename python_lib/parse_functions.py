@@ -2,13 +2,13 @@
 """
 
 
-def parse_header(header):
-    return header.stamp.sec + header.stamp.nanosec * 1e-9
+def parse_stamp(stamp):
+    return stamp.sec + stamp.nanosec * 1e-9
 
 
 def parse_PoseStamped(msg):
     return {
-        "timestamp": parse_header(msg.header),
+        "timestamp": parse_stamp(msg.header.stamp),
         "position.x": msg.pose.position.x,
         "position.y": msg.pose.position.y,
         "position.z": msg.pose.position.z,
@@ -21,7 +21,7 @@ def parse_PoseStamped(msg):
 
 def parse_PoseWithCovarianceStamped(msg):
     return {
-        "timestamp": parse_header(msg.header),
+        "timestamp": parse_stamp(msg.header.stamp),
         "position.x": msg.pose.pose.position.x,
         "position.y": msg.pose.pose.position.y,
         "position.z": msg.pose.pose.position.z,
@@ -34,6 +34,6 @@ def parse_PoseWithCovarianceStamped(msg):
 
 def parse_Float32Stamped(msg):
     return {
-        "timestamp": parse_header(msg.header),
+        "timestamp": parse_stamp(msg.stamp),
         "data": msg.data,
     }
