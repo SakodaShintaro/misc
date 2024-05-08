@@ -65,7 +65,9 @@ if __name__ == "__main__":
         (topic, data, t) = reader.read_next()
         msg_type = get_message(type_map[topic])
         msg = deserialize_message(data, msg_type)
-        if topic == '/localization/pose_estimator/nearest_voxel_transformation_likelihood':
+        if topic == '/localization/pose_estimator/exe_time_ms':
+            exe_time_ms_array.append(parse_Float32Stamped(msg))
+        elif topic == '/localization/pose_estimator/nearest_voxel_transformation_likelihood':
             nearest_voxel_transformation_likelihood_array.append(parse_Float32Stamped(msg))
         elif topic == '/localization/pose_estimator/transform_probability':
             t_from_msg = msg.stamp.sec * 1e9 + msg.stamp.nanosec
@@ -77,8 +79,6 @@ if __name__ == "__main__":
             t_from_msg /= 1e9
             time_itr_list.append(t_from_msg)
             value_itr_list.append(msg.data)
-        elif topic == '/localization/pose_estimator/exe_time_ms':
-            exe_time_ms_array.append(parse_Float32Stamped(msg))
         elif topic == '/localization/pose_estimator/initial_to_result_relative_pose':
             t_from_msg = msg.header.stamp.sec * 1e9 + msg.header.stamp.nanosec
             t_from_msg /= 1e9
