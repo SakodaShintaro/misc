@@ -62,8 +62,6 @@ if __name__ == "__main__":
     storage_filter = rosbag2_py.StorageFilter(topics=target_topics)
     reader.set_filter(storage_filter)
 
-    time_diff_position_list = []
-    value_diff_position_list = []
     time_pose_array_list = []
     value_pose_array_list = []
     value_quat_array_list = []
@@ -72,6 +70,7 @@ if __name__ == "__main__":
     transform_probability_array = []
     iteration_num_array = []
     pose_array = []
+    initial_to_result_relative_pose_array = []
     while reader.has_next():
         (topic, data, t) = reader.read_next()
         msg_type = get_message(type_map[topic])
@@ -85,12 +84,7 @@ if __name__ == "__main__":
         elif topic == '/localization/pose_estimator/iteration_num':
             iteration_num_array.append(parse_Float32Stamped(msg))
         elif topic == '/localization/pose_estimator/initial_to_result_relative_pose':
-            t_from_msg = msg.header.stamp.sec * 1e9 + msg.header.stamp.nanosec
-            t_from_msg /= 1e9
-            time_diff_position_list.append(t_from_msg)
-            value_diff_position_list.append(msg.pose.position.x**2 +
-                                            msg.pose.position.y**2 +
-                                            msg.pose.position.z**2)
+            initial_to_result_relative_pose_array.append(parse_PoseStamped(msg))
         elif topic == '/localization/pose_estimator/ndt_marker':
             curr_pose_array = []
             curr_quat_array = []
@@ -115,10 +109,11 @@ if __name__ == "__main__":
     df_transform_probability = pd.DataFrame(transform_probability_array)
     df_iteration_num = pd.DataFrame(iteration_num_array)
     df_pose = pd.DataFrame(pose_array)
+    df_initial_to_result_relative_pose = pd.DataFrame(initial_to_result_relative_pose_array)
 
-    # 時刻を0からの相対時刻に変換
-    time_diff_position_list = [
-        t - time_diff_position_list[0] for t in time_diff_position_list]
+    # dataとして変動量のノルムを計算
+    df_initial_to_result_relative_pose["data"] = df_initial_to_result_relative_pose.apply(
+        lambda x: np.linalg.norm([x["position.x"], x["position.y"], x["position.z"]]), axis=1)
 
     # rosbag path may be the path to the db3 file, or it may be the path to the directory containing it
     save_dir = (
@@ -160,10 +155,23 @@ if __name__ == "__main__":
     plt.grid()
 
     plt.subplot(5, 1, 5)
-    plt.plot(time_diff_position_list, value_diff_position_list)
+    plt.plot(
+        df_initial_to_result_relative_pose["timestamp"],
+        df_initial_to_result_relative_pose["position.x"],
+        label="x",
+    )
+    plt.plot(
+        df_initial_to_result_relative_pose["timestamp"],
+        df_initial_to_result_relative_pose["position.y"],
+        label="y",
+    )
+    plt.plot(
+        df_initial_to_result_relative_pose["timestamp"],
+        df_initial_to_result_relative_pose["position.z"],
+        label="z",
+    )
     plt.xlabel('time [s]')
     plt.ylabel('diff_position [m]')
-    plt.ylim(bottom=0)
     plt.grid()
 
     plt.tight_layout()
@@ -207,6 +215,12 @@ if __name__ == "__main__":
     )
     plot_pose_with_value(
         df_renamed, df_transform_probability, "transform_probability", save_dir
+    )
+    plot_pose_with_value(
+        df_renamed,
+        df_initial_to_result_relative_pose,
+        "initial_to_result_relative_pose",
+        save_dir,
     )
 
     # pose_arrayを気合で可視化
