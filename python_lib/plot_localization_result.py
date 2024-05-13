@@ -179,6 +179,7 @@ if __name__ == "__main__":
     print(f'saved to {save_path}')
 
     # 色つきposeの可視化
+    plt.rcParams["figure.figsize"] = 9, 9
     df_renamed = df_pose.rename(
         columns={
             "position.x": "x",
