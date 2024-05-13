@@ -43,11 +43,7 @@ if __name__ == "__main__":
     storage_filter = rosbag2_py.StorageFilter(topics=target_topics)
     reader.set_filter(storage_filter)
 
-    target_list = [
-        "/localization/pose_estimator/initial_to_result_relative_pose",
-        "/localization/pose_twist_fusion_filter/kinematic_state",
-    ]
-    data_dict = {key: [] for key in target_list}
+    data_dict = {key: [] for key in target_topics}
 
     while reader.has_next():
         (topic, data, timestamp_rosbag) = reader.read_next()
