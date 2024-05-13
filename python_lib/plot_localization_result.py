@@ -3,7 +3,6 @@ from rclpy.serialization import deserialize_message
 from rosidl_runtime_py.utilities import get_message
 import argparse
 import matplotlib.pyplot as plt
-import os
 import pandas as pd
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -19,7 +18,8 @@ def parse_args():
 
 
 def plot_pose_with_value(df_pose, df_value, value_name, save_dir):
-    plt.scatter(df_pose["x"], df_pose["y"], c=df_value["data"])
+    df = interpolate_pose(df_pose, df_value["timestamp"].values)
+    plt.scatter(df["x"], df["y"], c=df_value["data"])
     plt.colorbar()
     plt.axis('equal')
     plt.xlabel('x [m]')
