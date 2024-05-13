@@ -18,6 +18,19 @@ def parse_args():
     return parser.parse_args()
 
 
+def plot_pose_with_value(df_pose, df_value, value_name, save_dir):
+    plt.scatter(df_pose["x"], df_pose["y"], c=df_value["data"])
+    plt.colorbar()
+    plt.axis('equal')
+    plt.xlabel('x [m]')
+    plt.ylabel('y [m]')
+    plt.grid()
+    save_path = save_dir / f"pose_{value_name}.png"
+    plt.savefig(save_path, bbox_inches='tight', pad_inches=0.05)
+    plt.close()
+    print(f'saved to {save_path}')
+
+
 if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
@@ -49,8 +62,6 @@ if __name__ == "__main__":
     storage_filter = rosbag2_py.StorageFilter(topics=target_topics)
     reader.set_filter(storage_filter)
 
-    time_itr_list = []
-    value_itr_list = []
     time_diff_position_list = []
     value_diff_position_list = []
     time_pose_array_list = []
@@ -59,6 +70,7 @@ if __name__ == "__main__":
     exe_time_ms_array = []
     nearest_voxel_transformation_likelihood_array = []
     transform_probability_array = []
+    iteration_num_array = []
     pose_array = []
     while reader.has_next():
         (topic, data, t) = reader.read_next()
@@ -71,10 +83,7 @@ if __name__ == "__main__":
         elif topic == '/localization/pose_estimator/transform_probability':
             transform_probability_array.append(parse_Float32Stamped(msg))
         elif topic == '/localization/pose_estimator/iteration_num':
-            t_from_msg = msg.stamp.sec * 1e9 + msg.stamp.nanosec
-            t_from_msg /= 1e9
-            time_itr_list.append(t_from_msg)
-            value_itr_list.append(msg.data)
+            iteration_num_array.append(parse_Float32Stamped(msg))
         elif topic == '/localization/pose_estimator/initial_to_result_relative_pose':
             t_from_msg = msg.header.stamp.sec * 1e9 + msg.header.stamp.nanosec
             t_from_msg /= 1e9
@@ -104,10 +113,10 @@ if __name__ == "__main__":
     df_exe_time_ms = pd.DataFrame(exe_time_ms_array)
     df_nearest_voxel_transformation_likelihood = pd.DataFrame(nearest_voxel_transformation_likelihood_array)
     df_transform_probability = pd.DataFrame(transform_probability_array)
+    df_iteration_num = pd.DataFrame(iteration_num_array)
     df_pose = pd.DataFrame(pose_array)
 
     # 時刻を0からの相対時刻に変換
-    time_itr_list = [t - time_itr_list[0] for t in time_itr_list]
     time_diff_position_list = [
         t - time_diff_position_list[0] for t in time_diff_position_list]
 
@@ -122,7 +131,7 @@ if __name__ == "__main__":
 
     # plot
     plt.subplot(5, 1, 1)
-    plt.plot(time_itr_list, value_itr_list)
+    plt.plot(df_iteration_num["timestamp"], df_iteration_num["data"])
     plt.xlabel('time [s]')
     plt.ylabel('iteration_num')
     plt.ylim(bottom=0)
@@ -187,44 +196,18 @@ if __name__ == "__main__":
             "orientation.w": "qw",
         }
     )
-    # (1) exe_time_ms
-    df = interpolate_pose(df_renamed, df_exe_time_ms["timestamp"].values)
-    plt.scatter(df["x"], df["y"], c=df_exe_time_ms["data"])
-    plt.colorbar()
-    plt.axis('equal')
-    plt.xlabel('x [m]')
-    plt.ylabel('y [m]')
-    plt.grid()
-    save_path = save_dir / "pose_exe_time_ms.png"
-    plt.savefig(save_path, bbox_inches='tight', pad_inches=0.05)
-    plt.close()
-    print(f'saved to {save_path}')
 
-    # (2) nearest_voxel_transformation_likelihood
-    df = interpolate_pose(df_renamed, df_nearest_voxel_transformation_likelihood["timestamp"].values)
-    plt.scatter(df["x"], df["y"], c=df_nearest_voxel_transformation_likelihood["data"])
-    plt.colorbar()
-    plt.axis('equal')
-    plt.xlabel('x [m]')
-    plt.ylabel('y [m]')
-    plt.grid()
-    save_path = save_dir / "pose_nearest_voxel_transformation_likelihood.png"
-    plt.savefig(save_path, bbox_inches='tight', pad_inches=0.05)
-    plt.close()
-    print(f'saved to {save_path}')
-
-    # (3) transform_probability
-    df = interpolate_pose(df_renamed, df_transform_probability["timestamp"].values)
-    plt.scatter(df["x"], df["y"], c=df_transform_probability["data"])
-    plt.colorbar()
-    plt.axis('equal')
-    plt.xlabel('x [m]')
-    plt.ylabel('y [m]')
-    plt.grid()
-    save_path = save_dir / "pose_transform_probability.png"
-    plt.savefig(save_path, bbox_inches='tight', pad_inches=0.05)
-    plt.close()
-    print(f'saved to {save_path}')
+    plot_pose_with_value(df_renamed, df_exe_time_ms, "exe_time_ms", save_dir)
+    plot_pose_with_value(df_renamed, df_iteration_num, "iteration_num", save_dir)
+    plot_pose_with_value(
+        df_renamed,
+        df_nearest_voxel_transformation_likelihood,
+        "nearest_voxel_transformation_likelihood",
+        save_dir,
+    )
+    plot_pose_with_value(
+        df_renamed, df_transform_probability, "transform_probability", save_dir
+    )
 
     # pose_arrayを気合で可視化
     plt.rcParams['figure.figsize'] = 9, 9
