@@ -37,10 +37,11 @@ if __name__ == "__main__":
     storage_filter = rosbag2_py.StorageFilter(topics=[target_topic])
     reader.set_filter(storage_filter)
 
-    target_list = ["ndt_scan_matcher", "ekf_localizer"]
+    target_list = ["ndt_scan_matcher: scan_matching_status", "ekf_localizer"]
     data_dict = {key: [] for key in target_list}
 
     time_list = []
+    unique_status_name = set()
     while reader.has_next():
         (topic, data, timestamp_rosbag) = reader.read_next()
         msg_type = get_message(type_map[topic])
@@ -49,13 +50,18 @@ if __name__ == "__main__":
         for status in msg.status:
             for target in target_list:
                 if target in status.name:
+                    unique_status_name.add(status.name)
                     key_value_map = {kv.key: kv.value for kv in status.values}
                     key_value_map["timestamp_rosbag"] = timestamp_rosbag
                     key_value_map["timestamp_header"] = timestamp_header
                     data_dict[target].append(key_value_map)
 
+    print("unique_status_name")
+    for name in unique_status_name:
+        print(f"  {name}")
+
     # ndt_scan_matcher
-    df = pd.DataFrame(data_dict["ndt_scan_matcher"])
+    df = pd.DataFrame(data_dict["ndt_scan_matcher: scan_matching_status"])
     """
     execution_time is_local_optimal_solution_oscillation iteration_num lidar_topic_delay_time_sec  ...    state transform_probability timestamp_rosbag timestamp_header
     0       0.720000                                     0             1                   0.127052  ...  Aligned              6.466093      29410390260      29410390260
@@ -73,16 +79,16 @@ if __name__ == "__main__":
     key_list = [
         "execution_time",
         "iteration_num",
-        "lidar_topic_delay_time_sec",
+        "sensor_points_delay_time_sec",
         "skipping_publish_num",
-        "oscillation_count",
-        "is_local_optimal_solution_oscillation",
         "transform_probability",
         "nearest_voxel_transformation_likelihood",
+        "local_optimal_solution_oscillation_num",
     ]
     plt.figure(figsize=(6.4 * 2, 4.8 * 2))
     for i, key in enumerate(key_list):
         df[key] = df[key].astype(float)
+        df = df.dropna(subset=[key])
         plt.subplot(4, 2, i + 1)
         plt.plot(df["timestamp_header"], df[key], label=key)
         plt.xlabel("time [s]")
