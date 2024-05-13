@@ -37,7 +37,11 @@ if __name__ == "__main__":
     storage_filter = rosbag2_py.StorageFilter(topics=[target_topic])
     reader.set_filter(storage_filter)
 
-    target_list = ["ndt_scan_matcher: scan_matching_status", "ekf_localizer"]
+    target_list = [
+        "ndt_scan_matcher: scan_matching_status",
+        "localization: ekf_localizer",
+        "localization: pose_instability_detector",
+    ]
     data_dict = {key: [] for key in target_list}
 
     time_list = []
@@ -60,7 +64,9 @@ if __name__ == "__main__":
     for name in unique_status_name:
         print(f"  {name}")
 
-    # ndt_scan_matcher
+    ####################
+    # ndt_scan_matcher #
+    ####################
     df = pd.DataFrame(data_dict["ndt_scan_matcher: scan_matching_status"])
     """
     execution_time is_local_optimal_solution_oscillation iteration_num lidar_topic_delay_time_sec  ...    state transform_probability timestamp_rosbag timestamp_header
@@ -101,8 +107,10 @@ if __name__ == "__main__":
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     print(f"Saved {save_path}")
 
-    # ekf_localizer
-    df = pd.DataFrame(data_dict["ekf_localizer"])
+    #################
+    # ekf_localizer #
+    #################
+    df = pd.DataFrame(data_dict["localization: ekf_localizer"])
     df = df[df["is_activated"] == "True"]
     """
     is_activated  timestamp_rosbag  timestamp_header  ... twist_is_passed_mahalanobis_yaw twist_mahalanobis_yaw twist_mahalanobis_yaw_threshold
@@ -145,5 +153,97 @@ if __name__ == "__main__":
 
     plt.tight_layout()
     save_path = rosbag_path.parent / "diagnostics_ekf_localizer.png"
+    plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
+    print(f"Saved {save_path}")
+
+    #############################
+    # pose_instability_detector #
+    #############################
+    df = pd.DataFrame(data_dict["localization: pose_instability_detector"])
+    """
+    print(df.head())
+    diff_position_x:threshold diff_position_x:value diff_position_x:status diff_position_y:threshold diff_position_y:value  ... diff_angle_z:threshold diff_angle_z:value diff_angle_z:status timestamp_rosbag timestamp_header
+    0                  1.000000              0.004715                     OK                  1.000000             -0.001417  ...               1.000000          -0.000191                  OK      59381901391      59361782133
+    1                  1.000000              0.001659                     OK                  1.000000             -0.000304  ...               1.000000           0.000001                  OK      59881786413      59861793711
+    2                  1.000000              0.000014                     OK                  1.000000             -0.000097  ...               1.000000          -0.000026                  OK      60381810160      60361815555
+    3                  1.000000             -0.000325                     OK                  1.000000             -0.000363  ...               1.000000          -0.000008                  OK      60881809730      60861722314
+    4                  1.000000              0.000125                     OK                  1.000000              0.000154  ...               1.000000          -0.000003                  OK      61381810093      61361766673
+    print(df.columns)
+    Index(['diff_position_x:threshold', 'diff_position_x:value',
+        'diff_position_x:status', 'diff_position_y:threshold',
+        'diff_position_y:value', 'diff_position_y:status',
+        'diff_position_z:threshold', 'diff_position_z:value',
+        'diff_position_z:status', 'diff_angle_x:threshold',
+        'diff_angle_x:value', 'diff_angle_x:status', 'diff_angle_y:threshold',
+        'diff_angle_y:value', 'diff_angle_y:status', 'diff_angle_z:threshold',
+        'diff_angle_z:value', 'diff_angle_z:status', 'timestamp_rosbag',
+        'timestamp_header'],
+        dtype='object')
+    """
+    # fix timestamp
+    df["timestamp_header"] = df["timestamp_header"].astype(int)
+    df["timestamp_header"] -= df["timestamp_header"].iloc[0]
+    df["timestamp_header"] /= 1e9
+
+    # 2行に分けて表示する
+    plt.figure(figsize=(6.4 * 1, 4.8 * 1))
+    # 1行目:position
+    plt.subplot(2, 1, 1)
+    key_list = [
+        "diff_position_x",
+        "diff_position_y",
+        "diff_position_z",
+    ]
+    for key in key_list:
+        key_value = key + ":value"
+        key_threshold = key + ":threshold"
+        df[key_value] = df[key_value].astype(float)
+        df[key_threshold] = df[key_threshold].astype(float)
+        plt.plot(df["timestamp_header"], df[key_value], label=key_value)
+        plt.plot(
+            df["timestamp_header"],
+            df[key_threshold],
+            linestyle="dashed",
+        )
+        plt.plot(
+            df["timestamp_header"],
+            -df[key_threshold],
+            linestyle="dashed",
+        )
+    plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left", borderaxespad=0)
+    plt.xlabel("time [s]")
+    plt.ylabel("diff_position [m]")
+    plt.grid()
+
+    # 2行目:angle
+    plt.subplot(2, 1, 2)
+    key_list = [
+        "diff_angle_x",
+        "diff_angle_y",
+        "diff_angle_z",
+    ]
+    for key in key_list:
+        key_value = key + ":value"
+        key_threshold = key + ":threshold"
+        df[key_value] = df[key_value].astype(float)
+        df[key_threshold] = df[key_threshold].astype(float)
+        plt.plot(df["timestamp_header"], df[key_value], label=key_value)
+        plt.plot(
+            df["timestamp_header"],
+            df[key_threshold],
+            linestyle="dashed",
+        )
+        plt.plot(
+            df["timestamp_header"],
+            -df[key_threshold],
+            linestyle="dashed",
+        )
+    plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left", borderaxespad=0)
+    plt.xlabel("time [s]")
+    plt.ylabel("diff_angle [rad]")
+    plt.grid()
+
+    plt.tight_layout()
+    save_path = rosbag_path.parent / "diagnostics_pose_instability_detector.png"
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     print(f"Saved {save_path}")
