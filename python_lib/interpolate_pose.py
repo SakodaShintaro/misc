@@ -2,7 +2,12 @@ import pandas as pd
 from scipy.spatial.transform import Rotation, Slerp
 
 
-def interpolate_pose(df_pose: pd.DataFrame, target_timestamp: pd.Series) -> pd.DataFrame:
+def interpolate_pose(
+    df_pose: pd.DataFrame,
+    target_timestamp: pd.Series,
+    POSITIONS_KEY=["x", "y", "z"],
+    ORIENTATIONS_KEY=["qw", "qx", "qy", "qz"],
+) -> pd.DataFrame:
     """ Interpolate each pose in df_pose to match the timestamp in target_timestamp
     Constraints)
     * df_pose and target_timestamp must be sorted by timestamp
@@ -12,19 +17,12 @@ def interpolate_pose(df_pose: pd.DataFrame, target_timestamp: pd.Series) -> pd.D
     出力)
     * DataFrame with same columns as df_pose and length same as target_timestamp
     """
-    POSITIONS_KEY = ['x', 'y', 'z']
-    ORIENTATIONS_KEY = ['qw', 'qx', 'qy', 'qz']
     target_index = 0
     df_index = 0
     data_dict = {
         'timestamp': [],
-        'x': [],
-        'y': [],
-        'z': [],
-        'qw': [],
-        'qx': [],
-        'qy': [],
-        'qz': [],
+        **{key: [] for key in POSITIONS_KEY},
+        **{key: [] for key in ORIENTATIONS_KEY},
     }
     while df_index < len(df_pose) - 1 and target_index < len(target_timestamp):
         curr_time = df_pose.iloc[df_index]['timestamp']
@@ -52,13 +50,13 @@ def interpolate_pose(df_pose: pd.DataFrame, target_timestamp: pd.Series) -> pd.D
         target_orientation = slerp([target_time]).as_quat()[0]
 
         data_dict['timestamp'].append(target_time)
-        data_dict['x'].append(target_position[0])
-        data_dict['y'].append(target_position[1])
-        data_dict['z'].append(target_position[2])
-        data_dict['qw'].append(target_orientation[0])
-        data_dict['qx'].append(target_orientation[1])
-        data_dict['qy'].append(target_orientation[2])
-        data_dict['qz'].append(target_orientation[3])
+        data_dict[POSITIONS_KEY[0]].append(target_position[0])
+        data_dict[POSITIONS_KEY[1]].append(target_position[1])
+        data_dict[POSITIONS_KEY[2]].append(target_position[2])
+        data_dict[ORIENTATIONS_KEY[0]].append(target_orientation[0])
+        data_dict[ORIENTATIONS_KEY[1]].append(target_orientation[1])
+        data_dict[ORIENTATIONS_KEY[2]].append(target_orientation[2])
+        data_dict[ORIENTATIONS_KEY[3]].append(target_orientation[3])
         target_index += 1
     result_df = pd.DataFrame(data_dict)
     return result_df
