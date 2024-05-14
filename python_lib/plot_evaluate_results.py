@@ -47,7 +47,7 @@ if __name__ == "__main__":
         error_list.append(error)
 
         df_time = pd.read_csv(tsv_path_time, sep="\t")
-        time = df_time['value'].mean()
+        time = df_time['data'].mean()
         time_list.append(time)
 
     if len(date_list) == 0:
