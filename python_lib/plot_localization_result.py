@@ -171,6 +171,12 @@ if __name__ == "__main__":
     plt.ylabel("exe_time [ms]")
     plt.ylim(bottom=0)
     plt.grid()
+    with open(save_dir / "exe_time_ms_mean.txt", "w") as f:
+        f.write(f"{df_exe_time_ms['data'].mean():.1f} [ms]")
+    print(f"Average exe_time_ms: {df_exe_time_ms['data'].mean():.1f} [ms]")
+    df_exe_time_ms.to_csv(
+        save_dir / "exe_time_ms.tsv", index=False, sep="\t", float_format="%.9f"
+    )
 
     plt.subplot(5, 1, 3)
     plt.plot(
