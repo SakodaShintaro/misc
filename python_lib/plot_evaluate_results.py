@@ -25,7 +25,7 @@ if __name__ == "__main__":
     result_dirs.sort()
 
     suffix_error = "localization__pose_twist_fusion_filter__pose_result/relative_pose_summary.tsv"
-    suffix_time = "exe_time_ms/exe_time_ms.tsv"
+    suffix_time = "localization_result/exe_time_ms.tsv"
 
     date_list = []
     error_list = []
