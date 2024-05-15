@@ -18,7 +18,7 @@ ros2 launch autoware_launch planning_simulator.launch.xml \
 # 立ち上がるまで待つ
 while ! ros2 service type /pose_initializer_node/get_parameters; do
   echo "waiting for /pose_initializer_node/get_parameters"
-  sleep 2
+  sleep 4
 done
 
 # 安定性のためにさらに少し待つ
