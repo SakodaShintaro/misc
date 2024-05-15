@@ -45,7 +45,7 @@ if __name__ == "__main__":
     storage_filter = rosbag2_py.StorageFilter(topics=target_topics)
     reader.set_filter(storage_filter)
 
-    ekf_pose_list = list()
+    data_list = list()
     while reader.has_next():
         (topic, data, timestamp_rosbag) = reader.read_next()
         msg_type = get_message(type_map[topic])
@@ -53,16 +53,14 @@ if __name__ == "__main__":
         timestamp_header = int(msg.header.stamp.sec) + \
             int(msg.header.stamp.nanosec) * 1e-9
         if topic == target_topic:
-            pose = msg.pose.pose
-            twist = msg.twist.twist
-            ekf_pose_list.append({
+            data_list.append({
                 'timestamp_header': timestamp_header,
                 'timestamp_rosbag': timestamp_rosbag,
                 'msg': msg,
             })
         else:
             assert False, f"Unknown topic: {topic}"
-    df_ekf_pose = pd.DataFrame(ekf_pose_list)
+    df_data = pd.DataFrame(data_list)
 
     # prepare source2 rosbag (get all topics without kinematic state)
     storage_options = rosbag2_py.StorageOptions(
@@ -109,7 +107,7 @@ if __name__ == "__main__":
 
     # write kinematic state to output rosbag
     add_count = 0
-    for _, row in df_ekf_pose.iterrows():
+    for _, row in df_data.iterrows():
         timestamp_header = row['timestamp_header'] * 1e9
         timestamp_rosbag = row['timestamp_rosbag']
         msg = row['msg']
