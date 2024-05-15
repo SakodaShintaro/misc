@@ -11,6 +11,7 @@ def parse_args():
     parser.add_argument('source1_rosbag_path', type=pathlib.Path)
     parser.add_argument('source2_rosbag_path', type=pathlib.Path)
     parser.add_argument('output_rosbag_path', type=pathlib.Path)
+    parser.add_argument("--target_topic", type=str, default="/localization/kinematic_state")
     return parser.parse_args()
 
 
@@ -19,6 +20,7 @@ if __name__ == "__main__":
     source1_rosbag_path = args.source1_rosbag_path
     source2_rosbag_path = args.source2_rosbag_path
     output_rosbag_path = args.output_rosbag_path
+    target_topic = args.target_topic
 
     # read source1 rosbag (get kinematic state)
     serialization_format = 'cdr'
@@ -36,9 +38,10 @@ if __name__ == "__main__":
     type_map = {
         topic_types[i].name: topic_types[i].type for i in range(len(topic_types))}
 
-    COPY_TOPIC_NAME = "/localization/kinematic_state"
-    OUTPUT_TOPIC_NAME = "/localization/reference_kinematic_state"
-    target_topics = [COPY_TOPIC_NAME]
+    # OUTPUT_TOPIC_NAME = "/localization/reference_kinematic_state"
+    elements = target_topic.split("/")
+    output_topic_name = "/".join(elements[:-1] + ["reference_" + elements[-1]])
+    target_topics = [target_topic]
     storage_filter = rosbag2_py.StorageFilter(topics=target_topics)
     reader.set_filter(storage_filter)
 
@@ -49,7 +52,7 @@ if __name__ == "__main__":
         msg = deserialize_message(data, msg_type)
         timestamp_header = int(msg.header.stamp.sec) + \
             int(msg.header.stamp.nanosec) * 1e-9
-        if topic == COPY_TOPIC_NAME:
+        if topic == target_topic:
             pose = msg.pose.pose
             twist = msg.twist.twist
             ekf_pose_list.append({
@@ -81,13 +84,13 @@ if __name__ == "__main__":
 
     # create_topic
     for topic in type_map.keys():
-        if topic == OUTPUT_TOPIC_NAME:
+        if topic == output_topic_name:
             continue
         topic_info = rosbag2_py.TopicMetadata(
             name=topic, type=type_map[topic], serialization_format=serialization_format)
         writer.create_topic(topic_info)
     topic_info = rosbag2_py.TopicMetadata(
-        name=OUTPUT_TOPIC_NAME,
+        name=output_topic_name,
         type="nav_msgs/msg/Odometry",
         serialization_format=serialization_format,
     )
@@ -97,7 +100,7 @@ if __name__ == "__main__":
     last_timestamp_header = None
     while reader.has_next():
         (topic, data, timestamp_rosbag) = reader.read_next()
-        if topic == OUTPUT_TOPIC_NAME:
+        if topic == output_topic_name:
             continue    # skip if already exists
         writer.write(topic, data, timestamp_rosbag)
         if first_timestamp_header is None:
@@ -114,7 +117,7 @@ if __name__ == "__main__":
             continue
 
         data = serialize_message(msg)
-        writer.write(OUTPUT_TOPIC_NAME, data, timestamp_rosbag)
+        writer.write(output_topic_name, data, timestamp_rosbag)
         add_count += 1
 
     print(f"Added {add_count} kinematic state messages.")
