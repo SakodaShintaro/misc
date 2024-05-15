@@ -10,7 +10,7 @@ import numpy as np
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('target_dir', type=str)
+    parser.add_argument("target_dir", type=str)
     return parser.parse_args()
 
 
@@ -19,12 +19,16 @@ if __name__ == "__main__":
     target_dir = args.target_dir
 
     result_dirs = files_dir = [
-        os.path.join(target_dir, f) for f in os.listdir(target_dir) if os.path.isdir(os.path.join(target_dir, f))
+        os.path.join(target_dir, f)
+        for f in os.listdir(target_dir)
+        if os.path.isdir(os.path.join(target_dir, f))
     ]
 
     result_dirs.sort()
 
-    suffix_error = "localization__pose_twist_fusion_filter__pose_result/relative_pose_summary.tsv"
+    suffix_error = (
+        "localization__pose_twist_fusion_filter__pose_result/relative_pose_summary.tsv"
+    )
     suffix_time = "localization_result/exe_time_ms.tsv"
 
     date_list = []
@@ -43,11 +47,15 @@ if __name__ == "__main__":
         date_list.append(date)
 
         df_error = pd.read_csv(tsv_path_error, sep="\t")
-        error = df_error['error_mean'].values[0]
+        error = df_error["error_mean"].values[0]
         error_list.append(error)
 
         df_time = pd.read_csv(tsv_path_time, sep="\t")
-        time = df_time['data'].mean()
+        time = (
+            df_time["value"].mean()
+            if "value" in df_time.columns
+            else df_time["data"].mean()
+        )
         time_list.append(time)
 
     if len(date_list) == 0:
@@ -62,12 +70,7 @@ if __name__ == "__main__":
     plt.plot(date_list, error_list, marker=".", color="C0")
     plt.ylabel("error_mean")
     plt.ylim(0, percentile_90 * 2)
-    plt.tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
+    plt.tick_params(axis="x", which="both", bottom=False, top=False, labelbottom=False)
     plt.grid(True)
 
     # plot time
@@ -83,5 +86,5 @@ if __name__ == "__main__":
     plt.tight_layout()
 
     save_path = os.path.join(target_dir, "error_mean.png")
-    plt.savefig(save_path, bbox_inches='tight', pad_inches=0.05)
+    plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     print(f"save {save_path}")
