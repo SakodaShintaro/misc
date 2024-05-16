@@ -12,6 +12,7 @@ def parse_args():
     parser.add_argument('source2_rosbag_path', type=pathlib.Path)
     parser.add_argument('output_rosbag_path', type=pathlib.Path)
     parser.add_argument("--target_topic", type=str, default="/localization/kinematic_state")
+    parser.add_argument("--output_topic_prefix", type=str, default="reference_")
     return parser.parse_args()
 
 
@@ -21,8 +22,9 @@ if __name__ == "__main__":
     source2_rosbag_path = args.source2_rosbag_path
     output_rosbag_path = args.output_rosbag_path
     target_topic = args.target_topic
+    output_topic_prefix = args.output_topic_prefix
 
-    # read source1 rosbag (get kinematic state)
+    # read source1 rosbag (get target topic)
     serialization_format = 'cdr'
     storage_options = rosbag2_py.StorageOptions(
         uri=str(source1_rosbag_path), storage_id="sqlite3"
@@ -38,9 +40,8 @@ if __name__ == "__main__":
     type_map = {
         topic_types[i].name: topic_types[i].type for i in range(len(topic_types))}
 
-    # OUTPUT_TOPIC_NAME = "/localization/reference_kinematic_state"
     elements = target_topic.split("/")
-    output_topic_name = "/".join(elements[:-1] + ["reference_" + elements[-1]])
+    output_topic_name = "/".join(elements[:-1] + [output_topic_prefix + elements[-1]])
     target_topics = [target_topic]
     storage_filter = rosbag2_py.StorageFilter(topics=target_topics)
     reader.set_filter(storage_filter)
@@ -62,7 +63,7 @@ if __name__ == "__main__":
             assert False, f"Unknown topic: {topic}"
     df_data = pd.DataFrame(data_list)
 
-    # prepare source2 rosbag (get all topics without kinematic state)
+    # prepare source2 rosbag (get all topics without target topic)
     storage_options = rosbag2_py.StorageOptions(
         uri=str(source2_rosbag_path), storage_id="sqlite3"
     )
@@ -105,7 +106,7 @@ if __name__ == "__main__":
             first_timestamp_header = timestamp_rosbag
         last_timestamp_header = timestamp_rosbag
 
-    # write kinematic state to output rosbag
+    # write target topic to output rosbag
     add_count = 0
     for _, row in df_data.iterrows():
         timestamp_header = row['timestamp_header'] * 1e9
@@ -118,4 +119,4 @@ if __name__ == "__main__":
         writer.write(output_topic_name, data, timestamp_rosbag)
         add_count += 1
 
-    print(f"Added {add_count} kinematic state messages.")
+    print(f"Added {add_count} messages.")
