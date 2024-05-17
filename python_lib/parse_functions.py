@@ -16,6 +16,8 @@ def parse_msg(msg, msg_type):
         return parse_PoseStamped(msg)
     elif class_name == "PoseWithCovarianceStamped":
         return parse_PoseWithCovarianceStamped(msg)
+    elif class_name == "Odometry":
+        return parse_Odometry(msg)
     elif class_name == "MarkerArray":
         return parse_MarkerArray(msg)
     else:
@@ -49,7 +51,33 @@ def parse_PoseWithCovarianceStamped(msg):
     }
 
 
+def parse_Odometry(msg):
+    return {
+        "timestamp": parse_stamp(msg.header.stamp),
+        "position.x": msg.pose.pose.position.x,
+        "position.y": msg.pose.pose.position.y,
+        "position.z": msg.pose.pose.position.z,
+        "orientation.x": msg.pose.pose.orientation.x,
+        "orientation.y": msg.pose.pose.orientation.y,
+        "orientation.z": msg.pose.pose.orientation.z,
+        "orientation.w": msg.pose.pose.orientation.w,
+        "linear_velocity.x": msg.twist.twist.linear.x,
+        "linear_velocity.y": msg.twist.twist.linear.y,
+        "linear_velocity.z": msg.twist.twist.linear.z,
+        "angular_velocity.x": msg.twist.twist.angular.x,
+        "angular_velocity.y": msg.twist.twist.angular.y,
+        "angular_velocity.z": msg.twist.twist.angular.z,
+    }
+
+
 def parse_Float32Stamped(msg):
+    return {
+        "timestamp": parse_stamp(msg.stamp),
+        "data": msg.data,
+    }
+
+
+def parse_Int32Stamped(msg):
     return {
         "timestamp": parse_stamp(msg.stamp),
         "data": msg.data,
