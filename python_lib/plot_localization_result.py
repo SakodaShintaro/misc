@@ -72,7 +72,7 @@ if __name__ == "__main__":
     nearest_voxel_transformation_likelihood_array = []
     transform_probability_array = []
     iteration_num_array = []
-    pose_array = []
+    ndt_pose_array = []
     initial_to_result_relative_pose_array = []
     while reader.has_next():
         (topic, data, t) = reader.read_next()
@@ -125,7 +125,7 @@ if __name__ == "__main__":
             value_pose_array_list.append(curr_pose_array)
             value_quat_array_list.append(curr_quat_array)
         elif topic == "/localization/pose_estimator/pose":
-            pose_array.append(parse_PoseStamped(msg))
+            ndt_pose_array.append(parse_PoseStamped(msg))
 
     df_exe_time_ms = pd.DataFrame(exe_time_ms_array)
     df_nearest_voxel_transformation_likelihood = pd.DataFrame(
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     )
     df_transform_probability = pd.DataFrame(transform_probability_array)
     df_iteration_num = pd.DataFrame(iteration_num_array)
-    df_pose = pd.DataFrame(pose_array)
+    df_ndt_pose = pd.DataFrame(ndt_pose_array)
     df_initial_to_result_relative_pose = pd.DataFrame(
         initial_to_result_relative_pose_array
     )
@@ -164,6 +164,9 @@ if __name__ == "__main__":
     plt.ylabel("iteration_num")
     plt.ylim(bottom=0)
     plt.grid()
+    df_iteration_num.to_csv(
+        save_dir / "iteration_num.tsv", index=False, sep="\t", float_format="%.9f"
+    )
 
     plt.subplot(5, 1, 2)
     plt.plot(df_exe_time_ms["timestamp"], df_exe_time_ms["data"])
@@ -187,6 +190,12 @@ if __name__ == "__main__":
     plt.ylabel("NVTL")
     plt.ylim(bottom=0)
     plt.grid()
+    df_nearest_voxel_transformation_likelihood.to_csv(
+        save_dir / "nearest_voxel_transformation_likelihood.tsv",
+        index=False,
+        sep="\t",
+        float_format="%.9f",
+    )
 
     plt.subplot(5, 1, 4)
     plt.plot(df_transform_probability["timestamp"], df_transform_probability["data"])
@@ -194,6 +203,12 @@ if __name__ == "__main__":
     plt.ylabel("TP")
     plt.ylim(bottom=0)
     plt.grid()
+    df_transform_probability.to_csv(
+        save_dir / "transform_probability.tsv",
+        index=False,
+        sep="\t",
+        float_format="%.9f",
+    )
 
     plt.subplot(5, 1, 5)
     plt.plot(
@@ -214,6 +229,12 @@ if __name__ == "__main__":
     plt.xlabel("time [s]")
     plt.ylabel("diff_position [m]")
     plt.grid()
+    df_initial_to_result_relative_pose.to_csv(
+        save_dir / "initial_to_result_relative_pose.tsv",
+        index=False,
+        sep="\t",
+        float_format="%.9f",
+    )
 
     plt.tight_layout()
     save_path = save_dir / "localization_result.png"
@@ -222,19 +243,20 @@ if __name__ == "__main__":
     print(f"saved to {save_path}")
 
     # poseの可視化
-    plt.scatter(df_pose["position.x"], df_pose["position.y"], s=1)
+    plt.rcParams["figure.figsize"] = 9, 9
+    plt.scatter(df_ndt_pose["position.x"], df_ndt_pose["position.y"], s=1)
     plt.axis("equal")
     plt.xlabel("x [m]")
     plt.ylabel("y [m]")
     plt.grid()
-    save_path = save_dir / "pose.png"
+    save_path = save_dir / "ndt_pose.png"
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     plt.close()
     print(f"saved to {save_path}")
+    df_ndt_pose.to_csv(save_dir / "ndt_pose.tsv", index=False, sep="\t", float_format="%.9f")
 
     # 色つきposeの可視化
-    plt.rcParams["figure.figsize"] = 9, 9
-    df_renamed = df_pose.rename(
+    df_renamed = df_ndt_pose.rename(
         columns={
             "position.x": "x",
             "position.y": "y",
