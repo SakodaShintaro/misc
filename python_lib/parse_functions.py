@@ -6,6 +6,23 @@ def parse_stamp(stamp):
     return stamp.sec + stamp.nanosec * 1e-9
 
 
+def parse_msg(msg, msg_type):
+    class_name = msg_type.__class__.__name__.replace("Metaclass_", "")
+    if class_name == "Float32Stamped":
+        return parse_Float32Stamped(msg)
+    elif class_name == "Int32Stamped":
+        return parse_Float32Stamped(msg)
+    elif class_name == "PoseStamped":
+        return parse_PoseStamped(msg)
+    elif class_name == "PoseWithCovarianceStamped":
+        return parse_PoseWithCovarianceStamped(msg)
+    elif class_name == "MarkerArray":
+        return parse_MarkerArray(msg)
+    else:
+        print(f"Error: {class_name} is not supported.")
+        exit(0)
+
+
 def parse_PoseStamped(msg):
     return {
         "timestamp": parse_stamp(msg.header.stamp),

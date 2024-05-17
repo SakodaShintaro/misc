@@ -7,8 +7,9 @@ import pandas as pd
 import numpy as np
 from scipy.spatial.transform import Rotation
 from pathlib import Path
-from parse_functions import parse_PoseStamped, parse_Float32Stamped, parse_MarkerArray
+from parse_functions import parse_msg
 from interpolate_pose import interpolate_pose
+from collections import defaultdict
 
 
 def parse_args():
@@ -65,48 +66,37 @@ if __name__ == "__main__":
     storage_filter = rosbag2_py.StorageFilter(topics=target_topics)
     reader.set_filter(storage_filter)
 
-    exe_time_ms_array = []
-    nearest_voxel_transformation_likelihood_array = []
-    transform_probability_array = []
-    iteration_num_array = []
-    ndt_pose_array = []
-    initial_to_result_relative_pose_array = []
-    marker_array = []
+    topic_name_to_data = defaultdict(list)
     while reader.has_next():
         (topic, data, t) = reader.read_next()
         msg_type = get_message(type_map[topic])
         msg = deserialize_message(data, msg_type)
-        if topic == "/localization/pose_estimator/exe_time_ms":
-            exe_time_ms_array.append(parse_Float32Stamped(msg))
-        elif (
-            topic
-            == "/localization/pose_estimator/nearest_voxel_transformation_likelihood"
-        ):
-            nearest_voxel_transformation_likelihood_array.append(
-                parse_Float32Stamped(msg)
-            )
-        elif topic == "/localization/pose_estimator/transform_probability":
-            transform_probability_array.append(parse_Float32Stamped(msg))
-        elif topic == "/localization/pose_estimator/iteration_num":
-            iteration_num_array.append(parse_Float32Stamped(msg))
-        elif topic == "/localization/pose_estimator/initial_to_result_relative_pose":
-            initial_to_result_relative_pose_array.append(parse_PoseStamped(msg))
-        elif topic == "/localization/pose_estimator/ndt_marker":
-            marker_array.append(parse_MarkerArray(msg))
-        elif topic == "/localization/pose_estimator/pose":
-            ndt_pose_array.append(parse_PoseStamped(msg))
+        if topic in target_topics:
+            topic_name_to_data[topic].append(parse_msg(msg, msg_type))
 
-    df_exe_time_ms = pd.DataFrame(exe_time_ms_array)
+    df_exe_time_ms = pd.DataFrame(
+        topic_name_to_data["/localization/pose_estimator/exe_time_ms"]
+    )
     df_nearest_voxel_transformation_likelihood = pd.DataFrame(
-        nearest_voxel_transformation_likelihood_array
+        topic_name_to_data[
+            "/localization/pose_estimator/nearest_voxel_transformation_likelihood"
+        ]
     )
-    df_transform_probability = pd.DataFrame(transform_probability_array)
-    df_iteration_num = pd.DataFrame(iteration_num_array)
-    df_ndt_pose = pd.DataFrame(ndt_pose_array)
+    df_transform_probability = pd.DataFrame(
+        topic_name_to_data["/localization/pose_estimator/transform_probability"]
+    )
+    df_iteration_num = pd.DataFrame(
+        topic_name_to_data["/localization/pose_estimator/iteration_num"]
+    )
+    df_ndt_pose = pd.DataFrame(topic_name_to_data["/localization/pose_estimator/pose"])
     df_initial_to_result_relative_pose = pd.DataFrame(
-        initial_to_result_relative_pose_array
+        topic_name_to_data[
+            "/localization/pose_estimator/initial_to_result_relative_pose"
+        ]
     )
-    df_marker = pd.DataFrame(marker_array)
+    df_marker = pd.DataFrame(
+        topic_name_to_data["/localization/pose_estimator/ndt_marker"]
+    )
 
     # dataとして変動量のノルムを計算
     df_initial_to_result_relative_pose["data"] = (
@@ -223,7 +213,9 @@ if __name__ == "__main__":
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     plt.close()
     print(f"saved to {save_path}")
-    df_ndt_pose.to_csv(save_dir / "ndt_pose.tsv", index=False, sep="\t", float_format="%.9f")
+    df_ndt_pose.to_csv(
+        save_dir / "ndt_pose.tsv", index=False, sep="\t", float_format="%.9f"
+    )
 
     # 色つきposeの可視化
     df_renamed = df_ndt_pose.rename(
@@ -264,14 +256,22 @@ if __name__ == "__main__":
     yaw_array_result_dir.mkdir(exist_ok=True)
     for i, row in df_marker.iterrows():
         curr_df = pd.DataFrame(row["marker"])
-        curr_df = curr_df[~((curr_df["position.x"] == 0.0) * (curr_df["position.y"] == 0.0) * (curr_df["position.z"] == 0.0))]
+        curr_df = curr_df[
+            ~(
+                (curr_df["position.x"] == 0.0)
+                * (curr_df["position.y"] == 0.0)
+                * (curr_df["position.z"] == 0.0)
+            )
+        ]
         if len(curr_df) < 30:
             continue
         position_x = curr_df["position.x"].values
         position_y = curr_df["position.y"].values
         position_x -= position_x[0]
         position_y -= position_y[0]
-        orientation = curr_df[["orientation.x", "orientation.y", "orientation.z", "orientation.w"]].values
+        orientation = curr_df[
+            ["orientation.x", "orientation.y", "orientation.z", "orientation.w"]
+        ].values
         plt.figure()
         # indexで色付け(0 ~ 29), 0から1, 1から2,... へと矢印を描画
         for j in range(len(position_x) - 1):
