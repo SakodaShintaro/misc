@@ -37,3 +37,21 @@ def parse_Float32Stamped(msg):
         "timestamp": parse_stamp(msg.stamp),
         "data": msg.data,
     }
+
+
+def parse_MarkerArray(msg):
+    result_dict = {}
+    result_dict["timestamp"] = parse_stamp(msg.markers[0].header.stamp)
+    result_dict["marker"] = list()
+    for marker_msg in msg.markers:
+        one_marker = {}
+        one_marker["timestamp"] = parse_stamp(marker_msg.header.stamp)
+        one_marker["position.x"] = marker_msg.pose.position.x
+        one_marker["position.y"] = marker_msg.pose.position.y
+        one_marker["position.z"] = marker_msg.pose.position.z
+        one_marker["orientation.x"] = marker_msg.pose.orientation.x
+        one_marker["orientation.y"] = marker_msg.pose.orientation.y
+        one_marker["orientation.z"] = marker_msg.pose.orientation.z
+        one_marker["orientation.w"] = marker_msg.pose.orientation.w
+        result_dict["marker"].append(one_marker)
+    return result_dict

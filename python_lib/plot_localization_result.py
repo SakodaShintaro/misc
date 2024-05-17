@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 from scipy.spatial.transform import Rotation
 from pathlib import Path
-from parse_functions import parse_PoseStamped, parse_Float32Stamped
+from parse_functions import parse_PoseStamped, parse_Float32Stamped, parse_MarkerArray
 from interpolate_pose import interpolate_pose
 
 
@@ -65,15 +65,13 @@ if __name__ == "__main__":
     storage_filter = rosbag2_py.StorageFilter(topics=target_topics)
     reader.set_filter(storage_filter)
 
-    time_pose_array_list = []
-    value_pose_array_list = []
-    value_quat_array_list = []
     exe_time_ms_array = []
     nearest_voxel_transformation_likelihood_array = []
     transform_probability_array = []
     iteration_num_array = []
     ndt_pose_array = []
     initial_to_result_relative_pose_array = []
+    marker_array = []
     while reader.has_next():
         (topic, data, t) = reader.read_next()
         msg_type = get_message(type_map[topic])
@@ -94,36 +92,7 @@ if __name__ == "__main__":
         elif topic == "/localization/pose_estimator/initial_to_result_relative_pose":
             initial_to_result_relative_pose_array.append(parse_PoseStamped(msg))
         elif topic == "/localization/pose_estimator/ndt_marker":
-            curr_pose_array = []
-            curr_quat_array = []
-            for marker_msg in msg.markers:
-                t_from_msg = (
-                    marker_msg.header.stamp.sec * 1e9 + marker_msg.header.stamp.nanosec
-                )
-                t_from_msg /= 1e9
-                pose = marker_msg.pose
-                if (
-                    pose.position.x == 0
-                    and pose.position.y == 0
-                    and pose.position.z == 0
-                ):
-                    break
-                curr_pose_array.append(
-                    [pose.position.x, pose.position.y, pose.position.z]
-                )
-                curr_quat_array.append(
-                    Rotation.from_quat(
-                        [
-                            pose.orientation.x,
-                            pose.orientation.y,
-                            pose.orientation.z,
-                            pose.orientation.w,
-                        ]
-                    )
-                )
-            time_pose_array_list.append(t_from_msg)
-            value_pose_array_list.append(curr_pose_array)
-            value_quat_array_list.append(curr_quat_array)
+            marker_array.append(parse_MarkerArray(msg))
         elif topic == "/localization/pose_estimator/pose":
             ndt_pose_array.append(parse_PoseStamped(msg))
 
@@ -137,6 +106,7 @@ if __name__ == "__main__":
     df_initial_to_result_relative_pose = pd.DataFrame(
         initial_to_result_relative_pose_array
     )
+    df_marker = pd.DataFrame(marker_array)
 
     # dataとして変動量のノルムを計算
     df_initial_to_result_relative_pose["data"] = (
@@ -292,27 +262,30 @@ if __name__ == "__main__":
     yaw_array_result_dir = save_dir / "yaw_array"
     pose_array_result_dir.mkdir(exist_ok=True)
     yaw_array_result_dir.mkdir(exist_ok=True)
-    for i, (time, pose_array) in enumerate(
-        zip(time_pose_array_list, value_pose_array_list)
-    ):
-        if len(pose_array) < 30:
+    for i, row in df_marker.iterrows():
+        curr_df = pd.DataFrame(row["marker"])
+        curr_df = curr_df[~((curr_df["position.x"] == 0.0) * (curr_df["position.y"] == 0.0) * (curr_df["position.z"] == 0.0))]
+        if len(curr_df) < 30:
             continue
-        pose_array = np.array(pose_array)
-        pose_array -= pose_array[0]
+        position_x = curr_df["position.x"].values
+        position_y = curr_df["position.y"].values
+        position_x -= position_x[0]
+        position_y -= position_y[0]
+        orientation = curr_df[["orientation.x", "orientation.y", "orientation.z", "orientation.w"]].values
         plt.figure()
         # indexで色付け(0 ~ 29), 0から1, 1から2,... へと矢印を描画
-        for j in range(len(pose_array) - 1):
-            diff_x = pose_array[j + 1][0] - pose_array[j][0]
-            diff_y = pose_array[j + 1][1] - pose_array[j][1]
+        for j in range(len(position_x) - 1):
+            diff_x = position_x[j + 1] - position_x[j]
+            diff_y = position_y[j + 1] - position_y[j]
             plt.arrow(
-                pose_array[j][0],
-                pose_array[j][1],
+                position_x[j],
+                position_y[j],
                 diff_x,
                 diff_y,
-                color=plt.cm.jet(j / (len(pose_array) - 1)),
+                color=plt.cm.jet(j / (len(position_x) - 1)),
                 length_includes_head=True,
             )
-        plt.title(f"iteration: {len(pose_array) - 1}")
+        plt.title(f"iteration: {len(position_x) - 1}")
         plt.xlabel("x [m]")
         plt.ylabel("y [m]")
         plt.axis("equal")
@@ -328,9 +301,10 @@ if __name__ == "__main__":
         r_list = []
         p_list = []
         y_list = []
-        first_r = value_quat_array_list[i][0]
-        for j in range(len(pose_array)):
-            curr_r = value_quat_array_list[i][j]
+        rotation_list = Rotation.from_quat(orientation)
+        first_r = rotation_list[0]
+        for j in range(len(rotation_list)):
+            curr_r = rotation_list[j]
             curr_r = curr_r * first_r.inv()
             r, p, y = curr_r.as_euler("xyz")
             r_list.append(r * 180 / np.pi)
