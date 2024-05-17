@@ -18,10 +18,16 @@ def parse_args():
     return parser.parse_args()
 
 
-def plot_pose_with_value(df_pose, df_value, value_name, save_dir):
-    df = interpolate_pose(df_pose, df_value["timestamp"].values)
-    plt.scatter(df["x"], df["y"], c=df_value["data"])
-    plt.colorbar()
+def plot_pose(df_pose: pd.DataFrame, value_name: str, save_dir: Path, df_value=None):
+    df = (
+        interpolate_pose(df_pose, df_value["timestamp"].values)
+        if df_value is not None
+        else df_pose
+    )
+    color = df_value["data"] if df_value is not None else None
+    plt.scatter(df["x"], df["y"], c=color)
+    if df_value is not None:
+        plt.colorbar()
     plt.axis("equal")
     plt.xlabel("x [m]")
     plt.ylabel("y [m]")
@@ -204,15 +210,6 @@ if __name__ == "__main__":
 
     # poseの可視化
     plt.rcParams["figure.figsize"] = 9, 9
-    plt.scatter(df_ndt_pose["position.x"], df_ndt_pose["position.y"], s=1)
-    plt.axis("equal")
-    plt.xlabel("x [m]")
-    plt.ylabel("y [m]")
-    plt.grid()
-    save_path = save_dir / "ndt_pose.png"
-    plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
-    plt.close()
-    print(f"saved to {save_path}")
     df_ndt_pose.to_csv(
         save_dir / "ndt_pose.tsv", index=False, sep="\t", float_format="%.9f"
     )
@@ -230,22 +227,23 @@ if __name__ == "__main__":
         }
     )
 
-    plot_pose_with_value(df_renamed, df_exe_time_ms, "exe_time_ms", save_dir)
-    plot_pose_with_value(df_renamed, df_iteration_num, "iteration_num", save_dir)
-    plot_pose_with_value(
+    plot_pose(df_renamed, "ndt", save_dir, df_value=None)
+    plot_pose(df_renamed, "exe_time_ms", save_dir, df_value=df_exe_time_ms)
+    plot_pose(df_renamed, "iteration_num", save_dir, df_value=df_iteration_num)
+    plot_pose(
         df_renamed,
-        df_nearest_voxel_transformation_likelihood,
         "nearest_voxel_transformation_likelihood",
         save_dir,
+        df_value=df_nearest_voxel_transformation_likelihood,
     )
-    plot_pose_with_value(
-        df_renamed, df_transform_probability, "transform_probability", save_dir
+    plot_pose(
+        df_renamed, "transform_probability", save_dir, df_value=df_transform_probability
     )
-    plot_pose_with_value(
+    plot_pose(
         df_renamed,
-        df_initial_to_result_relative_pose,
         "initial_to_result_relative_pose",
         save_dir,
+        df_value=df_initial_to_result_relative_pose,
     )
 
     # pose_arrayを気合で可視化
