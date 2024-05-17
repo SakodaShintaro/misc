@@ -91,6 +91,23 @@ if __name__ == "__main__":
         if topic in target_topics:
             topic_name_to_data[topic].append(parse_msg(msg, msg_type))
 
+    # rosbag path may be the path to the db3 file, or it may be the path to the directory containing it
+    save_dir = (
+        rosbag_path.parent if rosbag_path.is_dir() else rosbag_path.parent.parent
+    ) / "localization_result"
+    save_dir.mkdir(exist_ok=True)
+
+    # save as csv
+    for topic_name in target_topics:
+        df = pd.DataFrame(topic_name_to_data[topic_name])
+        filename = topic_name.replace("/localization/", "").replace("/", "_")
+        df.to_csv(
+            save_dir / f"{filename}.tsv",
+            index=False,
+            sep="\t",
+            float_format="%.9f",
+        )
+
     df_exe_time_ms = pd.DataFrame(
         topic_name_to_data["/localization/pose_estimator/exe_time_ms"]
     )
@@ -128,12 +145,6 @@ if __name__ == "__main__":
         )
     )
 
-    # rosbag path may be the path to the db3 file, or it may be the path to the directory containing it
-    save_dir = (
-        rosbag_path.parent if rosbag_path.is_dir() else rosbag_path.parent.parent
-    ) / "localization_result"
-    save_dir.mkdir(exist_ok=True)
-
     # plotの縦サイズを大きくする
     plt.rcParams["figure.figsize"] = 9, 12
 
@@ -144,9 +155,6 @@ if __name__ == "__main__":
     plt.ylabel("iteration_num")
     plt.ylim(bottom=0)
     plt.grid()
-    df_iteration_num.to_csv(
-        save_dir / "iteration_num.tsv", index=False, sep="\t", float_format="%.9f"
-    )
 
     plt.subplot(5, 1, 2)
     plt.plot(df_exe_time_ms["timestamp"], df_exe_time_ms["data"])
@@ -157,9 +165,6 @@ if __name__ == "__main__":
     with open(save_dir / "exe_time_ms_mean.txt", "w") as f:
         f.write(f"{df_exe_time_ms['data'].mean():.1f} [ms]")
     print(f"Average exe_time_ms: {df_exe_time_ms['data'].mean():.1f} [ms]")
-    df_exe_time_ms.to_csv(
-        save_dir / "exe_time_ms.tsv", index=False, sep="\t", float_format="%.9f"
-    )
 
     plt.subplot(5, 1, 3)
     plt.plot(
@@ -170,12 +175,6 @@ if __name__ == "__main__":
     plt.ylabel("NVTL")
     plt.ylim(bottom=0)
     plt.grid()
-    df_nearest_voxel_transformation_likelihood.to_csv(
-        save_dir / "nearest_voxel_transformation_likelihood.tsv",
-        index=False,
-        sep="\t",
-        float_format="%.9f",
-    )
 
     plt.subplot(5, 1, 4)
     plt.plot(df_transform_probability["timestamp"], df_transform_probability["data"])
@@ -183,12 +182,6 @@ if __name__ == "__main__":
     plt.ylabel("TP")
     plt.ylim(bottom=0)
     plt.grid()
-    df_transform_probability.to_csv(
-        save_dir / "transform_probability.tsv",
-        index=False,
-        sep="\t",
-        float_format="%.9f",
-    )
 
     plt.subplot(5, 1, 5)
     plt.plot(
@@ -209,12 +202,6 @@ if __name__ == "__main__":
     plt.xlabel("time [s]")
     plt.ylabel("diff_position [m]")
     plt.grid()
-    df_initial_to_result_relative_pose.to_csv(
-        save_dir / "initial_to_result_relative_pose.tsv",
-        index=False,
-        sep="\t",
-        float_format="%.9f",
-    )
 
     plt.tight_layout()
     save_path = save_dir / "localization_result.png"
@@ -224,12 +211,6 @@ if __name__ == "__main__":
 
     # poseの可視化
     plt.rcParams["figure.figsize"] = 9, 9
-    df_ndt_pose.to_csv(
-        save_dir / "ndt_pose.tsv", index=False, sep="\t", float_format="%.9f"
-    )
-    df_kinematic_state.to_csv(
-        save_dir / "kinematic_state.tsv", index=False, sep="\t", float_format="%.9f"
-    )
 
     # poseの可視化
     plot_pose(df_ndt_pose, "ndt", save_dir, df_value=None)
@@ -253,7 +234,6 @@ if __name__ == "__main__":
         save_dir,
         df_value=df_initial_to_result_relative_pose,
     )
-    plot_pose(df_kinematic_state, "kinematic_state", save_dir, df_value=None)
 
     # pose_arrayを気合で可視化
     plt.rcParams["figure.figsize"] = 9, 9
