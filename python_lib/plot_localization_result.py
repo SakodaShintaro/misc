@@ -20,12 +20,22 @@ def parse_args():
 
 def plot_pose(df_pose: pd.DataFrame, value_name: str, save_dir: Path, df_value=None):
     df = (
-        interpolate_pose(df_pose, df_value["timestamp"].values)
+        interpolate_pose(
+            df_pose,
+            df_value["timestamp"].values,
+            POSITIONS_KEY=["position.x", "position.y", "position.z"],
+            ORIENTATIONS_KEY=[
+                "orientation.x",
+                "orientation.y",
+                "orientation.z",
+                "orientation.w",
+            ],
+        )
         if df_value is not None
         else df_pose
     )
     color = df_value["data"] if df_value is not None else None
-    plt.scatter(df["x"], df["y"], c=color)
+    plt.scatter(df["position.x"], df["position.y"], c=color)
     if df_value is not None:
         plt.colorbar()
     plt.axis("equal")
@@ -67,6 +77,7 @@ if __name__ == "__main__":
         "/localization/pose_estimator/nearest_voxel_transformation_likelihood",
         "/localization/pose_estimator/pose",
         "/localization/pose_estimator/transform_probability",
+        "/localization/pose_twist_fusion_filter/kinematic_state",
     ]
 
     storage_filter = rosbag2_py.StorageFilter(topics=target_topics)
@@ -102,6 +113,9 @@ if __name__ == "__main__":
     )
     df_marker = pd.DataFrame(
         topic_name_to_data["/localization/pose_estimator/ndt_marker"]
+    )
+    df_kinematic_state = pd.DataFrame(
+        topic_name_to_data["/localization/pose_twist_fusion_filter/kinematic_state"]
     )
 
     # dataとして変動量のノルムを計算
@@ -213,38 +227,33 @@ if __name__ == "__main__":
     df_ndt_pose.to_csv(
         save_dir / "ndt_pose.tsv", index=False, sep="\t", float_format="%.9f"
     )
-
-    # 色つきposeの可視化
-    df_renamed = df_ndt_pose.rename(
-        columns={
-            "position.x": "x",
-            "position.y": "y",
-            "position.z": "z",
-            "orientation.x": "qx",
-            "orientation.y": "qy",
-            "orientation.z": "qz",
-            "orientation.w": "qw",
-        }
+    df_kinematic_state.to_csv(
+        save_dir / "kinematic_state.tsv", index=False, sep="\t", float_format="%.9f"
     )
 
-    plot_pose(df_renamed, "ndt", save_dir, df_value=None)
-    plot_pose(df_renamed, "exe_time_ms", save_dir, df_value=df_exe_time_ms)
-    plot_pose(df_renamed, "iteration_num", save_dir, df_value=df_iteration_num)
+    # poseの可視化
+    plot_pose(df_ndt_pose, "ndt", save_dir, df_value=None)
+    plot_pose(df_ndt_pose, "exe_time_ms", save_dir, df_value=df_exe_time_ms)
+    plot_pose(df_ndt_pose, "iteration_num", save_dir, df_value=df_iteration_num)
     plot_pose(
-        df_renamed,
+        df_ndt_pose,
         "nearest_voxel_transformation_likelihood",
         save_dir,
         df_value=df_nearest_voxel_transformation_likelihood,
     )
     plot_pose(
-        df_renamed, "transform_probability", save_dir, df_value=df_transform_probability
+        df_ndt_pose,
+        "transform_probability",
+        save_dir,
+        df_value=df_transform_probability,
     )
     plot_pose(
-        df_renamed,
+        df_ndt_pose,
         "initial_to_result_relative_pose",
         save_dir,
         df_value=df_initial_to_result_relative_pose,
     )
+    plot_pose(df_kinematic_state, "kinematic_state", save_dir, df_value=None)
 
     # pose_arrayを気合で可視化
     plt.rcParams["figure.figsize"] = 9, 9
