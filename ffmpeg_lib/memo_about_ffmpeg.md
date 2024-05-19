@@ -43,3 +43,7 @@ ffmpeg -i input.mp4 -ss 5 -c copy output.mp4
 ```bash
 ffmpeg -r 4 -i dir/%05d.png output.gif
 ```
+
+```bash
+ffmpeg -r 16 -i $dir/%08d.png -filter_complex "[0:v] fps=10,scale=640:-1,split [a][b];[a] palettegen [p];[b][p] paletteuse" $dir/../output.gif
+```
