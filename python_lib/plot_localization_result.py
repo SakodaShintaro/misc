@@ -1,6 +1,3 @@
-import rosbag2_py
-from rclpy.serialization import deserialize_message
-from rosidl_runtime_py.utilities import get_message
 import argparse
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -9,7 +6,6 @@ from scipy.spatial.transform import Rotation
 from pathlib import Path
 from parse_functions import parse_rosbag
 from interpolate_pose import interpolate_pose
-from collections import defaultdict
 
 
 def parse_args():
