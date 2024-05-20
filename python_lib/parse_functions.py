@@ -1,17 +1,17 @@
 """ The library to parse the data from rosbag file.
 """
+
 import rosbag2_py
 from rclpy.serialization import deserialize_message
 from rosidl_runtime_py.utilities import get_message
+from cv_bridge import CvBridge
 from collections import defaultdict
 import pandas as pd
 
 
 def parse_rosbag(rosbag_path: str, target_topic_list):
     serialization_format = "cdr"
-    storage_options = rosbag2_py.StorageOptions(
-        uri=rosbag_path, storage_id="sqlite3"
-    )
+    storage_options = rosbag2_py.StorageOptions(uri=rosbag_path, storage_id="sqlite3")
     converter_options = rosbag2_py.ConverterOptions(
         input_serialization_format=serialization_format,
         output_serialization_format=serialization_format,
@@ -58,6 +58,10 @@ def parse_msg(msg, msg_type):
         return parse_Odometry(msg)
     elif class_name == "MarkerArray":
         return parse_MarkerArray(msg)
+    elif class_name == "Image":
+        return parse_Image(msg)
+    elif class_name == "CompressedImage":
+        return parse_CompressedImage(msg)
     else:
         print(f"Error: {class_name} is not supported.")
         exit(0)
@@ -138,3 +142,34 @@ def parse_MarkerArray(msg):
         one_marker["orientation.w"] = marker_msg.pose.orientation.w
         result_dict["marker"].append(one_marker)
     return result_dict
+
+
+def parse_Image(msg):
+    image = CvBridge().imgmsg_to_cv2(msg, desired_encoding="passthrough")
+    return {
+        "timestamp": parse_stamp(msg.header.stamp),
+        "frame_id": msg.header.frame_id,
+        "image": image,
+    }
+
+
+def parse_CompressedImage(msg):
+    image = CvBridge().compressed_imgmsg_to_cv2(msg, desired_encoding="passthrough")
+    return {
+        "timestamp": parse_stamp(msg.header.stamp),
+        "frame_id": msg.header.frame_id,
+        "image": image,
+    }
+
+
+def parse_CameraInfo(msg):
+    return {
+        "timestamp": parse_stamp(msg.header.stamp),
+        "frame_id": msg.header.frame_id,
+        "width": msg.width,
+        "height": msg.height,
+        "D": msg.D,
+        "K": msg.K,
+        "R": msg.R,
+        "P": msg.P,
+    }
