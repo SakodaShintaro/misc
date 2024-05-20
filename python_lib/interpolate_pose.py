@@ -5,8 +5,13 @@ from scipy.spatial.transform import Rotation, Slerp
 def interpolate_pose(
     df_pose: pd.DataFrame,
     target_timestamp: pd.Series,
-    POSITIONS_KEY=["x", "y", "z"],
-    ORIENTATIONS_KEY=["qw", "qx", "qy", "qz"],
+    POSITIONS_KEY=["position.x", "position.y", "position.z"],
+    ORIENTATIONS_KEY=[
+        "orientation.w",
+        "orientation.x",
+        "orientation.y",
+        "orientation.z",
+    ],
 ) -> pd.DataFrame:
     """ Interpolate each pose in df_pose to match the timestamp in target_timestamp
     Constraints)

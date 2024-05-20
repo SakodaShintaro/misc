@@ -10,8 +10,13 @@ def calc_relative_pose(df_pred: pd.DataFrame, df_true: pd.DataFrame) -> pd.DataF
     * df_predとdf_trueは同じカラムを持つ
     * df_predとdf_trueは同じフレーム数を持つ
     """
-    POSITIONS_KEY = ['x', 'y', 'z']
-    ORIENTATIONS_KEY = ['qx', 'qy', 'qz', 'qw']
+    POSITIONS_KEY = ["position.x", "position.y", "position.z"]
+    ORIENTATIONS_KEY = [
+        "orientation.x",
+        "orientation.y",
+        "orientation.z",
+        "orientation.w",
+    ]
     assert len(df_pred) == len(df_true)
     assert (
         sorted(df_pred.columns) == sorted(df_true.columns)
@@ -28,7 +33,11 @@ def calc_relative_pose(df_pred: pd.DataFrame, df_true: pd.DataFrame) -> pd.DataF
     df_relative[POSITIONS_KEY] = (rotation_true.inv().apply(df_relative[POSITIONS_KEY].values))
 
     # roll, pitch, yawに変換したものも追加する
-    r = Rotation.from_quat(df_relative[['qx', 'qy', 'qz', 'qw']])
+    r = Rotation.from_quat(
+        df_relative[
+            ["orientation.x", "orientation.y", "orientation.z", "orientation.w"]
+        ]
+    )
     euler = r.as_euler('xyz', degrees=True)
     df_relative['angle_x'] = euler[:, 0]
     df_relative['angle_y'] = euler[:, 1]
