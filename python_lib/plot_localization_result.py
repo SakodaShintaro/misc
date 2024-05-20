@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 from scipy.spatial.transform import Rotation
 from pathlib import Path
-from parse_functions import parse_msg
+from parse_functions import parse_rosbag
 from interpolate_pose import interpolate_pose
 from collections import defaultdict
 
@@ -52,23 +52,6 @@ if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
 
-    serialization_format = "cdr"
-    storage_options = rosbag2_py.StorageOptions(
-        uri=str(rosbag_path), storage_id="sqlite3"
-    )
-    converter_options = rosbag2_py.ConverterOptions(
-        input_serialization_format=serialization_format,
-        output_serialization_format=serialization_format,
-    )
-
-    reader = rosbag2_py.SequentialReader()
-    reader.open(storage_options, converter_options)
-
-    topic_types = reader.get_all_topics_and_types()
-    type_map = {
-        topic_types[i].name: topic_types[i].type for i in range(len(topic_types))
-    }
-
     target_topics = [
         "/localization/pose_estimator/exe_time_ms",
         "/localization/pose_estimator/initial_to_result_relative_pose",
@@ -80,16 +63,7 @@ if __name__ == "__main__":
         "/localization/pose_twist_fusion_filter/kinematic_state",
     ]
 
-    storage_filter = rosbag2_py.StorageFilter(topics=target_topics)
-    reader.set_filter(storage_filter)
-
-    topic_name_to_data = defaultdict(list)
-    while reader.has_next():
-        (topic, data, t) = reader.read_next()
-        msg_type = get_message(type_map[topic])
-        msg = deserialize_message(data, msg_type)
-        if topic in target_topics:
-            topic_name_to_data[topic].append(parse_msg(msg, msg_type))
+    df_dict = parse_rosbag(str(rosbag_path), target_topics)
 
     # rosbag path may be the path to the db3 file, or it may be the path to the directory containing it
     save_dir = (
@@ -99,7 +73,7 @@ if __name__ == "__main__":
 
     # save as csv
     for topic_name in target_topics:
-        df = pd.DataFrame(topic_name_to_data[topic_name])
+        df = df_dict[topic_name]
         filename = topic_name.replace("/localization/", "").replace("/", "_")
         df.to_csv(
             save_dir / f"{filename}.tsv",
@@ -108,32 +82,22 @@ if __name__ == "__main__":
             float_format="%.9f",
         )
 
-    df_exe_time_ms = pd.DataFrame(
-        topic_name_to_data["/localization/pose_estimator/exe_time_ms"]
-    )
-    df_nearest_voxel_transformation_likelihood = pd.DataFrame(
-        topic_name_to_data[
-            "/localization/pose_estimator/nearest_voxel_transformation_likelihood"
-        ]
-    )
-    df_transform_probability = pd.DataFrame(
-        topic_name_to_data["/localization/pose_estimator/transform_probability"]
-    )
-    df_iteration_num = pd.DataFrame(
-        topic_name_to_data["/localization/pose_estimator/iteration_num"]
-    )
-    df_ndt_pose = pd.DataFrame(topic_name_to_data["/localization/pose_estimator/pose"])
-    df_initial_to_result_relative_pose = pd.DataFrame(
-        topic_name_to_data[
-            "/localization/pose_estimator/initial_to_result_relative_pose"
-        ]
-    )
-    df_marker = pd.DataFrame(
-        topic_name_to_data["/localization/pose_estimator/ndt_marker"]
-    )
-    df_kinematic_state = pd.DataFrame(
-        topic_name_to_data["/localization/pose_twist_fusion_filter/kinematic_state"]
-    )
+    df_exe_time_ms = df_dict["/localization/pose_estimator/exe_time_ms"]
+    df_nearest_voxel_transformation_likelihood = df_dict[
+        "/localization/pose_estimator/nearest_voxel_transformation_likelihood"
+    ]
+    df_transform_probability = df_dict[
+        "/localization/pose_estimator/transform_probability"
+    ]
+    df_iteration_num = df_dict["/localization/pose_estimator/iteration_num"]
+    df_ndt_pose = df_dict["/localization/pose_estimator/pose"]
+    df_initial_to_result_relative_pose = df_dict[
+        "/localization/pose_estimator/initial_to_result_relative_pose"
+    ]
+    df_marker = df_dict["/localization/pose_estimator/ndt_marker"]
+    df_kinematic_state = df_dict[
+        "/localization/pose_twist_fusion_filter/kinematic_state"
+    ]
 
     # dataとして変動量のノルムを計算
     df_initial_to_result_relative_pose["data"] = (

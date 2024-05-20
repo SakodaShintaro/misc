@@ -1,5 +1,43 @@
 """ The library to parse the data from rosbag file.
 """
+import rosbag2_py
+from rclpy.serialization import deserialize_message
+from rosidl_runtime_py.utilities import get_message
+from collections import defaultdict
+import pandas as pd
+
+
+def parse_rosbag(rosbag_path: str, target_topic_list):
+    serialization_format = "cdr"
+    storage_options = rosbag2_py.StorageOptions(
+        uri=rosbag_path, storage_id="sqlite3"
+    )
+    converter_options = rosbag2_py.ConverterOptions(
+        input_serialization_format=serialization_format,
+        output_serialization_format=serialization_format,
+    )
+
+    reader = rosbag2_py.SequentialReader()
+    reader.open(storage_options, converter_options)
+
+    topic_types = reader.get_all_topics_and_types()
+    type_map = {
+        topic_types[i].name: topic_types[i].type for i in range(len(topic_types))
+    }
+
+    storage_filter = rosbag2_py.StorageFilter(topics=target_topic_list)
+    reader.set_filter(storage_filter)
+
+    topic_name_to_data = defaultdict(list)
+    while reader.has_next():
+        (topic, data, t) = reader.read_next()
+        msg_type = get_message(type_map[topic])
+        msg = deserialize_message(data, msg_type)
+        if topic in target_topic_list:
+            topic_name_to_data[topic].append(parse_msg(msg, msg_type))
+    for key in topic_name_to_data.keys():
+        topic_name_to_data[key] = pd.DataFrame(topic_name_to_data[key])
+    return topic_name_to_data
 
 
 def parse_stamp(stamp):
