@@ -134,7 +134,16 @@ if __name__ == "__main__":
     image_timestamp_list = list()
     image_list = list()
     saved_camera_info = False
-    columns = ["timestamp", "x", "y", "z", "qx", "qy", "qz", "qw"]
+    columns = [
+        "timestamp",
+        "position.x",
+        "position.y",
+        "position.z",
+        "orientation.x",
+        "orientation.y",
+        "orientation.z",
+        "orientation.w",
+    ]
     df_pose = pd.DataFrame(columns=columns)
     while reader.has_next():
         (topic, data, t) = reader.read_next()
