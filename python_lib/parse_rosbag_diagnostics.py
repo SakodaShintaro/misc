@@ -5,6 +5,7 @@ import argparse
 import matplotlib.pyplot as plt
 import pandas as pd
 from pathlib import Path
+from parse_functions import parse_stamp
 
 
 def parse_args():
@@ -50,19 +51,31 @@ if __name__ == "__main__":
         (topic, data, timestamp_rosbag) = reader.read_next()
         msg_type = get_message(type_map[topic])
         msg = deserialize_message(data, msg_type)
-        timestamp_header = int(msg.header.stamp.sec * 1e9 + msg.header.stamp.nanosec)
+        timestamp_header = parse_stamp(msg.header.stamp)
         for status in msg.status:
             for target in target_list:
                 if target in status.name:
                     unique_status_name.add(status.name)
                     key_value_map = {kv.key: kv.value for kv in status.values}
-                    key_value_map["timestamp_rosbag"] = timestamp_rosbag
+                    key_value_map["timestamp_rosbag"] = timestamp_rosbag / 1e9
                     key_value_map["timestamp_header"] = timestamp_header
                     data_dict[target].append(key_value_map)
 
     print("unique_status_name")
     for name in unique_status_name:
         print(f"  {name}")
+
+    save_dir = rosbag_path.parent / "diagnostics_result"
+    save_dir.mkdir(exist_ok=True)
+    for key, data in data_dict.items():
+        df = pd.DataFrame(data)
+        filename = key.replace(":", "_").replace(" ", "_")
+        df.to_csv(
+            save_dir / f"{filename}.tsv",
+            index=False,
+            sep="\t",
+            float_format="%.9f",
+        )
 
     ####################
     # ndt_scan_matcher #
@@ -103,7 +116,7 @@ if __name__ == "__main__":
         plt.grid()
 
     plt.tight_layout()
-    save_path = rosbag_path.parent / "diagnostics_ndt_scan_matcher.png"
+    save_path = save_dir / "diagnostics_ndt_scan_matcher.png"
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     print(f"Saved {save_path}")
 
@@ -152,7 +165,7 @@ if __name__ == "__main__":
         plt.grid()
 
     plt.tight_layout()
-    save_path = rosbag_path.parent / "diagnostics_ekf_localizer.png"
+    save_path = save_dir / "diagnostics_ekf_localizer.png"
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     print(f"Saved {save_path}")
 
@@ -244,6 +257,6 @@ if __name__ == "__main__":
     plt.grid()
 
     plt.tight_layout()
-    save_path = rosbag_path.parent / "diagnostics_pose_instability_detector.png"
+    save_path = save_dir / "diagnostics_pose_instability_detector.png"
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     print(f"Saved {save_path}")
