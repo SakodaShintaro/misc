@@ -57,3 +57,11 @@ find target_dir -mindepth 1 -maxdepth 1 | sort | xargs -Ipath echo path
 ```bash
 find target_dir -name "*.png" | sort | xargs -I{} sh -c 'dir=$(dirname "{}"); prefix=$(basename "$dir"); orig=$(basename "{}"); echo "${dir}/${prefix}_${orig}"'
 ```
+
+## シェルスクリプトで実行時間の取得
+
+```bash
+# set -euxをしているので
+elapsed_time=$(date -u -d "@$SECONDS" +"%T")
+# をするだけで表示される
+```
