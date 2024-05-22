@@ -59,6 +59,8 @@ if __name__ == "__main__":
                     key_value_map = {kv.key: kv.value for kv in status.values}
                     key_value_map["timestamp_rosbag"] = timestamp_rosbag / 1e9
                     key_value_map["timestamp_header"] = timestamp_header
+                    key_value_map["level"] = int.from_bytes(status.level, "big")
+                    key_value_map["message"] = status.message
                     data_dict[target].append(key_value_map)
 
     print("unique_status_name")
