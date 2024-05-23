@@ -70,6 +70,9 @@ if __name__ == "__main__":
     # save as csv
     for topic_name in target_topics:
         df = df_dict[topic_name]
+        if len(df) == 0:
+            print(f"!{topic_name} is empty")
+            continue
         filename = topic_name.replace("/localization/", "").replace("/", "_")
         df.to_csv(
             save_dir / f"{filename}.tsv",
