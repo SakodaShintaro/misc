@@ -91,10 +91,6 @@ if __name__ == "__main__":
     3       0.641000                                     0             1                   0.122059  ...  Aligned              6.464482      29705397494      29705397494
     4       0.853000                                     0             1                   0.137061  ...  Aligned              6.501288      29820398988      29820398988
     """
-    # fix timestamp
-    df["timestamp_header"] = df["timestamp_header"].astype(int)
-    df["timestamp_header"] -= df["timestamp_header"].iloc[0]
-    df["timestamp_header"] /= 1e9
 
     # plot
     key_list = [
@@ -135,11 +131,6 @@ if __name__ == "__main__":
     71         True       29280389433       29280389433  ...                            True              0.000000                    10000.000000
     72         True       29300399106       29300399106  ...                            True              0.000000                    10000.000000
     """
-
-    # fix timestamp
-    df["timestamp_header"] = df["timestamp_header"].astype(int)
-    df["timestamp_header"] -= df["timestamp_header"].iloc[0]
-    df["timestamp_header"] /= 1e9
 
     # plot
     key_list = [
@@ -195,10 +186,6 @@ if __name__ == "__main__":
         'timestamp_header'],
         dtype='object')
     """
-    # fix timestamp
-    df["timestamp_header"] = df["timestamp_header"].astype(int)
-    df["timestamp_header"] -= df["timestamp_header"].iloc[0]
-    df["timestamp_header"] /= 1e9
 
     # 2行に分けて表示する
     plt.figure(figsize=(6.4 * 1, 4.8 * 1))
