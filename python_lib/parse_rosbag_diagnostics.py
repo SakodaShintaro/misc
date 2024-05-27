@@ -64,13 +64,21 @@ if __name__ == "__main__":
                     data_dict[target].append(key_value_map)
 
     print("unique_status_name")
-    for name in unique_status_name:
+    for name in sorted(unique_status_name):
         print(f"  {name}")
 
     save_dir = rosbag_path.parent / "diagnostics_result"
     save_dir.mkdir(exist_ok=True)
     for key, data in data_dict.items():
         df = pd.DataFrame(data)
+        for col in df.columns:
+            try:
+                df[col] = df[col].astype(int)
+            except ValueError:
+                try:
+                    df[col] = df[col].astype(float)
+                except ValueError:
+                    pass
         filename = key.replace(":", "_").replace(" ", "_")
         df.to_csv(
             save_dir / f"{filename}.tsv",
