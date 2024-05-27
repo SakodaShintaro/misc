@@ -12,7 +12,7 @@ import pandas as pd
 from tf2_msgs.msg import TFMessage
 from tf2_ros import Buffer
 import geometry_msgs
-from scipy.spatial.transform import Rotation, Slerp
+from scipy.spatial.transform import Rotation
 import matplotlib.pyplot as plt
 import rosbag2_py
 from interpolate_pose import interpolate_pose
@@ -222,7 +222,7 @@ if __name__ == "__main__":
 
     # plot all of trajectory
     save_path = f"{output_dir}/plot_pose.png"
-    plt.plot(df_pose["x"], df_pose["y"])
+    plt.plot(df_pose["position.x"], df_pose["position.y"])
     plt.xlabel("x")
     plt.ylabel("y")
     plt.axis("equal")
