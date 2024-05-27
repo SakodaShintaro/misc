@@ -146,19 +146,12 @@ if __name__ == "__main__":
         "twist_mahalanobis_distance",
     ]
 
-    plt.figure(figsize=(6.4 * 1, 4.8 * 1))
-    y_max = [0, 0, 0, 0]
-    y_min = [0, 0, 0, 0]
+    plt.figure(figsize=(6.4 * 2, 4.8 * 2))
     for i, key in enumerate(key_list):
         df[key] = df[key].astype(float)
         key_threshold = key + "_threshold"
         df[key_threshold] = df[key_threshold].astype(float)
-        div = i // 2
-        mod = i % 2
-        area = mod * 2 + div
-        y_max[div] = max(y_max[div], df[key].max())
-        y_min[div] = min(y_min[div], df[key].min())
-        plt.subplot(2, 2, (area + 1))
+        plt.subplot(2, 1, (i + 1))
         plt.plot(df["timestamp_header"], df[key], label=key)
         plt.plot(df["timestamp_header"], df[key_threshold], label=key_threshold)
         plt.xlabel("time [s]")
@@ -196,7 +189,7 @@ if __name__ == "__main__":
     """
 
     # 2行に分けて表示する
-    plt.figure(figsize=(6.4 * 1, 4.8 * 1))
+    plt.figure(figsize=(6.4 * 2, 4.8 * 2))
     # 1行目:position
     plt.subplot(2, 1, 1)
     key_list = [
