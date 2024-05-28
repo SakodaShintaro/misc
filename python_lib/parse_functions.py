@@ -62,6 +62,10 @@ def parse_msg(msg, msg_type):
         return parse_Image(msg)
     elif class_name == "CompressedImage":
         return parse_CompressedImage(msg)
+    elif class_name == "CameraInfo":
+        return parse_CameraInfo(msg)
+    elif class_name == "TFMessage":
+        return parse_TFMessage(msg)
     else:
         print(f"Error: {class_name} is not supported.")
         exit(0)
@@ -168,8 +172,28 @@ def parse_CameraInfo(msg):
         "frame_id": msg.header.frame_id,
         "width": msg.width,
         "height": msg.height,
-        "D": msg.D,
-        "K": msg.K,
-        "R": msg.R,
-        "P": msg.P,
+        "D": msg.d,
+        "K": msg.k,
+        "R": msg.r,
+        "P": msg.p,
     }
+
+
+def parse_TFMessage(msg):
+    result = []
+    for transform in msg.transforms:
+        result.append(
+            {
+                "timestamp": parse_stamp(transform.header.stamp),
+                "frame_id": transform.header.frame_id,
+                "child_frame_id": transform.child_frame_id,
+                "translation.x": transform.transform.translation.x,
+                "translation.y": transform.transform.translation.y,
+                "translation.z": transform.transform.translation.z,
+                "rotation.x": transform.transform.rotation.x,
+                "rotation.y": transform.transform.rotation.y,
+                "rotation.z": transform.transform.rotation.z,
+                "rotation.w": transform.transform.rotation.w,
+            }
+        )
+    return result
