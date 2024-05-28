@@ -180,20 +180,6 @@ def parse_CameraInfo(msg):
 
 
 def parse_TFMessage(msg):
-    result = []
-    for transform in msg.transforms:
-        result.append(
-            {
-                "timestamp": parse_stamp(transform.header.stamp),
-                "frame_id": transform.header.frame_id,
-                "child_frame_id": transform.child_frame_id,
-                "translation.x": transform.transform.translation.x,
-                "translation.y": transform.transform.translation.y,
-                "translation.z": transform.transform.translation.z,
-                "rotation.x": transform.transform.rotation.x,
-                "rotation.y": transform.transform.rotation.y,
-                "rotation.z": transform.transform.rotation.z,
-                "rotation.w": transform.transform.rotation.w,
-            }
-        )
-    return result
+    return {
+        "transforms": msg.transforms,
+    }
