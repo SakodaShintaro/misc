@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+from scipy.spatial.transform import Rotation
 
 
 def parse_args():
@@ -29,6 +30,16 @@ if __name__ == "__main__":
 
     bar = tqdm(total=len(image_paths))
 
+    x_min = df["position.x"].min()
+    x_max = df["position.x"].max()
+    y_min = df["position.y"].min()
+    y_max = df["position.y"].max()
+    x_range = x_max - x_min
+    y_range = y_max - y_min
+    max_range = max(x_range, y_range)
+    ego_length = max_range / 20
+    default_orientation = [0, 0, ego_length]
+
     for image_path, (i, row) in zip(image_paths, df.iterrows()):
         if i > 0:
             travel_distance += (
@@ -40,8 +51,30 @@ if __name__ == "__main__":
         ax[0].imshow(plt.imread(image_path))
         ax[0].axis("off")
 
+        r = Rotation.from_quat(
+            [
+                row["orientation.x"],
+                row["orientation.y"],
+                row["orientation.z"],
+                row["orientation.w"],
+            ]
+        )
+        ego = r.apply(default_orientation)
+
         ax[1].plot(df["position.x"], df["position.y"])
         ax[1].scatter(row["position.x"], row["position.y"], color="red")
+        ax[1].quiver(
+            row["position.x"],
+            row["position.y"],
+            ego[0],
+            ego[1],
+            color="red",
+            scale=1,
+            scale_units="xy",
+            angles="xy",
+            width=0.01,
+            headwidth=6,
+        )
         ax[1].set_aspect("equal")
         ax[1].set_xlabel("x [m]")
         ax[1].set_ylabel("y [m]")
