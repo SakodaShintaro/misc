@@ -2,6 +2,7 @@ import argparse
 from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 
 def parse_args():
@@ -26,6 +27,8 @@ if __name__ == "__main__":
 
     travel_distance = 0
 
+    bar = tqdm(total=len(image_paths))
+
     for image_path, (i, row) in zip(image_paths, df.iterrows()):
         if i > 0:
             travel_distance += (
@@ -46,3 +49,4 @@ if __name__ == "__main__":
         ax[1].set_title(f"travel_distance = {travel_distance:.1f} m")
         plt.savefig(save_dir / f"{i:08d}.png")
         plt.close()
+        bar.update(1)
