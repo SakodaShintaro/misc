@@ -41,7 +41,7 @@ def parse_rosbag(rosbag_path: str, target_topic_list):
 
 
 def parse_stamp(stamp):
-    return stamp.sec + stamp.nanosec * 1e-9
+    return stamp.sec * int(1e9) + stamp.nanosec
 
 
 def parse_msg(msg, msg_type):

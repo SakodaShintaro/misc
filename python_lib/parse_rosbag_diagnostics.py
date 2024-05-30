@@ -58,7 +58,7 @@ if __name__ == "__main__":
                 if target in status.name:
                     unique_status_name.add(status.name)
                     key_value_map = {kv.key: kv.value for kv in status.values}
-                    key_value_map["timestamp_rosbag"] = timestamp_rosbag / 1e9
+                    key_value_map["timestamp_rosbag"] = timestamp_rosbag
                     key_value_map["timestamp_header"] = timestamp_header
                     key_value_map["level"] = int.from_bytes(status.level, "big")
                     key_value_map["message"] = status.message
@@ -75,6 +75,7 @@ if __name__ == "__main__":
         for col in df.columns:
             try:
                 df[col] = df[col].astype(float)
+                df[col] = df[col].apply(lambda x: int(x) if x.is_integer() else x)
             except ValueError:
                 pass
         filename = key.replace(":", "_").replace(" ", "_")
