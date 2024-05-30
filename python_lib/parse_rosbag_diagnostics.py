@@ -73,12 +73,9 @@ if __name__ == "__main__":
         df = pd.DataFrame(data)
         for col in df.columns:
             try:
-                df[col] = df[col].astype(int)
+                df[col] = df[col].astype(float)
             except ValueError:
-                try:
-                    df[col] = df[col].astype(float)
-                except ValueError:
-                    pass
+                pass
         filename = key.replace(":", "_").replace(" ", "_")
         df.to_csv(
             save_dir / f"{filename}.tsv",
