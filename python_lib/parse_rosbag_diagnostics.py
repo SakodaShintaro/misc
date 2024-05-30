@@ -41,6 +41,7 @@ if __name__ == "__main__":
     target_list = [
         "ndt_scan_matcher: scan_matching_status",
         "localization: ekf_localizer",
+        "localization: localization_error_monitor",
         "localization: pose_instability_detector",
     ]
     data_dict = {key: [] for key in target_list}
