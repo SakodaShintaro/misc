@@ -15,6 +15,32 @@ from builtin_interfaces.msg import Time
 from tqdm import tqdm
 
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("path_to_rosbag", type=str)
+    parser.add_argument("output_dir", type=str)
+    parser.add_argument(
+        "--storage_id", type=str, default="sqlite3", choices=["mcap", "sqlite3"]
+    )
+    parser.add_argument(
+        "--image_topic_name",
+        type=str,
+        default="/sensing/camera/traffic_light/image_raw",
+    )
+    parser.add_argument(
+        "--camera_info_topic_name",
+        type=str,
+        default="/sensing/camera/traffic_light/camera_info",
+    )
+    parser.add_argument(
+        "--pose_topic_name",
+        type=str,
+        default="/awsim/ground_truth/vehicle/pose",
+    )
+    parser.add_argument("--image_interval", type=int, default=1)
+    return parser.parse_args()
+
+
 def save_camera_info_to_opencv_yaml(camera_info, filename):
     fs = cv2.FileStorage(filename, cv2.FileStorage_WRITE)
 
@@ -89,30 +115,7 @@ def transform_pose_base_link_2_camera(df_pose: pd.DataFrame, transform):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("path_to_rosbag", type=str)
-    parser.add_argument("output_dir", type=str)
-    parser.add_argument(
-        "--storage_id", type=str, default="sqlite3", choices=["mcap", "sqlite3"]
-    )
-    parser.add_argument(
-        "--image_topic_name",
-        type=str,
-        default="/sensing/camera/traffic_light/image_raw",
-    )
-    parser.add_argument(
-        "--camera_info_topic_name",
-        type=str,
-        default="/sensing/camera/traffic_light/camera_info",
-    )
-    parser.add_argument(
-        "--pose_topic_name",
-        type=str,
-        default="/localization/pose_twist_fusion_filter/biased_pose_with_covariance",
-    )
-    parser.add_argument("--image_interval", type=int, default=1)
-    args = parser.parse_args()
-
+    args = parse_args()
     path_to_rosbag = args.path_to_rosbag
     output_dir = args.output_dir
     storage_id = args.storage_id
