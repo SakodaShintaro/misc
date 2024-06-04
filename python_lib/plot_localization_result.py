@@ -49,6 +49,7 @@ if __name__ == "__main__":
     rosbag_path = args.rosbag_path
 
     target_topics = [
+        "/localization/kinematic_state",
         "/localization/pose_estimator/exe_time_ms",
         "/localization/pose_estimator/initial_to_result_relative_pose",
         "/localization/pose_estimator/iteration_num",

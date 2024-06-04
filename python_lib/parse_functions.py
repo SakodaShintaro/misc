@@ -38,7 +38,6 @@ def parse_rosbag(rosbag_path: str, target_topic_list):
     for key in target_topic_list:
         topic_name_to_data[key] = pd.DataFrame(topic_name_to_data[key])
         print(f"{key}: {len(topic_name_to_data[key])} msgs")
-        assert len(topic_name_to_data[key]) > 0, f"{key} is empty."
     return topic_name_to_data
 
 
