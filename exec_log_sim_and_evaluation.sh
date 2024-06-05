@@ -82,7 +82,7 @@ python3 python_lib/extract_pose_from_rosbag.py \
     --output_dir=$SAVE_DIR
 python3 python_lib/extract_pose_from_rosbag.py \
     --rosbag_path=$SAVE_DIR/result_rosbag \
-    --target_topic="/localization/pose_estimator/pose" \
+    --target_topic="/localization/pose_estimator/pose_with_covariance" \
     --output_dir=$SAVE_DIR
 
 # 評価
@@ -90,7 +90,7 @@ python3 python_lib/compare_trajectories.py \
     $SAVE_DIR/localization__pose_twist_fusion_filter__pose.tsv \
     $SAVE_DIR/awsim__ground_truth__vehicle__pose.tsv
 python3 python_lib/compare_trajectories.py \
-    $SAVE_DIR/localization__pose_estimator__pose.tsv \
+    $SAVE_DIR/localization__pose_estimator__pose_with_covariance.tsv \
     $SAVE_DIR/awsim__ground_truth__vehicle__pose.tsv
 
 # その他プロット
