@@ -1,30 +1,4 @@
-""" extract_images_from_rosbag.pyを実行してimagesディレクトリにtsvが展開されている状態から
-【Before】
-.
-└── images
-    ├── camera0
-    ├── camera1
-    ├── camera2
-    ├── camera3
-    ├── camera4
-    ├── camera5
-    ├── camera6
-    ├── camera_info_camera0.tsv
-    ├── camera_info_camera1.tsv
-    ├── camera_info_camera2.tsv
-    ├── camera_info_camera3.tsv
-    ├── camera_info_camera4.tsv
-    ├── camera_info_camera5.tsv
-    ├── camera_info_camera6.tsv
-    ├── timestamps_camera0.tsv
-    ├── timestamps_camera1.tsv
-    ├── timestamps_camera2.tsv
-    ├── timestamps_camera3.tsv
-    ├── timestamps_camera4.tsv
-    ├── timestamps_camera5.tsv
-    └── timestamps_camera6.tsv
-【After】
-
+""" extract_images_from_rosbag.pyを実行してimagesディレクトリにtsvが展開されている状態からcolmap/sparse/0/cameras.txtを作る
 """
 
 import argparse
@@ -89,11 +63,7 @@ if __name__ == "__main__":
         K_str = row["K"]
 
         D = np.array(eval(D_str.replace("array('d', ", "").replace(")", "")))
-        print(D)
-
         K = np.array(eval(K_str.replace(" ", ","))).reshape((3, 3))
-        print(K)
-
         f_cameras.write(
             f"{i} OPENCV {width} {height} {K[0][0]} {K[1][1]} {K[0][2]} {K[1][2]} {D[0]} {D[1]} {D[2]} {D[3]} {D[4]}\n"
         )
