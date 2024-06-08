@@ -9,8 +9,13 @@ from rosidl_runtime_py.utilities import get_message
 import os
 import rosbag2_py
 import pandas as pd
-from parse_functions import parse_stamp, parse_CameraInfo
+from parse_functions import parse_stamp, parse_CameraInfo, parse_msg
 from collections import defaultdict
+from tf2_ros import Buffer
+from builtin_interfaces.msg import Time
+from extract_images_and_poses_from_rosbag import transform_pose_base_link_2_camera
+import numpy as np
+from copy import deepcopy
 
 
 def parse_args():
@@ -19,6 +24,9 @@ def parse_args():
     parser.add_argument("output_dir", type=str)
     parser.add_argument("--use_cvt_color", action="store_true")
     parser.add_argument("--use_timestamp_as_filename", action="store_true")
+    parser.add_argument(
+        "--pose_topic", type=str, default="/localization/kinematic_state"
+    )
     return parser.parse_args()
 
 
@@ -39,6 +47,7 @@ if __name__ == "__main__":
     path_to_rosbag = args.path_to_rosbag
     output_dir = args.output_dir
     use_cvt_color = args.use_cvt_color
+    pose_topic = args.pose_topic
 
     reader, storage_options, converter_options = create_reader(
         path_to_rosbag, "sqlite3"
@@ -59,10 +68,34 @@ if __name__ == "__main__":
     index_images = 0
 
     camera_info_df_dict = defaultdict(list)
-    timestamp_df_dict = defaultdict(list)
+    pose_df_dict = defaultdict(list)
+    tf_buffer = Buffer()
+
+    df_pose = None
 
     while reader.has_next():
         (topic, data, t) = reader.read_next()
+
+        if topic == "/tf_static":
+            msg_type = get_message(type_map[topic])
+            msg = deserialize_message(data, msg_type)
+            for transform in msg.transforms:
+                tf_buffer.set_transform_static(transform, "default_authority")
+                print(transform)
+            continue
+
+        if topic == pose_topic:
+            msg_type = get_message(type_map[topic])
+            msg = deserialize_message(data, msg_type)
+            data_dict = parse_msg(msg, msg_type)
+            if df_pose is None:
+                df_pose = pd.DataFrame([data_dict])
+            else:
+                df_pose = pd.concat([df_pose, pd.DataFrame([data_dict])], join="inner")
+
+        if df_pose is None:
+            continue
+
         if topic not in camera_topic_list:
             continue
 
@@ -78,7 +111,19 @@ if __name__ == "__main__":
             continue
 
         image_msg = deserialize_message(data, msg_type)
+
+        camera_frame = image_msg.header.frame_id
+        transform = tf_buffer.lookup_transform(
+            target_frame="base_link", source_frame=camera_frame, time=Time()
+        )
+
         timestamp_header = parse_stamp(image_msg.header.stamp)
+        index = np.searchsorted(df_pose["timestamp"].values, timestamp_header)
+        if index == 0:
+            continue
+        pose_row = deepcopy(df_pose.iloc[index - 1 : index])
+        transform_pose_base_link_2_camera(pose_row, transform)
+
         cv_image = (
             bridge.imgmsg_to_cv2(image_msg, desired_encoding="passthrough")
             if msg_type == Image
@@ -95,18 +140,21 @@ if __name__ == "__main__":
             else f"{save_dir}/{index_images:08d}.png"
         )
         cv2.imwrite(save_path, cv_image)
-        timestamp_df_dict[camera_name].append(timestamp_header)
-        print(f"\rtimestamp = {t}", end="")
+        row_dict = deepcopy(pose_row.iloc[0]).to_dict()
+        row_dict["timestamp"] = int(timestamp_header)
+        pose_df_dict[camera_name].append(row_dict)
+        print(f"\rtimestamp = {t}, {len(pose_df_dict[camera_name])=}", end="")
         index_images += 1
 
     print()
-    for camera_name, df in timestamp_df_dict.items():
+    for camera_name, df in pose_df_dict.items():
+        print(df)
         df = pd.DataFrame(df)
-        df.columns = ["timestamp"]
-        df.to_csv(f"{output_dir}/timestamps_{camera_name}.tsv", index=False)
-        print(f"{camera_name} timestamps: {len(df)} msgs")
+        df["timestamp"] = df["timestamp"].astype("int64")
+        df.to_csv(f"{output_dir}/pose_{camera_name}.tsv", index=False, sep="\t")
+        print(f"{camera_name} pose: {len(df)} msgs")
 
     for camera_name, df in camera_info_df_dict.items():
         df = pd.DataFrame(df)
-        df.to_csv(f"{output_dir}/camera_info_{camera_name}.tsv", index=False)
+        df.to_csv(f"{output_dir}/camera_info_{camera_name}.tsv", index=False, sep="\t")
         print(f"{camera_name} camera_info: {len(df)} msgs")
