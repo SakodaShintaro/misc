@@ -45,6 +45,7 @@ if __name__ == "__main__":
 
     images_dir = target_dir / "images"
     camera_info_tsv_list = sorted(list(images_dir.glob("camera_info_*.tsv")))
+    pose_tsv_list = sorted(list(images_dir.glob("pose_*.tsv")))
 
     save_dir = target_dir / "colmap" / "sparse" / "0"
     save_dir.mkdir(exist_ok=True, parents=True)
@@ -79,7 +80,7 @@ if __name__ == "__main__":
     """
 
     for i, camera_info_tsv in enumerate(camera_info_tsv_list):
-        df = pd.read_csv(camera_info_tsv)
+        df = pd.read_csv(camera_info_tsv, sep="\t")
         row = df.iloc[0]
         frame_id = row["frame_id"]
         width = row["width"]
@@ -100,9 +101,34 @@ if __name__ == "__main__":
     images_dir_list = sorted(list(images_dir.glob("camera*/")))
     image_id = 0
     for i, images_dir in enumerate(images_dir_list):
+        if not images_dir.is_dir():
+            continue
+        df = pd.read_csv(pose_tsv_list[i], sep="\t")
         image_list = list(images_dir.glob("*.png"))
-        for image_path in image_list:
+        values = df[
+            [
+                "orientation.w",
+                "orientation.x",
+                "orientation.y",
+                "orientation.z",
+                "position.x",
+                "position.y",
+                "position.z",
+            ]
+        ].values
+        assert len(image_list) == len(values)
+        qw = values[:, 0]
+        qx = values[:, 1]
+        qy = values[:, 2]
+        qz = values[:, 3]
+        x = values[:, 4]
+        y = values[:, 5]
+        z = values[:, 6]
+
+        for j, image_path in enumerate(image_list):
             image_name = image_path.name
-            f_images.write(f"{image_id:08d} 0 0 0 0 0 0 0 {i} {images_dir.name}/{image_name}\n")
+            f_images.write(
+                f"{image_id:08d} {qw[j]} {qx[j]} {qy[j]} {qz[j]} {x[j]} {y[j]} {z[j]} {i} {images_dir.name}/{image_name}\n"
+            )
             f_images.write(f"\n")
             image_id += 1
