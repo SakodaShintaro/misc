@@ -8,7 +8,6 @@ import pandas as pd
 from tf2_ros import Buffer
 from scipy.spatial.transform import Rotation
 import matplotlib.pyplot as plt
-import rosbag2_py
 from interpolate_pose import interpolate_pose
 from parse_functions import parse_rosbag
 from builtin_interfaces.msg import Time
@@ -60,18 +59,6 @@ def save_camera_info_to_opencv_yaml(camera_info, filename):
     fs.write("P", P)
 
     fs.release()
-
-
-def create_reader(input_bag_dir: str, storage_id: str):
-    storage_options = rosbag2_py.StorageOptions(
-        uri=input_bag_dir, storage_id=storage_id
-    )
-    converter_options = rosbag2_py.ConverterOptions(
-        input_serialization_format="cdr", output_serialization_format="cdr"
-    )
-    reader = rosbag2_py.SequentialReader()
-    reader.open(storage_options, converter_options)
-    return reader, storage_options, converter_options
 
 
 def transform_pose_base_link_2_camera(df_pose: pd.DataFrame, transform):
