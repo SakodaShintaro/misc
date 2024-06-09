@@ -23,7 +23,7 @@ def parse_args():
     parser.add_argument("path_to_rosbag", type=str)
     parser.add_argument("output_dir", type=str)
     parser.add_argument("--use_cvt_color", action="store_true")
-    parser.add_argument("--use_timestamp_as_filename", action="store_true")
+    parser.add_argument("--crop_height", type=int, default=-1)
     parser.add_argument(
         "--pose_topic", type=str, default="/localization/kinematic_state"
     )
@@ -47,6 +47,7 @@ if __name__ == "__main__":
     path_to_rosbag = args.path_to_rosbag
     output_dir = args.output_dir
     use_cvt_color = args.use_cvt_color
+    crop_height = args.crop_height
     pose_topic = args.pose_topic
 
     reader, storage_options, converter_options = create_reader(
@@ -107,6 +108,8 @@ if __name__ == "__main__":
         if msg_type == CameraInfo:
             msg = deserialize_message(data, msg_type)
             camera_info = parse_CameraInfo(msg)
+            if crop_height > 0:
+                camera_info["height"] = crop_height
             camera_info_df_dict[camera_name].append(camera_info)
             continue
 
@@ -129,16 +132,14 @@ if __name__ == "__main__":
             if msg_type == Image
             else bridge.compressed_imgmsg_to_cv2(image_msg)
         )
+        if crop_height > 0:
+            cv_image = cv_image[:crop_height]
         if use_cvt_color:
             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
 
         save_dir = f"{output_dir}/{camera_name}"
         os.makedirs(save_dir, exist_ok=True)
-        save_path = (
-            f"{save_dir}/{timestamp_header:018d}.png"
-            if args.use_timestamp_as_filename
-            else f"{save_dir}/{index_images:08d}.png"
-        )
+        save_path = f"{save_dir}/{timestamp_header:018d}.png"
         cv2.imwrite(save_path, cv_image)
         row_dict = deepcopy(pose_row.iloc[0]).to_dict()
         row_dict["timestamp"] = int(timestamp_header)

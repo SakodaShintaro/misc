@@ -148,3 +148,8 @@ if __name__ == "__main__":
     json_path = target_dir / "transform.json"
     with open(json_path, "w") as f:
         json.dump(json_frames, f, indent=4)
+
+    annotation_json = {"frames": []}
+    annotation_json_path = target_dir / "annotation.json"
+    with open(annotation_json_path, "w") as f:
+        json.dump(annotation_json, f, indent=4)
