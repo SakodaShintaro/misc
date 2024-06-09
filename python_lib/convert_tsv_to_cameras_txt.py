@@ -22,6 +22,7 @@ if __name__ == "__main__":
     images_dir = target_dir / "images"
     camera_info_tsv_list = sorted(list(images_dir.glob("camera_info_*.tsv")))
     pose_tsv_list = sorted(list(images_dir.glob("pose_*.tsv")))
+    print(camera_info_tsv_list, pose_tsv_list)
 
     save_dir = target_dir / "colmap" / "sparse" / "0"
     save_dir.mkdir(exist_ok=True, parents=True)
@@ -55,7 +56,8 @@ if __name__ == "__main__":
 
     """
 
-    images_dir_list = sorted(list(images_dir.glob("camera*/")))
+    images_dir_list = sorted(list(images_dir.glob("*/")))
+    images_dir_list = [i for i in images_dir_list if i.is_dir()]
     image_id = 0
     json_frames = []
     for i, images_dir in enumerate(images_dir_list):
@@ -63,6 +65,7 @@ if __name__ == "__main__":
             continue
 
         camera_name = images_dir.name
+        print(f"{camera_name=}")
 
         # camera.txt
         df = pd.read_csv(camera_info_tsv_list[i], sep="\t")
@@ -72,6 +75,11 @@ if __name__ == "__main__":
         height = row["height"]
         D_str = row["D"]
         K_str = row["K"]
+
+        print(D_str, K_str)
+        for space_width in range(20, 1, -1):
+            K_str = K_str.replace(" " * space_width, ",")
+        print(D_str, K_str)
 
         D = np.array(eval(D_str.replace("array('d', ", "").replace(")", "")))
         K = np.array(eval(K_str.replace(" ", ","))).reshape((3, 3))

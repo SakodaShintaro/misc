@@ -60,6 +60,7 @@ if __name__ == "__main__":
     camera_topic_list = [
         topic.name for topic in topic_types if topic.name.startswith("/sensing/camera")
     ]
+    print(f"{camera_topic_list=}")
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -81,7 +82,6 @@ if __name__ == "__main__":
             msg = deserialize_message(data, msg_type)
             for transform in msg.transforms:
                 tf_buffer.set_transform_static(transform, "default_authority")
-                print(transform)
             continue
 
         if topic == pose_topic:
