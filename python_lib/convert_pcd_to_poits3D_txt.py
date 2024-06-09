@@ -9,6 +9,8 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("pcd_path", type=Path)
     parser.add_argument("target_dir", type=Path)
+    parser.add_argument("--center_point", nargs="+", type=float, default=[0.0, 0.0, 0.0])
+    parser.add_argument("--crop_width", type=float, default=float("inf"))
     return parser.parse_args()
 
 
@@ -16,6 +18,8 @@ if __name__ == "__main__":
     args = parse_args()
     pcd_path = args.pcd_path
     target_dir = args.target_dir
+    center_point = args.center_point
+    crop_width = args.crop_width
 
     if pcd_path.is_dir():
         pcd_combined = o3d.geometry.PointCloud()
@@ -25,6 +29,13 @@ if __name__ == "__main__":
         pcd = pcd_combined
     else:
         pcd = o3d.io.read_point_cloud(str(pcd_path))
+
+    print(center_point)
+    print(f"{len(pcd.points)=}")
+    points = np.asarray(pcd.points)
+    mask = np.all(np.abs(points - center_point) <= crop_width / 2, axis=1)
+    pcd = pcd.select_by_index(np.where(mask)[0])
+    print(f"{len(pcd.points)=}")
 
     save_dir = target_dir / "colmap" / "sparse" / "0"
     save_dir.mkdir(exist_ok=True, parents=True)
