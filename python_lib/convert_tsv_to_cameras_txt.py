@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
         # images.txt
         df_pose = pd.read_csv(pose_tsv_list[i], sep="\t")
-        image_list = list(images_dir.glob("*.png"))
+        image_list = sorted(list(images_dir.glob("*.png")))
         pose_values = df_pose[
             [
                 "orientation.w",
@@ -139,12 +139,7 @@ if __name__ == "__main__":
                     "k4": 0.0,
                     "p1": D[2],
                     "p2": D[3],
-                    "transform_matrix": [
-                        transform_matrix[0].tolist(),
-                        transform_matrix[1].tolist(),
-                        transform_matrix[2].tolist(),
-                        transform_matrix[3].tolist(),
-                    ],
+                    "transform_matrix": transform_matrix.tolist(),
                 }
             )
             image_id += 1
