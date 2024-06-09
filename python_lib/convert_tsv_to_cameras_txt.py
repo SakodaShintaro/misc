@@ -5,6 +5,8 @@ import argparse
 from pathlib import Path
 import pandas as pd
 import numpy as np
+import json
+from scipy.spatial.transform import Rotation
 
 
 def parse_args():
@@ -55,9 +57,12 @@ if __name__ == "__main__":
 
     images_dir_list = sorted(list(images_dir.glob("camera*/")))
     image_id = 0
+    json_frames = []
     for i, images_dir in enumerate(images_dir_list):
         if not images_dir.is_dir():
             continue
+
+        camera_name = images_dir.name
 
         # camera.txt
         df = pd.read_csv(camera_info_tsv_list[i], sep="\t")
@@ -104,4 +109,39 @@ if __name__ == "__main__":
                 f"{image_id:08d} {qw[j]} {qx[j]} {qy[j]} {qz[j]} {x[j]} {y[j]} {z[j]} {i} {images_dir.name}/{image_name}\n"
             )
             f_images.write(f"\n")
+            r = Rotation.from_quat([qx[j], qy[j], qz[j], qw[j]])
+            transform_matrix = np.eye(4)
+            transform_matrix[:3, :3] = r.as_matrix()
+            transform_matrix[:3, 3] = [x[j], y[j], z[j]]
+            json_frames.append(
+                {
+                    "file_path": f"images/{camera_name}/{image_name}",
+                    "fl_x": K[0][0],
+                    "fl_y": K[1][1],
+                    "cx": K[0][2],
+                    "cy": K[1][2],
+                    "w": int(width),
+                    "h": int(height),
+                    "camera_model": "OPENCV",
+                    "camera": camera_name,
+                    "timestamp": float(int(image_path.stem) / 1e9),
+                    "k1": D[0],
+                    "k2": D[1],
+                    "k3": 0.0,
+                    "k4": 0.0,
+                    "p1": D[2],
+                    "p2": D[3],
+                    "transform_matrix": [
+                        transform_matrix[0].tolist(),
+                        transform_matrix[1].tolist(),
+                        transform_matrix[2].tolist(),
+                        transform_matrix[3].tolist(),
+                    ],
+                }
+            )
             image_id += 1
+
+    json_frames = {"frames": json_frames}
+    json_path = target_dir / "transform.json"
+    with open(json_path, "w") as f:
+        json.dump(json_frames, f, indent=4)
