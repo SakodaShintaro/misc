@@ -11,6 +11,8 @@ if [[ ! $current_dir =~ ^(autoware|pilot-auto) ]]; then
     exit 1
 fi
 
+rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO
+
 MAKEFLAGS="-j${JOB_COUNT}" colcon build \
   --symlink-install \
   --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF \
