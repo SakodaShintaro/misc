@@ -11,7 +11,7 @@ source $HOME/autoware/install/setup.bash
 set -eux
 
 # AWSIMをバックグラウンドで起動
-$HOME/Downloads/AWSIM_v1.2.1/AWSIM.x86_64 &
+$HOME/Downloads/AWSIM_autoware_msgs/AWSIM.x86_64 &
 
 # Autowareを起動
 ros2 launch autoware_launch e2e_simulator.launch.xml \
