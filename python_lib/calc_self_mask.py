@@ -14,7 +14,7 @@ from tqdm import tqdm
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("target_dir", type=Path)
-    parser.add_argument("--binary_threshold", type=float, default=17)
+    parser.add_argument("--binary_threshold", type=int, default=17)
     parser.add_argument("--skip_num", type=int, default=5)
     return parser.parse_args()
 
