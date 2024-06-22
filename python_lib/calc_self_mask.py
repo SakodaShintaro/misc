@@ -63,7 +63,7 @@ if __name__ == "__main__":
     # 2値化
     _, mask = cv2.threshold(stddev_images, binary_threshold, 255, cv2.THRESH_BINARY)
 
-    # 除去する部分が1となるように反転
+    # 除去する部分が255となるように反転
     mask = 255 - mask
 
     # モルフォロジー変換
@@ -75,6 +75,9 @@ if __name__ == "__main__":
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, make_kernel(100))
     # 膨張処理
     mask = cv2.dilate(mask, make_kernel(5), iterations=1)
+
+    # 残す部分が255となるように反転
+    mask = 255 - mask
 
     save_path = (
         target_dir.parent / f"{target_dir.stem}_mask_thresh{binary_threshold}.png"
