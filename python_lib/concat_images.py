@@ -13,19 +13,19 @@ def parse_args():
     parser.add_argument('output_dir', type=str)
     parser.add_argument('--text1', type=str, default="")
     parser.add_argument('--text2', type=str, default="")
+    parser.add_argument("--ext", type=str, default="png")
     return parser.parse_args()
 
 
 def put_text(image, text, outline_color=(0, 0, 0)):
-    scale = 1
     color = (128, 255, 128)
     face = cv2.FONT_HERSHEY_SIMPLEX
-    text_pixel = image.shape[0] // 16
+    text_pixel = image.shape[0] // 24
     scale = cv2.getFontScaleFromHeight(face, text_pixel)
     x = 0
     y = text_pixel
-    cv2.putText(image, text, (x, y), face, scale, outline_color, 4, cv2.LINE_AA)
-    cv2.putText(image, text, (x, y), face, scale, color, 1, cv2.LINE_AA)
+    cv2.putText(image, text, (x, y), face, scale, outline_color, 5, cv2.LINE_AA)
+    cv2.putText(image, text, (x, y), face, scale, color, 2, cv2.LINE_AA)
     return image
 
 
@@ -52,11 +52,12 @@ def main():
     dir1 = args.dir1
     dir2 = args.dir2
     output_dir = args.output_dir
+    ext = args.ext
 
     os.makedirs(output_dir, exist_ok=True)
 
-    files1 = sorted(glob(f"{dir1}/*.png"))
-    files2 = sorted(glob(f"{dir2}/*.png"))
+    files1 = sorted(glob(f"{dir1}/*.{ext}"))
+    files2 = sorted(glob(f"{dir2}/*.{ext}"))
     assert len(files1) == len(files1)
     progress = tqdm(total=len(files1))
 
