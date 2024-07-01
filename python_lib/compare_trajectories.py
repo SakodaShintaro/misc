@@ -13,7 +13,7 @@ from tqdm import tqdm
 from interpolate_pose import interpolate_pose
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("prediction_tsv", type=str)
     parser.add_argument("ground_truth_tsv", type=str)
@@ -79,20 +79,16 @@ if __name__ == "__main__":
     x_diff_mean = df_relative["position.x"].abs().mean()
     y_diff_mean = df_relative["position.y"].abs().mean()
     z_diff_mean = df_relative["position.z"].abs().mean()
-    angle_x_diff_mean = df_relative["angle_x"].abs().mean()
-    angle_y_diff_mean = df_relative["angle_y"].abs().mean()
-    angle_z_diff_mean = df_relative["angle_z"].abs().mean()
-    error = (
-        df_relative["position.x"] ** 2
-        + df_relative["position.y"] ** 2
-        + df_relative["position.z"] ** 2
-    ) ** 0.5
+    angle_x_diff_mean = df_relative["angle.x"].abs().mean()
+    angle_y_diff_mean = df_relative["angle.y"].abs().mean()
+    angle_z_diff_mean = df_relative["angle.z"].abs().mean()
+    error_norm = df_relative["position.norm"]
     df_summary = pd.DataFrame(
         {
             "x_diff_mean": [x_diff_mean],
             "y_diff_mean": [y_diff_mean],
             "z_diff_mean": [z_diff_mean],
-            "error_mean": [error.mean()],
+            "error_mean": [error_norm.mean()],
             "roll_diff_mean": [angle_x_diff_mean],
             "pitch_diff_mean": [angle_y_diff_mean],
             "yaw_diff_mean": [angle_z_diff_mean],
@@ -104,7 +100,7 @@ if __name__ == "__main__":
         index=False,
         float_format="%.4f",
     )
-    print(f"mean error: {error.mean():.3f} m")
+    print(f"mean error: {error_norm.mean():.3f} m")
 
     # plot (relative position)
     plt.plot(df_relative["position.x"], label="x")
@@ -124,9 +120,9 @@ if __name__ == "__main__":
     plt.close()
 
     # plot (relative angle)
-    plt.plot(df_relative["angle_x"], label="roll")
-    plt.plot(df_relative["angle_y"], label="pitch")
-    plt.plot(df_relative["angle_z"], label="yaw")
+    plt.plot(df_relative["angle.x"], label="roll")
+    plt.plot(df_relative["angle.y"], label="pitch")
+    plt.plot(df_relative["angle.z"], label="yaw")
     bottom, top = plt.ylim()
     plt.ylim(bottom=min(bottom, -1), top=max(top, 1))
     plt.legend()
@@ -160,9 +156,9 @@ if __name__ == "__main__":
         x = df_relative.iloc[df_index]["position.x"]
         y = df_relative.iloc[df_index]["position.y"]
         z = df_relative.iloc[df_index]["position.z"]
-        angle_x = df_relative.iloc[df_index]["angle_x"]
-        angle_y = df_relative.iloc[df_index]["angle_y"]
-        angle_z = df_relative.iloc[df_index]["angle_z"]
+        angle_x = df_relative.iloc[df_index]["angle.x"]
+        angle_y = df_relative.iloc[df_index]["angle.y"]
+        angle_z = df_relative.iloc[df_index]["angle.z"]
         direction = np.array([5, 0, 0])
         plt.quiver(
             0,
@@ -235,9 +231,9 @@ if __name__ == "__main__":
 
         # 下段: 相対角度
         plt.subplot(2, 1, 2)
-        plt.plot(df_relative["angle_x"], label="roll")
-        plt.plot(df_relative["angle_y"], label="pitch")
-        plt.plot(df_relative["angle_z"], label="yaw")
+        plt.plot(df_relative["angle.x"], label="roll")
+        plt.plot(df_relative["angle.y"], label="pitch")
+        plt.plot(df_relative["angle.z"], label="yaw")
         plt.plot([df_index, df_index], [-1, 1], color="black", linestyle="dashed")
         plt.ylim((-1, 1))
         plt.legend()
