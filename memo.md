@@ -65,3 +65,9 @@ find target_dir -name "*.png" | sort | xargs -I{} sh -c 'dir=$(dirname "{}"); pr
 elapsed_time=$(date -u -d "@$SECONDS" +"%T")
 # をするだけで表示される
 ```
+
+## diagnostic_graph_monitor
+
+```bash
+ros2 run rqt_diagnostic_graph_monitor rqt_diagnostic_graph_monitor
+```
