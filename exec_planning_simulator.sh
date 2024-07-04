@@ -55,5 +55,5 @@ ros2 topic pub -1 /planning/mission_planning/goal geometry_msgs/msg/PoseStamped 
 sleep 1
 
 # engage
-ros2 topic pub /autoware/engage autoware_auto_vehicle_msgs/msg/Engage "engage: true" -1
+ros2 topic pub /autoware/engage autoware_vehicle_msgs/msg/Engage "engage: true" -1
 sleep 25
