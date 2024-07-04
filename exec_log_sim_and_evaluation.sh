@@ -78,6 +78,10 @@ fi
 # rosbagからtsvに変換
 python3 python_lib/extract_pose_from_rosbag.py \
     --rosbag_path=$SAVE_DIR/result_rosbag \
+    --target_topic="/localization/kinematic_state" \
+    --output_dir=$SAVE_DIR
+python3 python_lib/extract_pose_from_rosbag.py \
+    --rosbag_path=$SAVE_DIR/result_rosbag \
     --target_topic="/localization/pose_twist_fusion_filter/pose" \
     --output_dir=$SAVE_DIR
 python3 python_lib/extract_pose_from_rosbag.py \
@@ -86,6 +90,9 @@ python3 python_lib/extract_pose_from_rosbag.py \
     --output_dir=$SAVE_DIR
 
 # 評価
+python3 python_lib/compare_trajectories.py \
+    $SAVE_DIR/localization__kinematic_state.tsv \
+    $SAVE_DIR/awsim__ground_truth__vehicle__pose.tsv
 python3 python_lib/compare_trajectories.py \
     $SAVE_DIR/localization__pose_twist_fusion_filter__pose.tsv \
     $SAVE_DIR/awsim__ground_truth__vehicle__pose.tsv
