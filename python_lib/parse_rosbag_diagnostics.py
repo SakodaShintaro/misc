@@ -8,7 +8,7 @@ from pathlib import Path
 from parse_functions import parse_stamp
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("rosbag_path", type=Path)
     return parser.parse_args()
@@ -44,9 +44,8 @@ if __name__ == "__main__":
         "localization: localization_error_monitor",
         "localization: pose_instability_detector",
     ]
-    data_dict = {key: [] for key in target_list}
+    data_dict: dict = {key: [] for key in target_list}
 
-    time_list = []
     unique_status_name = set()
     while reader.has_next():
         (topic, data, timestamp_rosbag) = reader.read_next()
@@ -106,14 +105,17 @@ if __name__ == "__main__":
         "sensor_points_delay_time_sec",
         "skipping_publish_num",
         "transform_probability",
+        "transform_probability_diff",
         "nearest_voxel_transformation_likelihood",
+        "nearest_voxel_transformation_likelihood_diff",
         "local_optimal_solution_oscillation_num",
+        "distance_initial_to_result",
     ]
     plt.figure(figsize=(6.4 * 2, 4.8 * 2))
     for i, key in enumerate(key_list):
         df[key] = df[key].astype(float)
         df = df.dropna(subset=[key])
-        plt.subplot(4, 2, i + 1)
+        plt.subplot(5, 2, i + 1)
         plt.plot(df["timestamp_header"], df[key], label=key)
         plt.xlabel("time [s]")
         plt.title(f"{key}")
@@ -143,14 +145,20 @@ if __name__ == "__main__":
     key_list = [
         "pose_mahalanobis_distance",
         "twist_mahalanobis_distance",
+        "cov_ellipse_long_axis_size",
+        "cov_ellipse_lateral_direction_size",
     ]
 
     plt.figure(figsize=(6.4 * 2, 4.8 * 2))
     for i, key in enumerate(key_list):
         df[key] = df[key].astype(float)
-        key_threshold = key + "_threshold"
+        key_threshold = (
+            key + "_threshold"
+            if "mahalanobis" in key
+            else key.replace("_size", "_warn_threshold")
+        )
         df[key_threshold] = df[key_threshold].astype(float)
-        plt.subplot(2, 1, (i + 1))
+        plt.subplot(4, 1, (i + 1))
         plt.plot(df["timestamp_header"], df[key], label=key)
         plt.plot(df["timestamp_header"], df[key_threshold], label=key_threshold)
         plt.xlabel("time [s]")
