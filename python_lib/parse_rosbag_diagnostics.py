@@ -119,7 +119,7 @@ if __name__ == "__main__":
         plt.plot(df["timestamp_header"], df[key], label=key)
         plt.xlabel("time [s]")
         plt.title(f"{key}")
-        plt.ylim(bottom=0)
+        plt.ylim(bottom=min(0, df[key].min()))
         plt.grid()
 
     plt.tight_layout()
