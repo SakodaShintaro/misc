@@ -8,13 +8,18 @@ from parse_functions import parse_rosbag
 from interpolate_pose import interpolate_pose
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("rosbag_path", type=Path)
     return parser.parse_args()
 
 
-def plot_pose(df_pose: pd.DataFrame, value_name: str, save_dir: Path, df_value=None):
+def plot_pose(
+    df_pose: pd.DataFrame,
+    value_name: str,
+    save_dir: Path,
+    df_value: pd.DataFrame | None = None,
+) -> None:
     df = (
         interpolate_pose(
             df_pose,
@@ -261,12 +266,12 @@ if __name__ == "__main__":
             r_list.append(r * 180 / np.pi)
             p_list.append(p * 180 / np.pi)
             y_list.append(y * 180 / np.pi)
-        r_list = np.array(r_list)
-        r_list -= r_list[0]
-        p_list = np.array(p_list)
-        p_list -= p_list[0]
-        y_list = np.array(y_list)
-        y_list -= y_list[0]
+        r_list_np = np.array(r_list)
+        r_list_np -= r_list[0]
+        p_list_np = np.array(p_list)
+        p_list_np -= p_list[0]
+        y_list_np = np.array(y_list)
+        y_list_np -= y_list[0]
         plt.plot(r_list, label="roll")
         plt.plot(p_list, label="pitch")
         plt.plot(y_list, label="yaw")
