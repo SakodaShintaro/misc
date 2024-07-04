@@ -16,8 +16,8 @@ ros2 launch autoware_launch planning_simulator.launch.xml \
   vehicle_model:=sample_vehicle sensor_model:=sample_sensor_kit &
 
 # 立ち上がるまで待つ
-while ! ros2 service type /pose_initializer_node/get_parameters; do
-  echo "waiting for /pose_initializer_node/get_parameters"
+while ! ros2 service type /planning/scenario_planning/scenario_selector/get_parameters; do
+  echo "waiting for /planning/scenario_planning/scenario_selector/get_parameters"
   sleep 4
 done
 
