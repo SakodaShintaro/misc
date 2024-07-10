@@ -28,7 +28,6 @@ def parse_args() -> argparse.Namespace:
 def plot_pose(
     df_pose: pd.DataFrame,
     value_name: str,
-    save_dir: Path,
     df_value: pd.DataFrame | None = None,
 ) -> None:
     df = (
@@ -202,8 +201,8 @@ if __name__ == "__main__":
 
             # plot pose
             plt.subplot(3, 1, 1)
-            plot_pose(df_kinematic_state, "kinematic_state", save_dir)
-            plot_pose(df_odometry_result, "odometry_result", save_dir)
+            plot_pose(df_kinematic_state, "kinematic_state")
+            plot_pose(df_odometry_result, "odometry_result")
 
             df_curr_gt = df_kinematic_state[
                 df_kinematic_state["timestamp"] <= curr_timestamp
