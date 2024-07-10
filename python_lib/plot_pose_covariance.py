@@ -13,6 +13,9 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+THRESHOLD = 0.5
+
+
 def transform_covariance_from_map_to_base_link(df: pd.DataFrame) -> pd.DataFrame:
     pose_covariance = df[
         [
@@ -34,7 +37,7 @@ def transform_covariance_from_map_to_base_link(df: pd.DataFrame) -> pd.DataFrame
     )
     rotation_matrix = rotation.as_matrix()
     transformed_covariance = (
-        rotation_matrix @ pose_covariance @ rotation_matrix.transpose(0, 2, 1)
+        rotation_matrix.transpose(0, 2, 1) @ pose_covariance @ rotation_matrix
     )
 
     df[
@@ -66,6 +69,12 @@ def plot_stddev(df: pd.DataFrame) -> None:
         np.sqrt(df["covariance_position.yy"]),
         label="yy",
     )
+    plt.plot(
+        time,
+        THRESHOLD * np.ones_like(time),
+        label=f"threshold({THRESHOLD})",
+        linestyle="--",
+    )
 
     plt.xlabel("times[s]")
     plt.ylabel("stddev[m]")
@@ -83,6 +92,8 @@ def plot_trajectory(df: pd.DataFrame) -> None:
         df["position.y"],
         c=value,
         cmap="viridis",
+        vmin=0,
+        vmax=THRESHOLD * 1.5,
     )
     plt.colorbar()
     plt.xlabel("x[m]")
