@@ -139,6 +139,9 @@ if __name__ == "__main__":
     curr_index_imu_raw = -1
     curr_index_velocity = -1
 
+    imu_offset = np.array([0.00137, -0.00125, 0.00027])
+    scale_factor = 1.01305
+
     value_list = []
     df_odometry_result = pd.DataFrame(columns=df_kinematic_state.columns)
 
@@ -154,12 +157,14 @@ if __name__ == "__main__":
         # Poseを進める
         # 回転
         curr_rotate = Rotation.from_rotvec(
-            transform_mat @ curr_angular_velocity * time_diff
+            transform_mat @ (curr_angular_velocity - imu_offset) * time_diff
         ).as_matrix()
         curr_pose[:3, :3] = curr_rotate @ curr_pose[:3, :3]
         # 並進
         curr_pose[:3, 3] += (
-            curr_pose[:3, :3] @ np.array([curr_longitudinal_velocity, 0, 0]) * time_diff
+            curr_pose[:3, :3]
+            @ np.array([curr_longitudinal_velocity * scale_factor, 0, 0])
+            * time_diff
         )
 
         quat = Rotation.from_matrix(curr_pose[:3, :3]).as_quat()
