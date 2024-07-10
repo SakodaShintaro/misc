@@ -69,7 +69,25 @@ def plot_stddev(df: pd.DataFrame) -> None:
 
     plt.xlabel("times[s]")
     plt.ylabel("stddev[m]")
+    plt.ylim(bottom=0)
     plt.legend()
+    plt.grid()
+
+
+def plot_trajectory(df: pd.DataFrame) -> None:
+    # 軌跡にxの標準偏差で色付けしてプロット
+    value = np.sqrt(df["covariance_position.xx"])
+
+    plt.scatter(
+        df["position.x"],
+        df["position.y"],
+        c=value,
+        cmap="viridis",
+    )
+    plt.colorbar()
+    plt.xlabel("x[m]")
+    plt.ylabel("y[m]")
+    plt.axis("equal")
     plt.grid()
 
 
@@ -121,5 +139,15 @@ if __name__ == "__main__":
 
     plot_stddev(df_pose_with_covariance)
     save_path = save_dir / "stddev_pose_with_covariance.png"
+    plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
+    plt.close()
+
+    plot_trajectory(df_kinematic_state)
+    save_path = save_dir / "trajectory_kinematic_state.png"
+    plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
+    plt.close()
+
+    plot_trajectory(df_pose_with_covariance)
+    save_path = save_dir / "trajectory_pose_with_covariance.png"
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     plt.close()
