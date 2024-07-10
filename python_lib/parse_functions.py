@@ -67,6 +67,10 @@ def parse_msg(msg, msg_type):
         return parse_CameraInfo(msg)
     elif class_name == "TFMessage":
         return parse_TFMessage(msg)
+    elif class_name == "Imu":
+        return parse_Imu(msg)
+    elif class_name == "VelocityReport":
+        return parse_VelocityReport(msg)
     else:
         print(f"Error: {class_name} is not supported.")
         exit(0)
@@ -207,4 +211,30 @@ def parse_CameraInfo(msg):
 def parse_TFMessage(msg):
     return {
         "transforms": msg.transforms,
+    }
+
+
+def parse_Imu(msg):
+    return {
+        "timestamp": parse_stamp(msg.header.stamp),
+        "frame_id": msg.header.frame_id,
+        "angular_velocity.x": msg.angular_velocity.x,
+        "angular_velocity.y": msg.angular_velocity.y,
+        "angular_velocity.z": msg.angular_velocity.z,
+        "linear_acceleration.x": msg.linear_acceleration.x,
+        "linear_acceleration.y": msg.linear_acceleration.y,
+        "linear_acceleration.z": msg.linear_acceleration.z,
+        "orientation.x": msg.orientation.x,
+        "orientation.y": msg.orientation.y,
+        "orientation.z": msg.orientation.z,
+        "orientation.w": msg.orientation.w,
+    }
+
+
+def parse_VelocityReport(msg):
+    return {
+        "timestamp": parse_stamp(msg.header.stamp),
+        "longitudinal_velocity": msg.longitudinal_velocity,
+        "lateral_velocity": msg.lateral_velocity,
+        "heading_rate": msg.heading_rate,
     }
