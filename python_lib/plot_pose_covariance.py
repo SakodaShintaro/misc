@@ -162,3 +162,35 @@ if __name__ == "__main__":
     save_path = save_dir / "trajectory_pose_with_covariance.png"
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     plt.close()
+
+    # x方向の標準偏差がTHRESHOLD以上で、y方向の標準偏差が0.15以下であるかどうかの列を追加
+    df_pose_with_covariance["is_tunnel"] = (
+        np.sqrt(df_pose_with_covariance["covariance_position.xx"]) >= THRESHOLD
+    ) & (np.sqrt(df_pose_with_covariance["covariance_position.yy"]) <= 0.15)
+
+    # is_tunnelがTrueの点をプロット
+    plt.scatter(
+        df_pose_with_covariance["position.x"][df_pose_with_covariance["is_tunnel"]],
+        df_pose_with_covariance["position.y"][df_pose_with_covariance["is_tunnel"]],
+        c="red",
+        label="is_tunnel",
+        s=1,
+    )
+    # is_tunnelがFalseの点をプロット
+    plt.scatter(
+        df_pose_with_covariance["position.x"][~df_pose_with_covariance["is_tunnel"]],
+        df_pose_with_covariance["position.y"][~df_pose_with_covariance["is_tunnel"]],
+        c="blue",
+        label="not_tunnel",
+        s=1,
+    )
+
+    plt.xlabel("x[m]")
+    plt.ylabel("y[m]")
+    plt.axis("equal")
+    plt.grid()
+    plt.legend()
+    save_path = save_dir / "is_tunnel.png"
+    plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05, dpi=150)
+    plt.close()
+    print(f"Saved to {save_path}")
