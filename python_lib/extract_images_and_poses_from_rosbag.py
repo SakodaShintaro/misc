@@ -3,21 +3,16 @@
 import argparse
 import numpy as np
 import cv2
-import os
 import pandas as pd
-from tf2_ros import Buffer
 from scipy.spatial.transform import Rotation
-import matplotlib.pyplot as plt
 from interpolate_pose import interpolate_pose
-from parse_functions import parse_rosbag
-from builtin_interfaces.msg import Time
-from tqdm import tqdm
+from pathlib import Path
+from geometry_msgs.msg import TransformStamped
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("path_to_rosbag", type=str)
-    parser.add_argument("output_dir", type=str)
+    parser.add_argument("output_dir", type=Path)
     parser.add_argument(
         "--storage_id", type=str, default="sqlite3", choices=["mcap", "sqlite3"]
     )
@@ -61,7 +56,9 @@ def save_camera_info_to_opencv_yaml(camera_info, filename):
     fs.release()
 
 
-def transform_pose_base_link_2_camera(df_pose: pd.DataFrame, transform):
+def transform_pose_base_link_2_camera(
+    df_pose: pd.DataFrame, transform: TransformStamped
+) -> pd.DataFrame:
     # transform pose (camera_link to base_link)
     R_c2b: np.ndarray = Rotation.from_quat(
         [
@@ -92,18 +89,20 @@ def transform_pose_base_link_2_camera(df_pose: pd.DataFrame, transform):
     t_c2m: np.ndarray = np.dot(R_b2m, t_c2b) + t_b2m
     q_c2m: np.ndarray = Rotation.from_matrix(R_c2m).as_quat()
 
-    df_pose["orientation.x"] = q_c2m[:, 0]
-    df_pose["orientation.y"] = q_c2m[:, 1]
-    df_pose["orientation.z"] = q_c2m[:, 2]
-    df_pose["orientation.w"] = q_c2m[:, 3]
-    df_pose["position.x"] = t_c2m[:, 0]
-    df_pose["position.y"] = t_c2m[:, 1]
-    df_pose["position.z"] = t_c2m[:, 2]
+    df_result = df_pose.copy()
+
+    df_result["orientation.x"] = q_c2m[:, 0]
+    df_result["orientation.y"] = q_c2m[:, 1]
+    df_result["orientation.z"] = q_c2m[:, 2]
+    df_result["orientation.w"] = q_c2m[:, 3]
+    df_result["position.x"] = t_c2m[:, 0]
+    df_result["position.y"] = t_c2m[:, 1]
+    df_result["position.z"] = t_c2m[:, 2]
+    return df_result
 
 
 if __name__ == "__main__":
     args = parse_args()
-    path_to_rosbag = args.path_to_rosbag
     output_dir = args.output_dir
     storage_id = args.storage_id
     image_topic_name = args.image_topic_name
@@ -111,75 +110,51 @@ if __name__ == "__main__":
     pose_topic_name = args.pose_topic_name
     image_interval = args.image_interval
 
-    target_topics = [
-        image_topic_name,
-        camera_info_topic_name,
-        pose_topic_name,
-        "/tf_static",
-    ]
-
-    df_dict = parse_rosbag(path_to_rosbag, target_topics)
-
-    # save rosbag info
-    os.makedirs(output_dir, exist_ok=True)
-    with open(f"{output_dir}/rosbag_info.txt", "w") as f:
-        f.write(f"{path_to_rosbag}\n")
-
     # save camera_info.yaml
-    save_camera_info_to_opencv_yaml(
-        df_dict[camera_info_topic_name].iloc[0], f"{output_dir}/camera_info.yaml"
+    # save_camera_info_to_opencv_yaml(
+    #     df_dict[camera_info_topic_name].iloc[0], f"{output_dir}/camera_info.yaml"
+    # )
+
+    df_pose = pd.read_csv(
+        output_dir / "localization__pose_estimator__pose_with_covariance.tsv", sep="\t"
     )
+    print(df_pose.head())
 
-    df_image = df_dict[image_topic_name]
-    df_pose = df_dict[pose_topic_name]
+    dir_list = sorted([p for p in output_dir.glob("*") if p.is_dir()])
+    for dir_path in dir_list:
+        print(dir_path)
+        camera_name = dir_path.name
+        df_camera_info = pd.read_csv(
+            output_dir / f"camera_info_{camera_name}.tsv", sep="\t"
+        )
+        df_transform = pd.read_csv(
+            output_dir / f"transform_{camera_name}.tsv", sep="\t"
+        )
+        transform = TransformStamped()
+        transform.header.frame_id = "base_link"
+        transform.child_frame_id = camera_name
+        transform.transform.translation.x = df_transform["x"].values[0]
+        transform.transform.translation.y = df_transform["y"].values[0]
+        transform.transform.translation.z = df_transform["z"].values[0]
+        transform.transform.rotation.w = df_transform["qw"].values[0]
+        transform.transform.rotation.x = df_transform["qx"].values[0]
+        transform.transform.rotation.y = df_transform["qy"].values[0]
+        transform.transform.rotation.z = df_transform["qz"].values[0]
 
-    camera_frame = df_image["frame_id"].values[0]
-    print(f"{camera_frame=}")
+        df_camera_pose = transform_pose_base_link_2_camera(df_pose, transform)
 
-    # transformを取得
-    df_tf_static = df_dict["/tf_static"]
-    tf_buffer = Buffer()
-    for _, row in df_tf_static.iterrows():
-        for transform_stamped in row["transforms"]:
-            tf_buffer.set_transform_static(transform_stamped, "default_authority")
-    transform = tf_buffer.lookup_transform(
-        target_frame="base_link", source_frame=camera_frame, time=Time()
-    )
+        image_list = sorted(list(dir_path.glob("*.png")))
+        timestamp_list = [int(p.stem) for p in image_list]
 
-    # df_poseを変換する
-    # df_pose : base_link in map
-    # 欲しいpose : camera_frame in map
-    # tf_staticでcamera_frame in base_linkを取得してdf_poseに右からかける
-    transform_pose_base_link_2_camera(df_pose, transform)
+        # タイムスタンプがdf_camera_poseの範囲外のものは無理やり範囲内に収める
+        timestamp_list = [
+            max(t, df_camera_pose["timestamp"].values[0]) for t in timestamp_list
+        ]
 
-    image_timestamp_list = df_image["timestamp"].values
-    image_list = df_image["image"].values
-
-    min_pose_t = df_pose["timestamp"].min()
-    max_pose_t = df_pose["timestamp"].max()
-    ok_image_timestamp = (min_pose_t < image_timestamp_list) * (
-        image_timestamp_list < max_pose_t
-    )
-    image_timestamp_list = image_timestamp_list[ok_image_timestamp]
-    image_list = image_list[ok_image_timestamp]
-
-    df_pose = interpolate_pose(df_pose, image_timestamp_list)
-
-    os.makedirs(f"{output_dir}/images", exist_ok=True)
-    bar = tqdm(total=len(image_list))
-    for i, image in enumerate(image_list):
-        save_path = f"{output_dir}/images/{i:08d}.png"
-        cv2.imwrite(save_path, image)
-        bar.update(1)
-
-    df_pose.to_csv(f"{output_dir}/pose.tsv", index=True, sep="\t", float_format="%.12f")
-
-    # plot all of trajectory
-    save_path = f"{output_dir}/plot_pose.png"
-    plt.plot(df_pose["position.x"], df_pose["position.y"])
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.axis("equal")
-    plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
-    plt.close()
-    print(f"Saved to {save_path}")
+        df_camera_pose = interpolate_pose(df_camera_pose, timestamp_list)
+        df_camera_pose.to_csv(
+            output_dir / f"pose_{camera_name}.tsv",
+            index=True,
+            sep="\t",
+            float_format="%.12f",
+        )
