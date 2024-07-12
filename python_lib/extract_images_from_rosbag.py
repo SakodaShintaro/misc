@@ -9,13 +9,10 @@ from rosidl_runtime_py.utilities import get_message
 import os
 import rosbag2_py
 import pandas as pd
-from parse_functions import parse_stamp, parse_CameraInfo, parse_msg
+from parse_functions import parse_stamp, parse_CameraInfo
 from collections import defaultdict
 from tf2_ros import Buffer
 from builtin_interfaces.msg import Time
-from extract_images_and_poses_from_rosbag import transform_pose_base_link_2_camera
-import numpy as np
-from copy import deepcopy
 
 
 def parse_args():
@@ -23,10 +20,7 @@ def parse_args():
     parser.add_argument("path_to_rosbag", type=str)
     parser.add_argument("output_dir", type=str)
     parser.add_argument("--use_cvt_color", action="store_true")
-    parser.add_argument("--crop_height", type=int, default=-1)
-    parser.add_argument(
-        "--pose_topic", type=str, default="/localization/kinematic_state"
-    )
+    parser.add_argument("--max_num", type=int, default=1000000000)
     return parser.parse_args()
 
 
@@ -47,8 +41,7 @@ if __name__ == "__main__":
     path_to_rosbag = args.path_to_rosbag
     output_dir = args.output_dir
     use_cvt_color = args.use_cvt_color
-    crop_height = args.crop_height
-    pose_topic = args.pose_topic
+    max_num = args.max_num
 
     reader, storage_options, converter_options = create_reader(
         path_to_rosbag, "sqlite3"
@@ -67,13 +60,9 @@ if __name__ == "__main__":
 
     bridge = CvBridge()
 
-    index_images = 0
-
     camera_info_df_dict = defaultdict(list)
-    pose_df_dict = defaultdict(list)
     tf_buffer = Buffer()
-
-    df_pose = None
+    transform_dict = dict()
 
     while reader.has_next():
         (topic, data, t) = reader.read_next()
@@ -83,18 +72,6 @@ if __name__ == "__main__":
             msg = deserialize_message(data, msg_type)
             for transform in msg.transforms:
                 tf_buffer.set_transform_static(transform, "default_authority")
-            continue
-
-        if topic == pose_topic:
-            msg_type = get_message(type_map[topic])
-            msg = deserialize_message(data, msg_type)
-            data_dict = parse_msg(msg, msg_type)
-            if df_pose is None:
-                df_pose = pd.DataFrame([data_dict])
-            else:
-                df_pose = pd.concat([df_pose, pd.DataFrame([data_dict])], join="inner")
-
-        if df_pose is None:
             continue
 
         if topic not in camera_topic_list:
@@ -108,8 +85,6 @@ if __name__ == "__main__":
         if msg_type == CameraInfo:
             msg = deserialize_message(data, msg_type)
             camera_info = parse_CameraInfo(msg)
-            if crop_height > 0:
-                camera_info["height"] = crop_height
             camera_info_df_dict[camera_name].append(camera_info)
             continue
 
@@ -119,21 +94,15 @@ if __name__ == "__main__":
         transform = tf_buffer.lookup_transform(
             target_frame="base_link", source_frame=camera_frame, time=Time()
         )
+        transform_dict[camera_name] = transform
 
         timestamp_header = parse_stamp(image_msg.header.stamp)
-        index = np.searchsorted(df_pose["timestamp"].values, timestamp_header)
-        if index == 0:
-            continue
-        pose_row = deepcopy(df_pose.iloc[index - 1 : index])
-        transform_pose_base_link_2_camera(pose_row, transform)
 
         cv_image = (
             bridge.imgmsg_to_cv2(image_msg, desired_encoding="passthrough")
             if msg_type == Image
             else bridge.compressed_imgmsg_to_cv2(image_msg)
         )
-        if crop_height > 0:
-            cv_image = cv_image[:crop_height]
         if use_cvt_color:
             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
 
@@ -141,19 +110,26 @@ if __name__ == "__main__":
         os.makedirs(save_dir, exist_ok=True)
         save_path = f"{save_dir}/{timestamp_header:018d}.png"
         cv2.imwrite(save_path, cv_image)
-        row_dict = deepcopy(pose_row.iloc[0]).to_dict()
-        row_dict["timestamp"] = int(timestamp_header)
-        pose_df_dict[camera_name].append(row_dict)
-        print(f"\rtimestamp = {t}, {len(pose_df_dict[camera_name])=}", end="")
-        index_images += 1
+        print(f"\rtimestamp = {t}", end="")
+
+        if len(camera_info_df_dict[camera_name]) >= max_num:
+            break
 
     print()
-    for camera_name, df in pose_df_dict.items():
-        print(df)
-        df = pd.DataFrame(df)
-        df["timestamp"] = df["timestamp"].astype("int64")
-        df.to_csv(f"{output_dir}/pose_{camera_name}.tsv", index=False, sep="\t")
-        print(f"{camera_name} pose: {len(df)} msgs")
+    for camera_name, transform in transform_dict.items():
+        save_path = f"{output_dir}/transform_{camera_name}.tsv"
+        df = pd.DataFrame(
+            {
+                "x": [transform.transform.translation.x],
+                "y": [transform.transform.translation.y],
+                "z": [transform.transform.translation.z],
+                "qw": [transform.transform.rotation.w],
+                "qx": [transform.transform.rotation.x],
+                "qy": [transform.transform.rotation.y],
+                "qz": [transform.transform.rotation.z],
+            }
+        )
+        df.to_csv(save_path, index=False, sep="\t")
 
     for camera_name, df in camera_info_df_dict.items():
         df = pd.DataFrame(df)
