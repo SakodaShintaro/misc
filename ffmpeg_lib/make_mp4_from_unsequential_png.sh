@@ -21,4 +21,4 @@ ffmpeg -r 10 \
        -pix_fmt yuv420p \
        -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" \
        -r 10 \
-       ${TARGET_DIR}/../movie.mp4
+       ${TARGET_DIR}/../$(basename $TARGET_DIR).mp4
