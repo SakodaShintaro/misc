@@ -14,24 +14,10 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("output_dir", type=Path)
     parser.add_argument(
-        "--storage_id", type=str, default="sqlite3", choices=["mcap", "sqlite3"]
-    )
-    parser.add_argument(
-        "--image_topic_name",
-        type=str,
-        default="/sensing/camera/traffic_light/image_raw",
-    )
-    parser.add_argument(
-        "--camera_info_topic_name",
-        type=str,
-        default="/sensing/camera/traffic_light/camera_info",
-    )
-    parser.add_argument(
         "--pose_topic_name",
         type=str,
         default="/awsim/ground_truth/vehicle/pose",
     )
-    parser.add_argument("--image_interval", type=int, default=1)
     return parser.parse_args()
 
 
@@ -104,20 +90,11 @@ def transform_pose_base_link_2_camera(
 if __name__ == "__main__":
     args = parse_args()
     output_dir = args.output_dir
-    storage_id = args.storage_id
-    image_topic_name = args.image_topic_name
-    camera_info_topic_name = args.camera_info_topic_name
     pose_topic_name = args.pose_topic_name
-    image_interval = args.image_interval
 
-    # save camera_info.yaml
-    # save_camera_info_to_opencv_yaml(
-    #     df_dict[camera_info_topic_name].iloc[0], f"{output_dir}/camera_info.yaml"
-    # )
+    save_name = "__".join(pose_topic_name.split("/")[1:])
 
-    df_pose = pd.read_csv(
-        output_dir / "localization__pose_estimator__pose_with_covariance.tsv", sep="\t"
-    )
+    df_pose = pd.read_csv(output_dir / f"{save_name}.tsv", sep="\t")
     print(df_pose.head())
 
     dir_list = sorted([p for p in output_dir.glob("*") if p.is_dir()])
