@@ -113,14 +113,26 @@ if __name__ == "__main__":
 
         for j, image_path in enumerate(image_list):
             image_name = image_path.name
-            f_images.write(
-                f"{image_id:08d} {qw[j]} {qx[j]} {qy[j]} {qz[j]} {x[j]} {y[j]} {z[j]} {i} {images_dir.name}/{image_name}\n"
-            )
-            f_images.write(f"\n")
+
             r = Rotation.from_quat([qx[j], qy[j], qz[j], qw[j]])
             transform_matrix = np.eye(4)
             transform_matrix[:3, :3] = r.as_matrix()
             transform_matrix[:3, 3] = [x[j], y[j], z[j]]
+            transform_matrix = np.linalg.inv(transform_matrix)
+
+            x[j] = transform_matrix[0][3]
+            y[j] = transform_matrix[1][3]
+            z[j] = transform_matrix[2][3]
+            quat = Rotation.from_matrix(transform_matrix[:3, :3]).as_quat()
+            qx[j] = quat[0]
+            qy[j] = quat[1]
+            qz[j] = quat[2]
+            qw[j] = quat[3]
+
+            f_images.write(
+                f"{image_id:08d} {qw[j]} {qx[j]} {qy[j]} {qz[j]} {x[j]} {y[j]} {z[j]} {i} {images_dir.name}/{image_name}\n"
+            )
+            f_images.write(f"\n")
             json_frames.append(
                 {
                     "file_path": f"images/{camera_name}/{image_name}",
