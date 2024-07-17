@@ -55,6 +55,8 @@ def parse_msg(msg, msg_type):
         return parse_PoseStamped(msg)
     elif class_name == "PoseWithCovarianceStamped":
         return parse_PoseWithCovarianceStamped(msg)
+    elif class_name == "TwistWithCovarianceStamped":
+        return parse_TwistWithCovarianceStamped(msg)
     elif class_name == "Odometry":
         return parse_Odometry(msg)
     elif class_name == "MarkerArray":
@@ -111,6 +113,30 @@ def parse_PoseWithCovarianceStamped(msg):
         "covariance_angle.x": msg.pose.covariance[21],
         "covariance_angle.y": msg.pose.covariance[28],
         "covariance_angle.z": msg.pose.covariance[35],
+    }
+
+
+def parse_TwistWithCovarianceStamped(msg):
+    return {
+        "timestamp": parse_stamp(msg.header.stamp),
+        "linear_velocity.x": msg.twist.twist.linear.x,
+        "linear_velocity.y": msg.twist.twist.linear.y,
+        "linear_velocity.z": msg.twist.twist.linear.z,
+        "angular_velocity.x": msg.twist.twist.angular.x,
+        "angular_velocity.y": msg.twist.twist.angular.y,
+        "angular_velocity.z": msg.twist.twist.angular.z,
+        "covariance_position.xx": msg.twist.covariance[0],
+        "covariance_position.xy": msg.twist.covariance[1],
+        "covariance_position.xz": msg.twist.covariance[2],
+        "covariance_position.yx": msg.twist.covariance[6],
+        "covariance_position.yy": msg.twist.covariance[7],
+        "covariance_position.yz": msg.twist.covariance[8],
+        "covariance_position.zx": msg.twist.covariance[12],
+        "covariance_position.zy": msg.twist.covariance[13],
+        "covariance_position.zz": msg.twist.covariance[14],
+        "covariance_angle.x": msg.twist.covariance[21],
+        "covariance_angle.y": msg.twist.covariance[28],
+        "covariance_angle.z": msg.twist.covariance[35],
     }
 
 
