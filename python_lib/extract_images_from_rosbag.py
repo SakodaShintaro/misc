@@ -91,9 +91,13 @@ if __name__ == "__main__":
         image_msg = deserialize_message(data, msg_type)
 
         camera_frame = image_msg.header.frame_id
-        transform = tf_buffer.lookup_transform(
-            target_frame="base_link", source_frame=camera_frame, time=Time()
-        )
+        try:
+            transform = tf_buffer.lookup_transform(
+                target_frame="base_link", source_frame=camera_frame, time=Time()
+            )
+        except Exception as e:
+            print(f"!{e}")
+            continue
         transform_dict[camera_name] = transform
 
         timestamp_header = parse_stamp(image_msg.header.stamp)
