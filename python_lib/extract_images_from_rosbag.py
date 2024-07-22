@@ -21,6 +21,7 @@ def parse_args():
     parser.add_argument("output_dir", type=str)
     parser.add_argument("--use_cvt_color", action="store_true")
     parser.add_argument("--max_num", type=int, default=1000000000)
+    parser.add_argument("--target_topic", type=str, default=None)
     return parser.parse_args()
 
 
@@ -42,6 +43,7 @@ if __name__ == "__main__":
     output_dir = args.output_dir
     use_cvt_color = args.use_cvt_color
     max_num = args.max_num
+    target_topic = args.target_topic
 
     reader, storage_options, converter_options = create_reader(
         path_to_rosbag, "sqlite3"
@@ -51,9 +53,15 @@ if __name__ == "__main__":
         topic_types[i].name: topic_types[i].type for i in range(len(topic_types))
     }
 
-    camera_topic_list = [
-        topic.name for topic in topic_types if topic.name.startswith("/sensing/camera")
-    ]
+    camera_topic_list = (
+        [
+            topic.name
+            for topic in topic_types
+            if topic.name.startswith("/sensing/camera")
+        ]
+        if target_topic is None
+        else [target_topic]
+    )
     print(f"{camera_topic_list=}")
 
     os.makedirs(output_dir, exist_ok=True)
