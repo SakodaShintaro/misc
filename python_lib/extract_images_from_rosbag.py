@@ -21,6 +21,7 @@ def parse_args():
     parser.add_argument("output_dir", type=str)
     parser.add_argument("--use_cvt_color", action="store_true")
     parser.add_argument("--max_num", type=int, default=1000000000)
+    parser.add_argument("--skip_num", type=int, default=1)
     parser.add_argument("--target_topic", type=str, default=None)
     return parser.parse_args()
 
@@ -43,6 +44,7 @@ if __name__ == "__main__":
     output_dir = args.output_dir
     use_cvt_color = args.use_cvt_color
     max_num = args.max_num
+    skip_num = args.skip_num
     target_topic = args.target_topic
 
     reader, storage_options, converter_options = create_reader(
@@ -72,6 +74,9 @@ if __name__ == "__main__":
     tf_buffer = Buffer()
     transform_dict = dict()
 
+    image_num = 0
+    image_num_next = 1
+
     while reader.has_next():
         (topic, data, t) = reader.read_next()
 
@@ -95,6 +100,13 @@ if __name__ == "__main__":
             camera_info = parse_CameraInfo(msg)
             camera_info_df_dict[camera_name].append(camera_info)
             continue
+        elif msg_type == Time:
+            continue
+
+        image_num += 1
+        if image_num != image_num_next:
+            continue
+        image_num_next = image_num + skip_num
 
         image_msg = deserialize_message(data, msg_type)
 
