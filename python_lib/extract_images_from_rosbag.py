@@ -54,11 +54,11 @@ if __name__ == "__main__":
     }
 
     camera_topic_list = (
-        [
+        sorted([
             topic.name
             for topic in topic_types
             if topic.name.startswith("/sensing/camera")
-        ]
+        ])
         if target_topic is None
         else [target_topic]
     )
