@@ -22,7 +22,7 @@ def parse_args():
     parser.add_argument("--use_cvt_color", action="store_true")
     parser.add_argument("--max_num", type=int, default=1000000000)
     parser.add_argument("--skip_num", type=int, default=1)
-    parser.add_argument("--target_topic", type=str, default=None)
+    parser.add_argument("--target_camera_name", type=str, default=None)
     return parser.parse_args()
 
 
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     use_cvt_color = args.use_cvt_color
     max_num = args.max_num
     skip_num = args.skip_num
-    target_topic = args.target_topic
+    target_camera_name = args.target_camera_name
 
     reader, storage_options, converter_options = create_reader(
         path_to_rosbag, "sqlite3"
@@ -56,13 +56,18 @@ if __name__ == "__main__":
     }
 
     camera_topic_list = (
-        sorted([
-            topic.name
-            for topic in topic_types
-            if topic.name.startswith("/sensing/camera")
-        ])
-        if target_topic is None
-        else [target_topic]
+        sorted(
+            [
+                topic.name
+                for topic in topic_types
+                if topic.name.startswith("/sensing/camera")
+            ]
+        )
+        if target_camera_name is None
+        else [
+            f"/sensing/camera/{target_camera_name}/image_rect_color/compressed",
+            f"/sensing/camera/{target_camera_name}/camera_info",
+        ]
     )
     print(f"{camera_topic_list=}")
 
