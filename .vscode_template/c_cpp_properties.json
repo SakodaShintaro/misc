@@ -16,7 +16,7 @@
       "compilerPath": "/usr/bin/gcc",
       "cStandard": "c17",
       "cppStandard": "c++17",
-      "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+      "compileCommands": "${HOME}/autoware/build/compile_commands.json"
     }
   ],
   "version": 4
