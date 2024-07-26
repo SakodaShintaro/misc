@@ -67,7 +67,6 @@ if __name__ == "__main__":
         "/localization/kinematic_state",
         "/localization/pose_estimator/exe_time_ms",
         "/localization/pose_estimator/initial_to_result_relative_pose",
-        "/localization/pose_estimator/iteration_num",
         "/localization/pose_estimator/ndt_marker",
         "/localization/pose_estimator/nearest_voxel_transformation_likelihood",
         "/localization/pose_estimator/pose",
@@ -105,7 +104,6 @@ if __name__ == "__main__":
     df_transform_probability = df_dict[
         "/localization/pose_estimator/transform_probability"
     ]
-    df_iteration_num = df_dict["/localization/pose_estimator/iteration_num"]
     df_ndt_pose = df_dict["/localization/pose_estimator/pose"]
     df_initial_to_result_relative_pose = df_dict[
         "/localization/pose_estimator/initial_to_result_relative_pose"
@@ -130,15 +128,8 @@ if __name__ == "__main__":
     plt.rcParams["figure.figsize"] = 9, 12
 
     # plot
-    plt.subplot(5, 1, 1)
-    if len(df_iteration_num) > 0:
-        plt.plot(df_iteration_num["timestamp"], df_iteration_num["data"])
-        plt.xlabel("time [s]")
-        plt.ylabel("iteration_num")
-        plt.ylim(bottom=0)
-        plt.grid()
-
-    plt.subplot(5, 1, 2)
+    PLOT_NUM = 5
+    plt.subplot(PLOT_NUM, 1, 1)
     if len(df_exe_time_ms) > 0:
         plt.plot(df_exe_time_ms["timestamp"], df_exe_time_ms["data"])
         plt.xlabel("time [s]")
@@ -149,7 +140,7 @@ if __name__ == "__main__":
             f.write(f"{df_exe_time_ms['data'].mean():.1f} [ms]")
         print(f"Average exe_time_ms: {df_exe_time_ms['data'].mean():.1f} [ms]")
 
-    plt.subplot(5, 1, 3)
+    plt.subplot(PLOT_NUM, 1, 2)
     if len(df_nearest_voxel_transformation_likelihood) > 0:
         plt.plot(
             df_nearest_voxel_transformation_likelihood["timestamp"],
@@ -160,7 +151,7 @@ if __name__ == "__main__":
         plt.ylim(bottom=0)
         plt.grid()
 
-    plt.subplot(5, 1, 4)
+    plt.subplot(PLOT_NUM, 1, 3)
     if len(df_transform_probability) > 0:
         plt.plot(
             df_transform_probability["timestamp"], df_transform_probability["data"]
@@ -170,8 +161,8 @@ if __name__ == "__main__":
         plt.ylim(bottom=0)
         plt.grid()
 
-    plt.subplot(5, 1, 5)
     if len(df_initial_to_result_relative_pose) > 0:
+        plt.subplot(PLOT_NUM, 1, 4)
         plt.plot(
             df_initial_to_result_relative_pose["timestamp"],
             df_initial_to_result_relative_pose["position.x"],
@@ -190,6 +181,35 @@ if __name__ == "__main__":
         plt.xlabel("time [s]")
         plt.ylabel("diff_position [m]")
         plt.grid()
+        plt.legend()
+
+        r = Rotation.from_quat(
+            df_initial_to_result_relative_pose[
+                ["orientation.x", "orientation.y", "orientation.z", "orientation.w"]
+            ].values
+        )
+        angle = r.as_euler("xyz", degrees=True)
+        print(angle.shape)
+        plt.subplot(PLOT_NUM, 1, 5)
+        plt.plot(
+            df_initial_to_result_relative_pose["timestamp"],
+            angle[:, 0],
+            label="x",
+        )
+        plt.plot(
+            df_initial_to_result_relative_pose["timestamp"],
+            angle[:, 1],
+            label="y",
+        )
+        plt.plot(
+            df_initial_to_result_relative_pose["timestamp"],
+            angle[:, 2],
+            label="z",
+        )
+        plt.xlabel("time [s]")
+        plt.ylabel("diff_angle [deg/s]")
+        plt.grid()
+        plt.legend()
 
     plt.tight_layout()
     save_path = save_dir / "localization_result.png"
@@ -203,7 +223,6 @@ if __name__ == "__main__":
     # poseの可視化
     plot_pose(df_ndt_pose, "ndt", save_dir, df_value=None)
     plot_pose(df_ndt_pose, "exe_time_ms", save_dir, df_value=df_exe_time_ms)
-    plot_pose(df_ndt_pose, "iteration_num", save_dir, df_value=df_iteration_num)
     plot_pose(
         df_ndt_pose,
         "nearest_voxel_transformation_likelihood",
