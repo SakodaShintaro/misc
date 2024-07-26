@@ -20,6 +20,10 @@ def plot_pose(
     save_dir: Path,
     df_value: pd.DataFrame | None = None,
 ) -> None:
+    if "timestamp" not in df_pose.columns or (
+        df_value is not None and "timestamp" not in df_value.columns
+    ):
+        return
     df = (
         interpolate_pose(
             df_pose,
@@ -35,7 +39,11 @@ def plot_pose(
         if df_value is not None
         else df_pose
     )
-    color = df_value["data"] if df_value is not None else None
+    if df_value is None:
+        color = None
+    else:
+        df_value = df_value[df_value["timestamp"].isin(df["timestamp"])]
+        color = df_value["data"]
     plt.scatter(df["position.x"], df["position.y"], c=color)
     if df_value is not None:
         plt.colorbar()
@@ -106,72 +114,80 @@ if __name__ == "__main__":
     ]
 
     # dataとして変動量のノルムを計算
-    df_initial_to_result_relative_pose["data"] = (
-        df_initial_to_result_relative_pose.apply(
-            lambda x: np.linalg.norm(
-                [x["position.x"], x["position.y"], x["position.z"]]
-            ),
-            axis=1,
+    if len(df_initial_to_result_relative_pose) > 0:
+        df_initial_to_result_relative_pose["data"] = (
+            df_initial_to_result_relative_pose.apply(
+                lambda x: np.linalg.norm(
+                    [x["position.x"], x["position.y"], x["position.z"]]
+                ),
+                axis=1,
+            )
         )
-    )
 
     # plotの縦サイズを大きくする
     plt.rcParams["figure.figsize"] = 9, 12
 
     # plot
     plt.subplot(5, 1, 1)
-    plt.plot(df_iteration_num["timestamp"], df_iteration_num["data"])
-    plt.xlabel("time [s]")
-    plt.ylabel("iteration_num")
-    plt.ylim(bottom=0)
-    plt.grid()
+    if len(df_iteration_num) > 0:
+        plt.plot(df_iteration_num["timestamp"], df_iteration_num["data"])
+        plt.xlabel("time [s]")
+        plt.ylabel("iteration_num")
+        plt.ylim(bottom=0)
+        plt.grid()
 
     plt.subplot(5, 1, 2)
-    plt.plot(df_exe_time_ms["timestamp"], df_exe_time_ms["data"])
-    plt.xlabel("time [s]")
-    plt.ylabel("exe_time [ms]")
-    plt.ylim(bottom=0)
-    plt.grid()
-    with open(save_dir / "exe_time_ms_mean.txt", "w") as f:
-        f.write(f"{df_exe_time_ms['data'].mean():.1f} [ms]")
-    print(f"Average exe_time_ms: {df_exe_time_ms['data'].mean():.1f} [ms]")
+    if len(df_exe_time_ms) > 0:
+        plt.plot(df_exe_time_ms["timestamp"], df_exe_time_ms["data"])
+        plt.xlabel("time [s]")
+        plt.ylabel("exe_time [ms]")
+        plt.ylim(bottom=0)
+        plt.grid()
+        with open(save_dir / "exe_time_ms_mean.txt", "w") as f:
+            f.write(f"{df_exe_time_ms['data'].mean():.1f} [ms]")
+        print(f"Average exe_time_ms: {df_exe_time_ms['data'].mean():.1f} [ms]")
 
     plt.subplot(5, 1, 3)
-    plt.plot(
-        df_nearest_voxel_transformation_likelihood["timestamp"],
-        df_nearest_voxel_transformation_likelihood["data"],
-    )
-    plt.xlabel("time [s]")
-    plt.ylabel("NVTL")
-    plt.ylim(bottom=0)
-    plt.grid()
+    if len(df_nearest_voxel_transformation_likelihood) > 0:
+        plt.plot(
+            df_nearest_voxel_transformation_likelihood["timestamp"],
+            df_nearest_voxel_transformation_likelihood["data"],
+        )
+        plt.xlabel("time [s]")
+        plt.ylabel("NVTL")
+        plt.ylim(bottom=0)
+        plt.grid()
 
     plt.subplot(5, 1, 4)
-    plt.plot(df_transform_probability["timestamp"], df_transform_probability["data"])
-    plt.xlabel("time [s]")
-    plt.ylabel("TP")
-    plt.ylim(bottom=0)
-    plt.grid()
+    if len(df_transform_probability) > 0:
+        plt.plot(
+            df_transform_probability["timestamp"], df_transform_probability["data"]
+        )
+        plt.xlabel("time [s]")
+        plt.ylabel("TP")
+        plt.ylim(bottom=0)
+        plt.grid()
 
     plt.subplot(5, 1, 5)
-    plt.plot(
-        df_initial_to_result_relative_pose["timestamp"],
-        df_initial_to_result_relative_pose["position.x"],
-        label="x",
-    )
-    plt.plot(
-        df_initial_to_result_relative_pose["timestamp"],
-        df_initial_to_result_relative_pose["position.y"],
-        label="y",
-    )
-    plt.plot(
-        df_initial_to_result_relative_pose["timestamp"],
-        df_initial_to_result_relative_pose["position.z"],
-        label="z",
-    )
-    plt.xlabel("time [s]")
-    plt.ylabel("diff_position [m]")
-    plt.grid()
+    if len(df_initial_to_result_relative_pose) > 0:
+        plt.plot(
+            df_initial_to_result_relative_pose["timestamp"],
+            df_initial_to_result_relative_pose["position.x"],
+            label="x",
+        )
+        plt.plot(
+            df_initial_to_result_relative_pose["timestamp"],
+            df_initial_to_result_relative_pose["position.y"],
+            label="y",
+        )
+        plt.plot(
+            df_initial_to_result_relative_pose["timestamp"],
+            df_initial_to_result_relative_pose["position.z"],
+            label="z",
+        )
+        plt.xlabel("time [s]")
+        plt.ylabel("diff_position [m]")
+        plt.grid()
 
     plt.tight_layout()
     save_path = save_dir / "localization_result.png"
