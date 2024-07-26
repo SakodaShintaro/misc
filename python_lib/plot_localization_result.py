@@ -6,6 +6,7 @@ from scipy.spatial.transform import Rotation
 from pathlib import Path
 from parse_functions import parse_rosbag
 from interpolate_pose import interpolate_pose
+from plot_pose_covariance import transform_covariance_from_map_to_base_link
 
 
 def parse_args() -> argparse.Namespace:
@@ -114,6 +115,12 @@ if __name__ == "__main__":
         "/localization/pose_twist_fusion_filter/kinematic_state"
     ]
 
+    # 共分散をbase_linkに変換
+    df_ndt_pose_with_covariance = transform_covariance_from_map_to_base_link(
+        df_ndt_pose_with_covariance
+    )
+    df_kinematic_state = transform_covariance_from_map_to_base_link(df_kinematic_state)
+
     # dataとして変動量のノルムを計算
     if len(df_initial_to_result_relative_pose) > 0:
         df_initial_to_result_relative_pose["data"] = (
@@ -129,7 +136,7 @@ if __name__ == "__main__":
     plt.rcParams["figure.figsize"] = 9, 12
 
     # plot
-    PLOT_NUM = 5
+    PLOT_NUM = 6
     plt.subplot(PLOT_NUM, 1, 1)
     if len(df_exe_time_ms) > 0:
         plt.plot(df_exe_time_ms["timestamp"], df_exe_time_ms["data"])
@@ -190,7 +197,6 @@ if __name__ == "__main__":
             ].values
         )
         angle = r.as_euler("xyz", degrees=True)
-        print(angle.shape)
         plt.subplot(PLOT_NUM, 1, 5)
         plt.plot(
             df_initial_to_result_relative_pose["timestamp"],
@@ -211,6 +217,28 @@ if __name__ == "__main__":
         plt.ylabel("diff_angle [deg/s]")
         plt.grid()
         plt.legend()
+
+    plt.subplot(PLOT_NUM, 1, 6)
+    plt.plot(
+        df_ndt_pose_with_covariance["timestamp"],
+        np.sqrt(df_ndt_pose_with_covariance["covariance_position.xx"]),
+        label="xx",
+    )
+    plt.plot(
+        df_ndt_pose_with_covariance["timestamp"],
+        np.sqrt(df_ndt_pose_with_covariance["covariance_position.yy"]),
+        label="yy",
+    )
+    plt.plot(
+        df_ndt_pose_with_covariance["timestamp"],
+        np.sqrt(df_ndt_pose_with_covariance["covariance_position.zz"]),
+        label="zz",
+    )
+    plt.xlabel("time [s]")
+    plt.ylabel("stddev [m]")
+    plt.ylim(bottom=0)
+    plt.grid()
+    plt.legend()
 
     plt.tight_layout()
     save_path = save_dir / "localization_result.png"
