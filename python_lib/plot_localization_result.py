@@ -11,6 +11,7 @@ from interpolate_pose import interpolate_pose
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("rosbag_path", type=Path)
+    parser.add_argument("--output_pose_array", action="store_true")
     return parser.parse_args()
 
 
@@ -60,6 +61,7 @@ def plot_pose(
 if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
+    output_pose_array = args.output_pose_array
 
     target_topics = [
         "/localization/kinematic_state",
@@ -220,6 +222,9 @@ if __name__ == "__main__":
         save_dir,
         df_value=df_initial_to_result_relative_pose,
     )
+
+    if not output_pose_array:
+        exit(0)
 
     # pose_arrayを気合で可視化
     plt.rcParams["figure.figsize"] = 9, 9
