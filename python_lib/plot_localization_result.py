@@ -69,7 +69,6 @@ if __name__ == "__main__":
         "/localization/pose_estimator/initial_to_result_relative_pose",
         "/localization/pose_estimator/ndt_marker",
         "/localization/pose_estimator/nearest_voxel_transformation_likelihood",
-        "/localization/pose_estimator/pose",
         "/localization/pose_estimator/pose_with_covariance",
         "/localization/pose_estimator/transform_probability",
         "/localization/pose_twist_fusion_filter/kinematic_state",
@@ -104,7 +103,9 @@ if __name__ == "__main__":
     df_transform_probability = df_dict[
         "/localization/pose_estimator/transform_probability"
     ]
-    df_ndt_pose = df_dict["/localization/pose_estimator/pose"]
+    df_ndt_pose_with_covariance = df_dict[
+        "/localization/pose_estimator/pose_with_covariance"
+    ]
     df_initial_to_result_relative_pose = df_dict[
         "/localization/pose_estimator/initial_to_result_relative_pose"
     ]
@@ -221,22 +222,24 @@ if __name__ == "__main__":
     plt.rcParams["figure.figsize"] = 9, 9
 
     # poseの可視化
-    plot_pose(df_ndt_pose, "ndt", save_dir, df_value=None)
-    plot_pose(df_ndt_pose, "exe_time_ms", save_dir, df_value=df_exe_time_ms)
+    plot_pose(df_ndt_pose_with_covariance, "ndt", save_dir, df_value=None)
     plot_pose(
-        df_ndt_pose,
+        df_ndt_pose_with_covariance, "exe_time_ms", save_dir, df_value=df_exe_time_ms
+    )
+    plot_pose(
+        df_ndt_pose_with_covariance,
         "nearest_voxel_transformation_likelihood",
         save_dir,
         df_value=df_nearest_voxel_transformation_likelihood,
     )
     plot_pose(
-        df_ndt_pose,
+        df_ndt_pose_with_covariance,
         "transform_probability",
         save_dir,
         df_value=df_transform_probability,
     )
     plot_pose(
-        df_ndt_pose,
+        df_ndt_pose_with_covariance,
         "initial_to_result_relative_pose",
         save_dir,
         df_value=df_initial_to_result_relative_pose,
