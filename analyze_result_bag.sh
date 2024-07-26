@@ -8,12 +8,20 @@ set +eux
 source $HOME/autoware/install/setup.bash
 set -eux
 
-set +e
-
 # target_dir以下にあるディレクトリ全てについて解析
-dir_list=$(find $target_dir -mindepth 1 -maxdepth 1 -type d | sort)
+result_bag_list=$(find $target_dir -name "result_bag" | sort)
 
-for dir in $dir_list; do
-  python3 ~/misc/python_lib/parse_rosbag_diagnostics.py $dir/result_bag
-  python3 ~/misc/python_lib/plot_localization_result.py $dir/result_bag
+for result_bag in $result_bag_list; do
+  python3 ~/misc/python_lib/parse_rosbag_diagnostics.py $result_bag
+  python3 ~/misc/python_lib/plot_localization_result.py $result_bag
+done
+
+# 結果をまとめる
+target_file_name=("diagnostics_ekf_localizer.png" "diagnostics_ndt_scan_matcher.png" "diagnostics_pose_instability_detector.png")
+for file_name in ${target_file_name[@]}; do
+  without_ext=${file_name%.*}
+  mkdir -p $target_dir/$without_ext
+  for result_bag in $result_bag_list; do
+    cp $result_bag/../diagnostics_result/$file_name $target_dir/$without_ext/${without_ext}_$(basename $(readlink -f $result_bag/../)).png
+  done
 done
