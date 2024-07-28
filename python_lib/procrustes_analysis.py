@@ -42,12 +42,8 @@ def procrustes(df_from: pd.DataFrame, df_to: pd.DataFrame) -> pd.DataFrame:
     # SVDを計算
     u, _, vt = np.linalg.svd(normalized_xyz_to.T @ normalized_xyz_from)
 
-    print(f"{u.shape=}, {vt.shape=}")
-
     # 回転行列の計算 (3x3)
     R = u @ vt
-
-    print(f"{centered_xyz_from.shape=}, {R.shape=}, {mean_to.shape=}")
 
     # 回転行列を適用して df_from を変換
     transformed_xyz_from = (centered_xyz_from @ R.T) * norm_to / norm_from + mean_to
@@ -88,10 +84,8 @@ if __name__ == "__main__":
     ]
     df_glim["timestamp"] = df_glim["timestamp"] * 1e9
     df_glim["timestamp"] = df_glim["timestamp"].astype(int)
-    print(df_glim.head())
 
     df_pose = pd.read_csv(pose_tsv, sep="\t")
-    print(df_pose.head())
 
     df_pose = interpolate_pose(df_pose, df_glim["timestamp"])
 
@@ -99,7 +93,6 @@ if __name__ == "__main__":
     df_glim["position.y"] += df_pose["position.y"].mean() - df_glim["position.y"].mean()
     df_glim["position.z"] += df_pose["position.z"].mean() - df_glim["position.z"].mean()
 
-    print(len(df_glim), len(df_pose))
     assert len(df_glim) == len(df_pose)
 
     # プロクラステス解析
@@ -125,12 +118,16 @@ if __name__ == "__main__":
         save_dir / "relative_pose_from_glim.tsv", sep="\t", index=False
     )
 
+    mean_error = df_relative_pose["position.norm"].mean()
+    print(f"mean_error={mean_error:.3f}")
+
     plt.subplot(2, 1, 1)
     plt.plot(df_relative_pose["timestamp"], df_relative_pose["position.x"], label="x")
     plt.plot(df_relative_pose["timestamp"], df_relative_pose["position.y"], label="y")
     plt.plot(df_relative_pose["timestamp"], df_relative_pose["position.z"], label="z")
     plt.grid()
     plt.legend()
+    plt.title(f"mean_error = {mean_error:.3f} [m]")
     plt.ylabel("diff [m]")
 
     plt.subplot(2, 1, 2)
@@ -145,3 +142,4 @@ if __name__ == "__main__":
     save_path = save_dir / f"{pose_tsv.stem}_relative_pose.png"
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     plt.close()
+    print(f"Saved to {save_path}")
