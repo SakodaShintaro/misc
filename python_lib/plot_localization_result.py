@@ -133,44 +133,17 @@ if __name__ == "__main__":
         )
 
     # plotの縦サイズを大きくする
-    plt.rcParams["figure.figsize"] = 9, 12
+    plt.rcParams["figure.figsize"] = 9, 9
 
     # plot
-    PLOT_NUM = 6
-    plt.subplot(PLOT_NUM, 1, 1)
+    PLOT_NUM = 3
     if len(df_exe_time_ms) > 0:
-        plt.plot(df_exe_time_ms["timestamp"], df_exe_time_ms["data"])
-        plt.xlabel("time [s]")
-        plt.ylabel("exe_time [ms]")
-        plt.ylim(bottom=0)
-        plt.grid()
         with open(save_dir / "exe_time_ms_mean.txt", "w") as f:
             f.write(f"{df_exe_time_ms['data'].mean():.1f} [ms]")
         print(f"Average exe_time_ms: {df_exe_time_ms['data'].mean():.1f} [ms]")
 
-    plt.subplot(PLOT_NUM, 1, 2)
-    if len(df_nearest_voxel_transformation_likelihood) > 0:
-        plt.plot(
-            df_nearest_voxel_transformation_likelihood["timestamp"],
-            df_nearest_voxel_transformation_likelihood["data"],
-        )
-        plt.xlabel("time [s]")
-        plt.ylabel("NVTL")
-        plt.ylim(bottom=0)
-        plt.grid()
-
-    plt.subplot(PLOT_NUM, 1, 3)
-    if len(df_transform_probability) > 0:
-        plt.plot(
-            df_transform_probability["timestamp"], df_transform_probability["data"]
-        )
-        plt.xlabel("time [s]")
-        plt.ylabel("TP")
-        plt.ylim(bottom=0)
-        plt.grid()
-
     if len(df_initial_to_result_relative_pose) > 0:
-        plt.subplot(PLOT_NUM, 1, 4)
+        plt.subplot(PLOT_NUM, 1, 1)
         plt.plot(
             df_initial_to_result_relative_pose["timestamp"],
             df_initial_to_result_relative_pose["position.x"],
@@ -197,7 +170,7 @@ if __name__ == "__main__":
             ].values
         )
         angle = r.as_euler("xyz", degrees=True)
-        plt.subplot(PLOT_NUM, 1, 5)
+        plt.subplot(PLOT_NUM, 1, 2)
         plt.plot(
             df_initial_to_result_relative_pose["timestamp"],
             angle[:, 0],
@@ -218,7 +191,7 @@ if __name__ == "__main__":
         plt.grid()
         plt.legend()
 
-    plt.subplot(PLOT_NUM, 1, 6)
+    plt.subplot(PLOT_NUM, 1, 3)
     plt.plot(
         df_ndt_pose_with_covariance["timestamp"],
         np.sqrt(df_ndt_pose_with_covariance["covariance_position.xx"]),
