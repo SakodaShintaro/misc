@@ -25,3 +25,12 @@ for file_name in ${target_file_name[@]}; do
     cp $result_bag/../diagnostics_result/$file_name $target_dir/$without_ext/${without_ext}_$(basename $(readlink -f $result_bag/../)).png
   done
 done
+
+target_file_name=("localization_result.png")
+for file_name in ${target_file_name[@]}; do
+  without_ext=${file_name%.*}
+  mkdir -p $target_dir/$without_ext
+  for result_bag in $result_bag_list; do
+    cp $result_bag/../localization_result/$file_name $target_dir/$without_ext/${without_ext}_$(basename $(readlink -f $result_bag/../)).png
+  done
+done
