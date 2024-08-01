@@ -112,7 +112,7 @@ if __name__ == "__main__":
     ]
     df_marker = df_dict["/localization/pose_estimator/ndt_marker"]
     df_kinematic_state = df_dict[
-        "/localization/pose_twist_fusion_filter/kinematic_state"
+        "/localization/kinematic_state"
     ]
 
     # 共分散をbase_linkに変換
