@@ -9,7 +9,7 @@ from collections import defaultdict
 import pandas as pd
 
 
-def parse_rosbag(rosbag_path: str, target_topic_list):
+def parse_rosbag(rosbag_path: str, target_topic_list: list[str], limit: int = 0) -> dict:
     serialization_format = "cdr"
     storage_options = rosbag2_py.StorageOptions(uri=rosbag_path, storage_id="sqlite3")
     converter_options = rosbag2_py.ConverterOptions(
@@ -29,12 +29,16 @@ def parse_rosbag(rosbag_path: str, target_topic_list):
     reader.set_filter(storage_filter)
 
     topic_name_to_data = defaultdict(list)
+    parse_num = 0
     while reader.has_next():
         (topic, data, t) = reader.read_next()
         msg_type = get_message(type_map[topic])
         msg = deserialize_message(data, msg_type)
         if topic in target_topic_list:
             topic_name_to_data[topic].append(parse_msg(msg, msg_type))
+            parse_num += 1
+            if limit > 0 and parse_num >= limit:
+                break
     for key in target_topic_list:
         topic_name_to_data[key] = pd.DataFrame(topic_name_to_data[key])
         print(f"{key}: {len(topic_name_to_data[key])} msgs")
