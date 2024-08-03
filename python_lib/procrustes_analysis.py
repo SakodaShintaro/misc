@@ -93,7 +93,7 @@ if __name__ == "__main__":
     df_glim["position.y"] += df_pose["position.y"].mean() - df_glim["position.y"].mean()
     df_glim["position.z"] += df_pose["position.z"].mean() - df_glim["position.z"].mean()
 
-    assert len(df_glim) == len(df_pose)
+    assert len(df_glim) == len(df_pose), f"{len(df_glim)=}, {len(df_pose)=}"
 
     # プロクラステス解析
     df_glim_transformed = procrustes(df_glim, df_pose)
