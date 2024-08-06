@@ -13,6 +13,7 @@ from geometry_msgs.msg import TransformStamped
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("output_dir", type=Path)
+    parser.add_argument("--pose_tsv_path", type=Path, default=None)
     parser.add_argument(
         "--pose_topic_name",
         type=str,
@@ -90,12 +91,14 @@ def transform_pose_base_link_2_camera(
 if __name__ == "__main__":
     args = parse_args()
     output_dir = args.output_dir
+    pose_tsv_path = args.pose_tsv_path
     pose_topic_name = args.pose_topic_name
 
     save_name = "__".join(pose_topic_name.split("/")[1:])
 
-    df_pose = pd.read_csv(output_dir / f"{save_name}.tsv", sep="\t")
-    print(df_pose.head())
+    pose_tsv_path = output_dir / f"{save_name}.tsv" if pose_tsv_path is None else pose_tsv_path
+
+    df_pose = pd.read_csv(pose_tsv_path, sep="\t")
 
     dir_list = sorted([p for p in output_dir.glob("*") if p.is_dir()])
     for dir_path in dir_list:
