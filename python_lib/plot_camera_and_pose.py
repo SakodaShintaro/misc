@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 
 def parse_args():
@@ -28,7 +29,15 @@ if __name__ == "__main__":
     travel_distance = 0
     timestamp0 = timestamp_list[0]
 
+    image_path_list = [
+        p for p in image_path_list if int(p.stem) in pose_df["timestamp"].values
+    ]
+
+    progress = tqdm(total=len(image_path_list))
+
     for i, image_path in enumerate(image_path_list):
+        progress.update(1)
+
         if i >= 1:
             prev_pose = pose_df.iloc[i - 1]
             curr_pose = pose_df.iloc[i]
@@ -46,7 +55,9 @@ if __name__ == "__main__":
         curr_pose = pose_df.iloc[i]
         ax[1].plot(pose_df["position.x"], pose_df["position.y"], "b")
         ax[1].plot(curr_pose["position.x"], curr_pose["position.y"], "ro")
-        ax[1].set_title(f"timestamp_diff: {(timestamp - timestamp0) / 1e9:.1f} sec, travel_distance: {travel_distance:.2f} m")
+        ax[1].set_title(
+            f"timestamp_diff: {(timestamp - timestamp0) / 1e9:.1f} sec, travel_distance: {travel_distance:.2f} m"
+        )
         ax[1].set_xlabel("x [m]")
         ax[1].set_ylabel("y [m]")
         ax[1].grid()
@@ -55,7 +66,6 @@ if __name__ == "__main__":
         save_path = images_dir / f"{camera_name}_and_pose_plot" / f"{timestamp}.png"
         save_path.parent.mkdir(exist_ok=True, parents=True)
         plt.savefig(save_path)
-        print(f"Saved plot to {save_path}")
 
         plt.cla()
         plt.clf()
