@@ -117,6 +117,13 @@ if __name__ == "__main__":
         df = df.dropna(subset=[key])
         plt.subplot(5, 2, i + 1)
         plt.plot(df["timestamp_header"], df[key], label=key)
+        if key == "nearest_voxel_transformation_likelihood":
+            plt.plot(
+                df["timestamp_header"],
+                [2.3 for _ in range(len(df))],
+                label="threshold",
+                linestyle="dashed",
+            )
         plt.xlabel("time [s]")
         plt.title(f"{key}")
         plt.ylim(bottom=min(0, df[key].min()))
