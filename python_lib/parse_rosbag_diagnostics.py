@@ -113,6 +113,9 @@ if __name__ == "__main__":
     ]
     plt.figure(figsize=(6.4 * 2, 4.8 * 2))
     for i, key in enumerate(key_list):
+        if key not in df.columns:
+            print(f"Skip {key}")
+            continue
         df[key] = df[key].astype(float)
         df = df.dropna(subset=[key])
         plt.subplot(5, 2, i + 1)
@@ -158,6 +161,9 @@ if __name__ == "__main__":
 
     plt.figure(figsize=(6.4 * 2, 4.8 * 2))
     for i, key in enumerate(key_list):
+        if key not in df.columns:
+            print(f"Skip {key}")
+            continue
         df[key] = df[key].astype(float)
         key_threshold = (
             key + "_threshold"
@@ -214,6 +220,9 @@ if __name__ == "__main__":
     for key in key_list:
         key_value = key + ":value"
         key_threshold = key + ":threshold"
+        if key_value not in df.columns:
+            print(f"Skip {key}")
+            continue
         df[key_value] = df[key_value].astype(float)
         df[key_threshold] = df[key_threshold].astype(float)
         plt.plot(df["timestamp_header"], df[key_value], label=key_value)
@@ -242,6 +251,9 @@ if __name__ == "__main__":
     for key in key_list:
         key_value = key + ":value"
         key_threshold = key + ":threshold"
+        if key_value not in df.columns:
+            print(f"Skip {key}")
+            continue
         df[key_value] = df[key_value].astype(float)
         df[key_threshold] = df[key_threshold].astype(float)
         plt.plot(df["timestamp_header"], df[key_value], label=key_value)
