@@ -46,7 +46,7 @@ def plot_pose(
     else:
         df_value = df_value[df_value["timestamp"].isin(df["timestamp"])]
         color = df_value["data"]
-    plt.scatter(df["position.x"], df["position.y"], c=color)
+    plt.scatter(df["position.x"], df["position.y"], c=color, s=0.5)
     if df_value is not None:
         plt.colorbar()
     plt.axis("equal")
