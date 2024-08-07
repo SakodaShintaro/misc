@@ -9,21 +9,21 @@ from parse_functions import parse_rosbag
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("rosbag_path", type=Path)
+    parser.add_argument("--target_topic", type=str, default="/sensing/imu/imu_data")
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
-
-    target_topic = "/sensing/imu/imu_data"
+    target_topic = args.target_topic
 
     df_dict = parse_rosbag(str(rosbag_path), [target_topic])
 
     # rosbag path may be the path to the db3 file, or it may be the path to the directory containing it
     save_dir = (
         rosbag_path.parent if rosbag_path.is_dir() else rosbag_path.parent.parent
-    ) / "imu_data"
+    ) / target_topic.split("/")[-1]
     save_dir.mkdir(exist_ok=True)
 
     # save as csv
@@ -32,7 +32,7 @@ if __name__ == "__main__":
         if len(df) == 0:
             print(f"!{topic_name} is empty")
             continue
-        filename = topic_name.replace("/sensing/", "").replace("/", "_")
+        filename = topic_name.replace("/sensing/", "").replace("/", "__")
         df.to_csv(
             save_dir / f"{filename}.tsv",
             index=False,
