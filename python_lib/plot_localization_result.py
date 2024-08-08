@@ -145,17 +145,17 @@ if __name__ == "__main__":
     if len(df_initial_to_result_relative_pose) > 0:
         plt.subplot(PLOT_NUM, 1, 1)
         plt.plot(
-            df_initial_to_result_relative_pose["timestamp"],
+            df_initial_to_result_relative_pose["timestamp"] / 1e9,
             df_initial_to_result_relative_pose["position.x"],
             label="x",
         )
         plt.plot(
-            df_initial_to_result_relative_pose["timestamp"],
+            df_initial_to_result_relative_pose["timestamp"] / 1e9,
             df_initial_to_result_relative_pose["position.y"],
             label="y",
         )
         plt.plot(
-            df_initial_to_result_relative_pose["timestamp"],
+            df_initial_to_result_relative_pose["timestamp"] / 1e9,
             df_initial_to_result_relative_pose["position.z"],
             label="z",
         )
@@ -172,17 +172,17 @@ if __name__ == "__main__":
         angle = r.as_euler("xyz", degrees=True)
         plt.subplot(PLOT_NUM, 1, 2)
         plt.plot(
-            df_initial_to_result_relative_pose["timestamp"],
+            df_initial_to_result_relative_pose["timestamp"] / 1e9,
             angle[:, 0],
             label="x",
         )
         plt.plot(
-            df_initial_to_result_relative_pose["timestamp"],
+            df_initial_to_result_relative_pose["timestamp"] / 1e9,
             angle[:, 1],
             label="y",
         )
         plt.plot(
-            df_initial_to_result_relative_pose["timestamp"],
+            df_initial_to_result_relative_pose["timestamp"] / 1e9,
             angle[:, 2],
             label="z",
         )
@@ -193,17 +193,17 @@ if __name__ == "__main__":
 
     plt.subplot(PLOT_NUM, 1, 3)
     plt.plot(
-        df_ndt_pose_with_covariance["timestamp"],
+        df_ndt_pose_with_covariance["timestamp"] / 1e9,
         np.sqrt(df_ndt_pose_with_covariance["covariance_position.xx"]),
         label="xx",
     )
     plt.plot(
-        df_ndt_pose_with_covariance["timestamp"],
+        df_ndt_pose_with_covariance["timestamp"] / 1e9,
         np.sqrt(df_ndt_pose_with_covariance["covariance_position.yy"]),
         label="yy",
     )
     plt.plot(
-        df_ndt_pose_with_covariance["timestamp"],
+        df_ndt_pose_with_covariance["timestamp"] / 1e9,
         np.sqrt(df_ndt_pose_with_covariance["covariance_position.zz"]),
         label="zz",
     )
