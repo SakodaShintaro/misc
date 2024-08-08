@@ -111,9 +111,7 @@ if __name__ == "__main__":
         "/localization/pose_estimator/initial_to_result_relative_pose"
     ]
     df_marker = df_dict["/localization/pose_estimator/ndt_marker"]
-    df_kinematic_state = df_dict[
-        "/localization/kinematic_state"
-    ]
+    df_kinematic_state = df_dict["/localization/kinematic_state"]
 
     # 共分散をbase_linkに変換
     df_ndt_pose_with_covariance = transform_covariance_from_map_to_base_link(
@@ -136,7 +134,7 @@ if __name__ == "__main__":
     plt.rcParams["figure.figsize"] = 9, 9
 
     # plot
-    PLOT_NUM = 3
+    PLOT_NUM = 4
     if len(df_exe_time_ms) > 0:
         with open(save_dir / "exe_time_ms_mean.txt", "w") as f:
             f.write(f"{df_exe_time_ms['data'].mean():.1f} [ms]")
@@ -210,6 +208,27 @@ if __name__ == "__main__":
     plt.xlabel("time [s]")
     plt.ylabel("stddev [m]")
     plt.ylim(bottom=0)
+    plt.grid()
+    plt.legend()
+
+    plt.subplot(PLOT_NUM, 1, 4)
+    plt.plot(
+        df_kinematic_state["timestamp"] / 1e9,
+        df_kinematic_state["linear_velocity.x"],
+        label="x",
+    )
+    plt.plot(
+        df_kinematic_state["timestamp"] / 1e9,
+        df_kinematic_state["linear_velocity.y"],
+        label="y",
+    )
+    plt.plot(
+        df_kinematic_state["timestamp"] / 1e9,
+        df_kinematic_state["linear_velocity.z"],
+        label="z",
+    )
+    plt.xlabel("time [s]")
+    plt.ylabel("velocity [m/s]")
     plt.grid()
     plt.legend()
 
