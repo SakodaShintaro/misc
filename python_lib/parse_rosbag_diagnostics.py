@@ -276,3 +276,38 @@ if __name__ == "__main__":
     save_path = save_dir / "diagnostics_pose_instability_detector.png"
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     print(f"Saved {save_path}")
+
+    ##############################
+    # localization_error_monitor #
+    ##############################
+    df = pd.DataFrame(data_dict["localization: localization_error_monitor"])
+    """
+    print(df.head())
+    localization_error_ellipse localization_error_ellipse_lateral_direction     timestamp_rosbag     timestamp_header  level                                  message
+    0                   2.185800                                     0.005914  1722926634905264942  1722926634785096275      2  ellipse size is over the expected range
+    1                   2.329596                                     0.005917  1722926634908142198  1722926634805128505      2  ellipse size is over the expected range
+    2                   2.488433                                     0.005921  1722926634921237057  1722926634826337806      2  ellipse size is over the expected range
+    3                   3.066201                                     0.005941  1722926634944631758  1722926634898547179      2  ellipse size is over the expected range
+    4                   3.073270                                     0.005946  1722926634952046863  1722926634909982648      2  ellipse size is over the expected range
+    """
+    # plot
+    key_list = [
+        "localization_error_ellipse",
+        "localization_error_ellipse_lateral_direction",
+        "level",
+    ]
+    plt.figure(figsize=(6.4 * 2, 4.8 * 2))
+    for i, key in enumerate(key_list):
+        if key not in df.columns:
+            print(f"Skip {key}")
+            continue
+        df[key] = df[key].astype(float)
+        plt.plot(df["timestamp_header"], df[key], label=key)
+    plt.xlabel("time [s]")
+    plt.ylabel("error_ellipse [m]")
+    plt.grid()
+    plt.legend()
+    plt.tight_layout()
+    save_path = save_dir / "diagnostics_localization_error_monitor.png"
+    plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
+    print(f"Saved {save_path}")
