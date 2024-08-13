@@ -19,7 +19,6 @@ if __name__ == "__main__":
     images_dir = args.images_dir
     camera_name = args.camera_name
 
-
     image_path_list = sorted((images_dir / camera_name).glob("*.png"))
     pose_df = pd.read_csv(images_dir / f"pose_{camera_name}.tsv", sep="\t", index_col=0)
 
