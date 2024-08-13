@@ -84,8 +84,14 @@ if __name__ == "__main__":
     ]
     df_glim["timestamp"] = df_glim["timestamp"] * 1e9
     df_glim["timestamp"] = df_glim["timestamp"].astype(int)
+    df_glim = df_glim.sort_values("timestamp")
 
     df_pose = pd.read_csv(pose_tsv, sep="\t")
+
+    cond = (df_pose.iloc[0]["timestamp"] <= df_glim["timestamp"]) & (
+        df_glim["timestamp"] <= df_pose.iloc[-1]["timestamp"]
+    )
+    df_glim = df_glim[cond]
 
     df_pose = interpolate_pose(df_pose, df_glim["timestamp"])
 

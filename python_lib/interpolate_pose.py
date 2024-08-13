@@ -19,9 +19,19 @@ def interpolate_pose(
     * df_pose must have timestamps with a larger interval than target_timestamp
       * i.e. df_pose[0] <= target_timestamp[0] and target_timestamp[-1] <= df_pose[-1]
     * len(df_pose) > len(target_timestamp)
+    * df_pose and target_timestamp is 0-indexed
     出力)
     * DataFrame with same columns as df_pose and length same as target_timestamp
     """
+    assert df_pose['timestamp'].is_monotonic_increasing
+    assert target_timestamp.is_monotonic_increasing
+    assert df_pose.iloc[0]['timestamp'] <= target_timestamp.iloc[0]
+    assert target_timestamp.iloc[-1] <= df_pose.iloc[-1]['timestamp']
+    assert len(df_pose) > len(target_timestamp) > 0
+
+    df_pose = df_pose.reset_index(drop=True)
+    target_timestamp = target_timestamp.reset_index(drop=True)
+
     target_index = 0
     df_index = 0
     data_dict = {
