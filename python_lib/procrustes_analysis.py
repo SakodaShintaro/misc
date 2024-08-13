@@ -149,3 +149,7 @@ if __name__ == "__main__":
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     plt.close()
     print(f"Saved to {save_path}")
+
+    save_path = save_dir / "glim_transformed.tsv"
+    df_glim_transformed.to_csv(save_path, sep="\t", index=False)
+    print(f"Saved to {save_path}")
