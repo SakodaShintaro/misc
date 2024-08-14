@@ -17,7 +17,7 @@ def parse_args():
     parser.add_argument(
         "--pose_topic_name",
         type=str,
-        default="/awsim/ground_truth/vehicle/pose",
+        default="/awsim/ground_truth/localization/kinematic_state",
     )
     return parser.parse_args()
 

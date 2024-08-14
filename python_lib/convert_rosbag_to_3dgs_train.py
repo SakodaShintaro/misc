@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
     lidar_topic_list = ["/sensing/lidar/top/pointcloud_raw_ex"]
 
-    pose_topic_name = "/awsim/ground_truth/vehicle/pose"
+    pose_topic_name = "/awsim/ground_truth/localization/kinematic_state"
 
     target_topics = image_topic_list + camera_info_topic_list + [
         pose_topic_name,

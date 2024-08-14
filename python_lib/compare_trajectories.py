@@ -52,7 +52,7 @@ if __name__ == "__main__":
     df_gt = df_gt.sort_values(by="timestamp")
 
     # interpolate
-    timestamp = df_pr["timestamp"].values
+    timestamp = df_pr["timestamp"]
     ok_mask = (timestamp > df_gt["timestamp"].min()) * (
         timestamp < df_gt["timestamp"].max()
     )

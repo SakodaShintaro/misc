@@ -26,10 +26,12 @@ def plot_pose(
         df_value is not None and "timestamp" not in df_value.columns
     ):
         return
+    if df_value is not None:
+        df_value = df_value.sort_values(by="timestamp")
     df = (
         interpolate_pose(
             df_pose,
-            df_value["timestamp"].values,
+            df_value["timestamp"],
             POSITIONS_KEY=["position.x", "position.y", "position.z"],
             ORIENTATIONS_KEY=[
                 "orientation.x",

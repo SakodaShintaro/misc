@@ -13,7 +13,6 @@ TOPICS=(
     "/sensing/lidar/top/pointcloud_raw_ex"
     "/vehicle/status/velocity_status"
     "/awsim/ground_truth/localization/kinematic_state"
-    "/awsim/ground_truth/vehicle/pose"
     "/localization/pose_twist_fusion_filter/biased_pose_with_covariance"
     "/localization/kinematic_state"
     "/localization/util/downsample/pointcloud"
