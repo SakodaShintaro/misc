@@ -17,6 +17,7 @@ cd $HOME/autoware/src/launcher/autoware_launch
 ~/misc/merge_from_url.sh https://github.com/tier4/autoware_launch/tree/add-launch-sensor-driver-arg
 cd $HOME/autoware
 ~/misc/build_with_custom_jobs.sh 2
+~/misc/change_autoware_for_localization.sh
 
 # AWSIMをバックグラウンドで起動
 $HOME/Downloads/shinjuku_binary_1_lidar_2024_07_25/AWSIM/AWSIM.x86_64 \
