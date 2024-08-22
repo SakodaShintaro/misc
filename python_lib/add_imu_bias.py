@@ -1,13 +1,13 @@
-""" A script to add bias to imu.
-"""
+"""A script to add bias to imu."""
 
 import argparse
 from pathlib import Path
+
 from rosbags.rosbag2 import Reader, Writer
-from rosbags.serde import serialize_cdr, deserialize_cdr
+from rosbags.serde import deserialize_cdr, serialize_cdr
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("input_bag", type=Path)
     parser.add_argument("topic_name", type=str)
@@ -46,7 +46,7 @@ if __name__ == "__main__":
             msg.angular_velocity.x += bias_x
             msg.angular_velocity.y += bias_y
             msg.angular_velocity.z += bias_z
-            rawdata = serialize_cdr(msg, connection.msgtype)
+            rawdata = serialize_cdr(msg, connection.msgtype)  # noqa: PLW2901
         writer.write(topic_name_to_connection[connection.topic], timestamp, rawdata)
 
     reader.close()
