@@ -1,8 +1,10 @@
-"""(静止状態であるrosbagと前提して)IMUのバイアスを計算するスクリプト"""
+"""(静止状態であるrosbagと前提して)IMUのバイアスを計算するスクリプト."""
 
 import argparse
-import matplotlib.pyplot as plt
 from pathlib import Path
+
+import matplotlib.pyplot as plt
+
 from parse_functions import parse_rosbag
 
 
@@ -20,7 +22,7 @@ if __name__ == "__main__":
 
     df_dict = parse_rosbag(str(rosbag_path), [target_topic])
 
-    # rosbag path may be the path to the db3 file, or it may be the path to the directory containing it
+    # rosbag path may be the path to the db3 file, or may be the path to the directory containing it
     save_dir = (
         rosbag_path.parent if rosbag_path.is_dir() else rosbag_path.parent.parent
     ) / target_topic.split("/")[-1]
@@ -33,13 +35,7 @@ if __name__ == "__main__":
             print(f"!{topic_name} is empty")
             continue
         filename = topic_name.replace("/sensing/", "").replace("/", "__")
-        df.to_csv(
-            save_dir / f"{filename}.tsv",
-            index=False,
-            sep="\t",
-            float_format="%.9f",
-        )
-
+        df.to_csv(save_dir / f"{filename}.tsv", index=False, sep="\t", float_format="%.9f")
     df = df_dict[target_topic]
 
     """
@@ -50,7 +46,7 @@ if __name__ == "__main__":
     2  1721370795407268850  tamagawa/imu_link           -0.001917           -0.002663            0.007883               0.027466              -0.131226              -9.698486            0.0            0.0            0.0            1.0
     3  1721370795412342401  tamagawa/imu_link           -0.001278           -0.001278            0.007776               0.042725              -0.085449              -9.796143            0.0            0.0            0.0            1.0
     4  1721370795417306159  tamagawa/imu_link           -0.000639           -0.002131            0.008629               0.070190              -0.119019              -9.768677            0.0            0.0            0.0            1.0
-    """
+    """  # noqa: E501
 
     print(f"{df['angular_velocity.x'].mean()=:+.6f}")
     print(f"{df['angular_velocity.y'].mean()=:+.6f}")
