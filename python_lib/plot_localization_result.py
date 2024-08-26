@@ -1,11 +1,16 @@
+"""localizationの結果を読み込んでプロットするスクリプト."""
+
 import argparse
-import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
-from scipy.spatial.transform import Rotation
+import sys
 from pathlib import Path
-from parse_functions import parse_rosbag
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from scipy.spatial.transform import Rotation
+
 from interpolate_pose import interpolate_pose
+from parse_functions import parse_rosbag
 from plot_pose_covariance import transform_covariance_from_map_to_base_link
 
 
@@ -83,7 +88,7 @@ if __name__ == "__main__":
 
     df_dict = parse_rosbag(str(rosbag_path), target_topics)
 
-    # rosbag path may be the path to the db3 file, or it may be the path to the directory containing it
+    # rosbag path may be the path to the db3 file, or may be the path to the directory containing it
     save_dir = (
         rosbag_path.parent if rosbag_path.is_dir() else rosbag_path.parent.parent
     ) / "localization_result"
@@ -117,7 +122,7 @@ if __name__ == "__main__":
 
     # 共分散をbase_linkに変換
     df_ndt_pose_with_covariance = transform_covariance_from_map_to_base_link(
-        df_ndt_pose_with_covariance
+        df_ndt_pose_with_covariance,
     )
     df_kinematic_state = transform_covariance_from_map_to_base_link(df_kinematic_state)
 
@@ -134,7 +139,7 @@ if __name__ == "__main__":
     # plot
     PLOT_NUM = 4
     if len(df_exe_time_ms) > 0:
-        with open(save_dir / "exe_time_ms_mean.txt", "w") as f:
+        with (save_dir / "exe_time_ms_mean.txt").open("w") as f:
             f.write(f"{df_exe_time_ms['data'].mean():.1f} [ms]")
         print(f"Average exe_time_ms: {df_exe_time_ms['data'].mean():.1f} [ms]")
 
@@ -163,7 +168,7 @@ if __name__ == "__main__":
         r = Rotation.from_quat(
             df_initial_to_result_relative_pose[
                 ["orientation.x", "orientation.y", "orientation.z", "orientation.w"]
-            ].values
+            ].values,
         )
         angle = r.as_euler("xyz", degrees=True)
         plt.subplot(PLOT_NUM, 1, 2)
@@ -262,7 +267,7 @@ if __name__ == "__main__":
     )
 
     if not output_pose_array:
-        exit(0)
+        sys.exit(0)
 
     # pose_arrayを気合で可視化
     plt.rcParams["figure.figsize"] = 9, 9
@@ -279,15 +284,16 @@ if __name__ == "__main__":
                 * (curr_df["position.z"] == 0.0)
             )
         ]
-        if len(curr_df) < 30:
+        THRESHOLD = 30
+        if len(curr_df) < THRESHOLD:
             continue
-        position_x = curr_df["position.x"].values
-        position_y = curr_df["position.y"].values
+        position_x = curr_df["position.x"].to_numpy()
+        position_y = curr_df["position.y"].to_numpy()
         position_x -= position_x[0]
         position_y -= position_y[0]
         orientation = curr_df[
             ["orientation.x", "orientation.y", "orientation.z", "orientation.w"]
-        ].values
+        ].to_numpy()
         plt.figure()
         # indexで色付け(0 ~ 29), 0から1, 1から2,... へと矢印を描画
         for j in range(len(position_x) - 1):
@@ -309,7 +315,7 @@ if __name__ == "__main__":
         plt.xlim(-lim, lim)
         plt.ylim(-lim, lim)
         plt.grid()
-        plt.savefig(f'{str(pose_array_result_dir/ f"{i:08d}.png")}')
+        plt.savefig(pose_array_result_dir / f"{i:08d}.png")
         plt.close()
 
         # quaternionを気合で可視化
@@ -340,5 +346,5 @@ if __name__ == "__main__":
         plt.ylim(-1, 1)
         plt.grid()
         plt.legend()
-        plt.savefig(f'{str(yaw_array_result_dir/ f"{i:08d}.png")}')
+        plt.savefig(yaw_array_result_dir / f"{i:08d}.png")
         plt.close()
