@@ -28,6 +28,10 @@ def plot_pose(
         return
     if df_value is not None:
         df_value = df_value.sort_values(by="timestamp")
+        cond = (df_pose.iloc[0]["timestamp"] <= df_value["timestamp"]) & (
+            df_value["timestamp"] <= df_pose.iloc[-1]["timestamp"]
+        )
+        df_value = df_value[cond]
     df = (
         interpolate_pose(
             df_pose,
@@ -103,12 +107,8 @@ if __name__ == "__main__":
     df_nearest_voxel_transformation_likelihood = df_dict[
         "/localization/pose_estimator/nearest_voxel_transformation_likelihood"
     ]
-    df_transform_probability = df_dict[
-        "/localization/pose_estimator/transform_probability"
-    ]
-    df_ndt_pose_with_covariance = df_dict[
-        "/localization/pose_estimator/pose_with_covariance"
-    ]
+    df_transform_probability = df_dict["/localization/pose_estimator/transform_probability"]
+    df_ndt_pose_with_covariance = df_dict["/localization/pose_estimator/pose_with_covariance"]
     df_initial_to_result_relative_pose = df_dict[
         "/localization/pose_estimator/initial_to_result_relative_pose"
     ]
@@ -123,13 +123,9 @@ if __name__ == "__main__":
 
     # dataとして変動量のノルムを計算
     if len(df_initial_to_result_relative_pose) > 0:
-        df_initial_to_result_relative_pose["data"] = (
-            df_initial_to_result_relative_pose.apply(
-                lambda x: np.linalg.norm(
-                    [x["position.x"], x["position.y"], x["position.z"]]
-                ),
-                axis=1,
-            )
+        df_initial_to_result_relative_pose["data"] = df_initial_to_result_relative_pose.apply(
+            lambda x: np.linalg.norm([x["position.x"], x["position.y"], x["position.z"]]),
+            axis=1,
         )
 
     # plotの縦サイズを大きくする
@@ -245,9 +241,7 @@ if __name__ == "__main__":
 
     # poseの可視化
     plot_pose(df_ndt_pose_with_covariance, "ndt", save_dir, df_value=None)
-    plot_pose(
-        df_ndt_pose_with_covariance, "exe_time_ms", save_dir, df_value=df_exe_time_ms
-    )
+    plot_pose(df_ndt_pose_with_covariance, "exe_time_ms", save_dir, df_value=df_exe_time_ms)
     plot_pose(
         df_ndt_pose_with_covariance,
         "nearest_voxel_transformation_likelihood",
