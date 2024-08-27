@@ -10,6 +10,9 @@ set +eux
 source $HOME/autoware/install/setup.bash
 set -eux
 
+cd $HOME/autoware
+~/misc/change_autoware_for_localization.sh
+
 # AWSIMをバックグラウンドで起動
 $HOME/Downloads/shinuku_binary_1_lidar_2024_07_30/AWSIM/AWSIM.x86_64 &
 
