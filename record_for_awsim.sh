@@ -16,6 +16,7 @@ TOPICS=(
     "/localization/pose_twist_fusion_filter/biased_pose_with_covariance"
     "/localization/kinematic_state"
     "/localization/util/downsample/pointcloud"
+    "/localization/twist_estimator/twist_with_covariance"
     "/initialpose"
     "/tf_static"
 )
