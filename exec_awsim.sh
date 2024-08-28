@@ -15,6 +15,7 @@ cd $HOME/autoware
 
 # AWSIMをバックグラウンドで起動
 $HOME/Downloads/shinuku_binary_1_lidar_2024_07_30/AWSIM/AWSIM.x86_64 &
+# $HOME/Downloads/shinuku_binary_3_lidars_2024_07_30/AWSIM/AWSIM.x86_64 &
 
 # Autowareを起動
 ros2 launch autoware_launch e2e_simulator.launch.xml \
