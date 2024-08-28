@@ -1,16 +1,18 @@
-""" 日々実行される結果からグラフを作成する
-"""
+"""日々実行される結果からグラフを作成する."""
 
 import argparse
 import os
-import pandas as pd
+import sys
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("target_dir", type=str)
+    parser.add_argument("target_dir", type=Path)
     return parser.parse_args()
 
 
@@ -18,49 +20,43 @@ if __name__ == "__main__":
     args = parse_args()
     target_dir = args.target_dir
 
-    result_dirs = files_dir = [
-        os.path.join(target_dir, f)
-        for f in os.listdir(target_dir)
-        if os.path.isdir(os.path.join(target_dir, f))
+    result_dirs = [
+        Path(target_dir) / f for f in os.listdir(target_dir) if (Path(target_dir) / f).is_dir()
     ]
 
     result_dirs.sort()
 
     suffix_error = (
-        "localization__pose_twist_fusion_filter__pose_result/relative_pose_summary.tsv"
+        "localization__pose_estimator__pose_with_covariance_result/relative_pose_summary.tsv"
     )
-    suffix_time = "localization_result/exe_time_ms.tsv"
+    suffix_time = "localization_result/pose_estimator_exe_time_ms.tsv"
 
     date_list = []
     error_list = []
     time_list = []
 
     for result_dir in result_dirs:
-        tsv_path_error = os.path.join(result_dir, suffix_error)
-        tsv_path_time = os.path.join(result_dir, suffix_time)
-        if not os.path.exists(tsv_path_error) or not os.path.exists(tsv_path_time):
+        tsv_path_error = result_dir / suffix_error
+        tsv_path_time = result_dir / suffix_time
+        if not tsv_path_error.exists() or not tsv_path_time.exists():
             continue
 
-        date = os.path.basename(result_dir).split("_")
+        date = result_dir.name.split("_")
         date = date[0] + date[1]
         date = pd.to_datetime(date, format="%Y%m%d%H%M%S")
         date_list.append(date)
 
         df_error = pd.read_csv(tsv_path_error, sep="\t")
-        error = df_error["error_mean"].values[0]
+        error = df_error["error_mean"].to_numpy()[0]
         error_list.append(error)
 
         df_time = pd.read_csv(tsv_path_time, sep="\t")
-        time = (
-            df_time["value"].mean()
-            if "value" in df_time.columns
-            else df_time["data"].mean()
-        )
+        time = df_time["value"].mean() if "value" in df_time.columns else df_time["data"].mean()
         time_list.append(time)
 
     if len(date_list) == 0:
         print("no data")
-        exit(0)
+        sys.exit(0)
 
     plt.figure(figsize=(6.4, 4.8 * 1.5))
 
@@ -71,7 +67,7 @@ if __name__ == "__main__":
     plt.ylabel("error_mean")
     plt.ylim(0, percentile_90 * 2)
     plt.tick_params(axis="x", which="both", bottom=False, top=False, labelbottom=False)
-    plt.grid(True)
+    plt.grid()
 
     # plot time
     plt.subplot(2, 1, 2)
@@ -81,10 +77,10 @@ if __name__ == "__main__":
     plt.ylabel("exe_time_ms")
     plt.xticks(rotation=90)
     plt.ylim(0, percentile_90 * 2)
-    plt.grid(True)
+    plt.grid()
 
     plt.tight_layout()
 
-    save_path = os.path.join(target_dir, "error_mean.png")
+    save_path = target_dir / "error_mean.png"
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     print(f"save {save_path}")
