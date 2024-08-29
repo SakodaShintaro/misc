@@ -32,7 +32,8 @@ if __name__ == "__main__":
     set1 = {d.name for d in dir_list1}
     set2 = {d.name for d in dir_list2}
     common_dir_list = sorted(set1 & set2)
-    print(common_dir_list)
+    # "LM_regression_"を含むディレクトリ名を抽出
+    common_dir_list = [s for s in common_dir_list if "LM_regression_" in s]
 
     target_path = (
         "compare_trajectories/localization__kinematic_state_result/relative_pose_summary.tsv"
