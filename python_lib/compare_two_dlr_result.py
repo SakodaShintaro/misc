@@ -14,6 +14,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("output_dir", type=Path)
     parser.add_argument("--label1", type=str, default="result1")
     parser.add_argument("--label2", type=str, default="result2")
+    parser.add_argument("--anonymous_print", action="store_true")
     return parser.parse_args()
 
 
@@ -24,6 +25,7 @@ if __name__ == "__main__":
     output_dir = args.output_dir
     label1 = args.label1
     label2 = args.label2
+    anonymous_print = args.anonymous_print
 
     dir_list1 = sorted(dlr_result_dir1.glob("*/"))
     dir_list2 = sorted(dlr_result_dir2.glob("*/"))
@@ -61,7 +63,14 @@ if __name__ == "__main__":
     plt.plot([GUIDELINE] * len(common_dir_list), label=f"Guideline({GUIDELINE}m)", linestyle="--")
     plt.legend()
     plt.grid()
-    plt.xticks(range(len(common_dir_list)), common_dir_list, rotation=-90)
+    if anonymous_print:
+        plt.xticks(
+            range(len(common_dir_list)),
+            [f"location{i:2d}" for i in range(len(common_dir_list))],
+            rotation=-90,
+        )
+    else:
+        plt.xticks(range(len(common_dir_list)), common_dir_list, rotation=-90)
     plt.yscale("log")
     plt.ylabel("Error Mean [m]")
     save_path = output_dir / "compare_result.png"
