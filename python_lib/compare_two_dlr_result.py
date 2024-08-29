@@ -72,7 +72,7 @@ if __name__ == "__main__":
     else:
         plt.xticks(range(len(common_dir_list)), common_dir_list, rotation=-90)
     plt.yscale("log")
-    plt.ylabel("Error Mean [m]")
+    plt.ylabel("Mean Error [m]")
     save_path = output_dir / "compare_result.png"
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     print(f"Save: {save_path}")
