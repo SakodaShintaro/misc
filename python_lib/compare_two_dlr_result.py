@@ -1,12 +1,13 @@
-"""2つのDriving Log Replayerの実行結果を比較するスクリプト"""
+"""2つのDriving Log Replayerの実行結果を比較するスクリプト."""
 
 import argparse
 from pathlib import Path
-import pandas as pd
+
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("dlr_result_dir1", type=Path)
     parser.add_argument("dlr_result_dir2", type=Path)
@@ -28,12 +29,14 @@ if __name__ == "__main__":
     dir_list2 = sorted(dlr_result_dir2.glob("*/"))
 
     # 共通するディレクトリ名を抽出
-    set1 = set([d.name for d in dir_list1])
-    set2 = set([d.name for d in dir_list2])
-    common_dir_list = sorted(list(set1 & set2))
+    set1 = {d.name for d in dir_list1}
+    set2 = {d.name for d in dir_list2}
+    common_dir_list = sorted(set1 & set2)
     print(common_dir_list)
 
-    target_path = "compare_trajectories/localization__kinematic_state_result/relative_pose_summary.tsv"
+    target_path = (
+        "compare_trajectories/localization__kinematic_state_result/relative_pose_summary.tsv"
+    )
 
     error_mean_list1 = []
     error_mean_list2 = []
