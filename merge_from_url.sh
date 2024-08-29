@@ -2,6 +2,7 @@
 
 # 引数からGitHubの完全なURLを取得
 URL=$1
+FORCE=${2:-false}
 
 # URLからGitHubのベースURL、リポジトリ名、ブランチ名を抽出
 GITHUB_URL=$(echo "$URL" | grep -oP 'https://github.com/\K[^/]+/[^/]+')
@@ -15,7 +16,7 @@ USER_NAME=$(echo "$GITHUB_URL" | cut -d'/' -f1)
 CURRENT_DIR_NAME=$(basename "$(pwd)")
 
 # 現在のディレクトリ名とREPO_NAMEが一致するか確認
-if [ "$CURRENT_DIR_NAME" != "$REPO_NAME" ]; then
+if [ "$FORCE" != "true" ] && [ "$CURRENT_DIR_NAME" != "$REPO_NAME" ]; then
     echo "Error: Current directory does not match the repository name ($REPO_NAME)."
     exit 1
 fi
