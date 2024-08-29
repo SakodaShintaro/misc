@@ -121,10 +121,12 @@ if __name__ == "__main__":
     df_kinematic_state = df_dict["/localization/kinematic_state"]
 
     # 共分散をbase_linkに変換
-    df_ndt_pose_with_covariance = transform_covariance_from_map_to_base_link(
-        df_ndt_pose_with_covariance,
-    )
-    df_kinematic_state = transform_covariance_from_map_to_base_link(df_kinematic_state)
+    if len(df_ndt_pose_with_covariance) > 0:
+        df_ndt_pose_with_covariance = transform_covariance_from_map_to_base_link(
+            df_ndt_pose_with_covariance,
+        )
+    if len(df_kinematic_state) > 0:
+        df_kinematic_state = transform_covariance_from_map_to_base_link(df_kinematic_state)
 
     # dataとして変動量のノルムを計算
     if len(df_initial_to_result_relative_pose) > 0:
@@ -192,27 +194,28 @@ if __name__ == "__main__":
         plt.grid()
         plt.legend()
 
-    plt.subplot(PLOT_NUM, 1, 3)
-    plt.plot(
-        df_ndt_pose_with_covariance["timestamp"] / 1e9,
-        np.sqrt(df_ndt_pose_with_covariance["covariance_position.xx"]),
-        label="xx",
-    )
-    plt.plot(
-        df_ndt_pose_with_covariance["timestamp"] / 1e9,
-        np.sqrt(df_ndt_pose_with_covariance["covariance_position.yy"]),
-        label="yy",
-    )
-    plt.plot(
-        df_ndt_pose_with_covariance["timestamp"] / 1e9,
-        np.sqrt(df_ndt_pose_with_covariance["covariance_position.zz"]),
-        label="zz",
-    )
-    plt.xlabel("time [s]")
-    plt.ylabel("stddev [m]")
-    plt.ylim(bottom=0)
-    plt.grid()
-    plt.legend()
+    if len(df_ndt_pose_with_covariance) > 0:
+        plt.subplot(PLOT_NUM, 1, 3)
+        plt.plot(
+            df_ndt_pose_with_covariance["timestamp"] / 1e9,
+            np.sqrt(df_ndt_pose_with_covariance["covariance_position.xx"]),
+            label="xx",
+        )
+        plt.plot(
+            df_ndt_pose_with_covariance["timestamp"] / 1e9,
+            np.sqrt(df_ndt_pose_with_covariance["covariance_position.yy"]),
+            label="yy",
+        )
+        plt.plot(
+            df_ndt_pose_with_covariance["timestamp"] / 1e9,
+            np.sqrt(df_ndt_pose_with_covariance["covariance_position.zz"]),
+            label="zz",
+        )
+        plt.xlabel("time [s]")
+        plt.ylabel("stddev [m]")
+        plt.ylim(bottom=0)
+        plt.grid()
+        plt.legend()
 
     plt.subplot(PLOT_NUM, 1, 4)
     plt.plot(
