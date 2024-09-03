@@ -15,7 +15,8 @@ for git_dir in $REPOSITORIES; do
         cd "$repo_dir"
         git reset --hard @{u}
         git clean -df
-        git checkout $(git remote show origin | grep "HEAD branch" | awk '{print $NF}')
+        default_branch=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+        git checkout "$default_branch"
         git pull
     )
 done
