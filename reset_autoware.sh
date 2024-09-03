@@ -15,6 +15,8 @@ for git_dir in $REPOSITORIES; do
         cd "$repo_dir"
         git reset --hard @{u}
         git clean -df
+        git checkout $(git remote show origin | grep "HEAD branch" | awk '{print $NF}')
+        git pull
     )
 done
 
