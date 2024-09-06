@@ -1,22 +1,24 @@
-""" A script to compare two trajectories.
-"""
+"""A script to compare two trajectories."""
 
 import argparse
-import pandas as pd
+import sys
+from pathlib import Path
+
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from matplotlib.font_manager import FontProperties
 from scipy.spatial.transform import Rotation
-import os
-from calc_relative_pose import calc_relative_pose
-import numpy as np
 from tqdm import tqdm
+
+from calc_relative_pose import calc_relative_pose
 from interpolate_pose import interpolate_pose
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("prediction_tsv", type=str)
-    parser.add_argument("ground_truth_tsv", type=str)
+    parser.add_argument("prediction_tsv", type=Path)
+    parser.add_argument("ground_truth_tsv", type=Path)
     return parser.parse_args()
 
 
@@ -25,9 +27,9 @@ if __name__ == "__main__":
     prediction_tsv = args.prediction_tsv
     ground_truth_tsv = args.ground_truth_tsv
 
-    result_name = os.path.basename(prediction_tsv)[:-4]
-    save_dir = f"{os.path.dirname(prediction_tsv)}/{result_name}_result/"
-    os.makedirs(save_dir, exist_ok=True)
+    result_name = prediction_tsv.stem
+    save_dir = prediction_tsv.parent / f"{result_name}_result"
+    save_dir.mkdir(parents=True, exist_ok=True)
 
     df_pr = pd.read_csv(prediction_tsv, sep="\t")
     df_gt = pd.read_csv(ground_truth_tsv, sep="\t")
@@ -53,9 +55,7 @@ if __name__ == "__main__":
 
     # interpolate
     timestamp = df_pr["timestamp"]
-    ok_mask = (timestamp > df_gt["timestamp"].min()) * (
-        timestamp < df_gt["timestamp"].max()
-    )
+    ok_mask = (timestamp > df_gt["timestamp"].min()) * (timestamp < df_gt["timestamp"].max())
     df_pr = df_pr[ok_mask]
     timestamp = timestamp[ok_mask]
     df_gt = interpolate_pose(df_gt, timestamp)
@@ -67,9 +67,9 @@ if __name__ == "__main__":
     assert len(df_pr) == len(df_gt), f"len(df_pr)={len(df_pr)}, len(df_gt)={len(df_gt)}"
 
     # calc mean error
-    diff_x = df_pr["position.x"].values - df_gt["position.x"].values
-    diff_y = df_pr["position.y"].values - df_gt["position.y"].values
-    diff_z = df_pr["position.z"].values - df_gt["position.z"].values
+    diff_x = df_pr["position.x"].to_numpy() - df_gt["position.x"].to_numpy()
+    diff_y = df_pr["position.y"].to_numpy() - df_gt["position.y"].to_numpy()
+    diff_z = df_pr["position.z"].to_numpy() - df_gt["position.z"].to_numpy()
     diff_meter = (diff_x**2 + diff_y**2 + diff_z**2) ** 0.5
 
     # calc relative pose
@@ -92,7 +92,7 @@ if __name__ == "__main__":
             "roll_diff_mean": [angle_x_diff_mean],
             "pitch_diff_mean": [angle_y_diff_mean],
             "yaw_diff_mean": [angle_z_diff_mean],
-        }
+        },
     )
     df_summary.to_csv(
         f"{save_dir}/relative_pose_summary.tsv",
@@ -128,18 +128,16 @@ if __name__ == "__main__":
     plt.legend()
     plt.xlabel("frame number")
     plt.ylabel("relative angle [degree]")
-    plt.savefig(
-        f"{save_dir}/relative_angle.png", bbox_inches="tight", pad_inches=0.05, dpi=300
-    )
+    plt.savefig(f"{save_dir}/relative_angle.png", bbox_inches="tight", pad_inches=0.05, dpi=300)
     plt.close()
 
     # plot (relative_pose of each frame)
-    if not os.path.exists(f"{save_dir}/../image_timestamps.tsv"):
-        exit(0)
+    if not Path(f"{save_dir}/../image_timestamps.tsv").exists():
+        sys.exit(0)
     df_image_timestamp = pd.read_csv(f"{save_dir}/../image_timestamps.tsv", sep="\t")
     df_image_timestamp["timestamp"] *= 1e-9
-    os.makedirs(f"{save_dir}/relative_pose_plot", exist_ok=True)
-    os.makedirs(f"{save_dir}/combined_plot", exist_ok=True)
+    (save_dir / "relative_pose_plot").mkdir(exist_ok=True)
+    (save_dir / "combined_plot").mkdir(exist_ok=True)
     df_index = 0
 
     # 等幅化
@@ -190,24 +188,12 @@ if __name__ == "__main__":
         plt.xlabel("x [m]")
         plt.ylabel("y [m]")
         plt.legend()
-        plt.text(
-            -2, 3.0, f"error_x = {x * 100:+.1f} cm", fontsize=10, fontproperties=font
-        )
-        plt.text(
-            -2, 2.5, f"error_y = {y * 100:+.1f} cm", fontsize=10, fontproperties=font
-        )
-        plt.text(
-            -2, 2.0, f"error_z = {z * 100:+.1f} cm", fontsize=10, fontproperties=font
-        )
-        plt.text(
-            -2, 1.5, f"roll    = {angle_x:+.2f} deg", fontsize=10, fontproperties=font
-        )
-        plt.text(
-            -2, 1.0, f"pitch   = {angle_y:+.2f} deg", fontsize=10, fontproperties=font
-        )
-        plt.text(
-            -2, 0.5, f"yaw     = {angle_z:+.2f} deg", fontsize=10, fontproperties=font
-        )
+        plt.text(-2, 3.0, f"error_x = {x * 100:+.1f} cm", fontsize=10, fontproperties=font)
+        plt.text(-2, 2.5, f"error_y = {y * 100:+.1f} cm", fontsize=10, fontproperties=font)
+        plt.text(-2, 2.0, f"error_z = {z * 100:+.1f} cm", fontsize=10, fontproperties=font)
+        plt.text(-2, 1.5, f"roll    = {angle_x:+.2f} deg", fontsize=10, fontproperties=font)
+        plt.text(-2, 1.0, f"pitch   = {angle_y:+.2f} deg", fontsize=10, fontproperties=font)
+        plt.text(-2, 0.5, f"yaw     = {angle_z:+.2f} deg", fontsize=10, fontproperties=font)
         plt.savefig(
             f"{save_dir}/relative_pose_plot/{i:08d}.png",
             bbox_inches="tight",
@@ -218,7 +204,7 @@ if __name__ == "__main__":
         # グラフ上で今のdf_indexの位置に縦点線を入れる
         fig = plt.figure(figsize=(5, 5))
 
-        # 上段: 相対位置
+        # 上段：相対位置
         plt.subplot(2, 1, 1)
         plt.plot(df_relative["position.x"], label="x")
         plt.plot(df_relative["position.y"], label="y")
@@ -229,7 +215,7 @@ if __name__ == "__main__":
         plt.xlabel("frame number")
         plt.ylabel("relative position [m]")
 
-        # 下段: 相対角度
+        # 下段：相対角度
         plt.subplot(2, 1, 2)
         plt.plot(df_relative["angle.x"], label="roll")
         plt.plot(df_relative["angle.y"], label="pitch")
