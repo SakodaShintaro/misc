@@ -1,17 +1,19 @@
-"""自車の写り込みマスクを作成するスクリプト
-基本的に、自車が写っているところは時系列的にずっと同じものが写るはず
-つまりピクセルレベルで見たときに分散が小さい
+"""自車の写り込みマスクを作成するスクリプト.
+
+基本的に、自車が写っているところは時系列的にずっと同じものが写るはず。
+つまりピクセルレベルで見たときに分散が小さい。
 """
 
 import argparse
+from copy import deepcopy
 from pathlib import Path
+
 import cv2
 import numpy as np
-from copy import deepcopy
 from tqdm import tqdm
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("target_dir", type=Path)
     parser.add_argument("--binary_threshold", type=int, default=17)
@@ -25,7 +27,7 @@ if __name__ == "__main__":
     binary_threshold = args.binary_threshold
     skip_num = args.skip_num
 
-    image_path_list = sorted(list(target_dir.glob("*.png")))
+    image_path_list = sorted(target_dir.glob("*.png"))
     image_path_list = image_path_list[::skip_num]
 
     # 平均を求める
@@ -44,7 +46,7 @@ if __name__ == "__main__":
     # 分散を求める
     var_images = np.zeros_like(ave_images)
     progress = tqdm(total=len(image_path_list))
-    for i, image_path in enumerate(image_path_list):
+    for _, image_path in enumerate(image_path_list):
         image = cv2.imread(str(image_path))
         diff = image - ave_images
         diff_2 = np.power(diff, 2)
@@ -67,11 +69,12 @@ if __name__ == "__main__":
     mask = 255 - mask
 
     # モルフォロジー変換
-    def make_kernel(size: int):
+    def make_kernel(size: int) -> np.ndarray:
         return np.ones((size, size), np.uint8)
-    # ノイズ除去(Opening)
+
+    # ノイズ除去（Opening）
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, make_kernel(5))
-    # 穴埋め(Closing)
+    # 穴埋め（Closing）
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, make_kernel(100))
     # 膨張処理
     mask = cv2.dilate(mask, make_kernel(5), iterations=1)
@@ -79,8 +82,6 @@ if __name__ == "__main__":
     # 残す部分が255となるように反転
     mask = 255 - mask
 
-    save_path = (
-        target_dir.parent / f"{target_dir.stem}_mask_thresh{binary_threshold}.png"
-    )
+    save_path = target_dir.parent / f"{target_dir.stem}_mask_thresh{binary_threshold}.png"
     cv2.imwrite(str(save_path), mask)
     print(f"Saved to {save_path}")
