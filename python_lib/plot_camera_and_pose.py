@@ -1,13 +1,14 @@
-"""左にカメラ画像、右にPoseを表示するスクリプト"""
+"""左にカメラ画像、右にPoseを表示するスクリプト."""
 
 import argparse
 from pathlib import Path
-import pandas as pd
+
 import matplotlib.pyplot as plt
+import pandas as pd
 from tqdm import tqdm
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("images_dir", type=Path)
     parser.add_argument("camera_name", type=str)
@@ -28,15 +29,14 @@ if __name__ == "__main__":
     travel_distance = 0
     timestamp0 = timestamp_list[0]
 
-    image_path_list = [
-        p for p in image_path_list if int(p.stem) in pose_df["timestamp"].values
-    ]
+    image_path_list = [p for p in image_path_list if int(p.stem) in pose_df["timestamp"].to_numpy()]
 
     progress = tqdm(total=len(image_path_list))
 
     for i, image_path in enumerate(image_path_list):
         progress.update(1)
 
+        # 道のりを計算
         if i >= 1:
             prev_pose = pose_df.iloc[i - 1]
             curr_pose = pose_df.iloc[i]
@@ -45,18 +45,19 @@ if __name__ == "__main__":
                 + (curr_pose["position.y"] - prev_pose["position.y"]) ** 2
             ) ** 0.5
 
+        # 左にカメラ画像を表示
         image = plt.imread(image_path)
         fig, ax = plt.subplots(1, 2, figsize=(12, 6))
         ax[0].imshow(image)
         ax[0].set_title(image_path.stem)
 
+        # 右にPoseを表示
         timestamp = int(image_path.stem)
+        time_diff = (timestamp - timestamp0) / 1e9
         curr_pose = pose_df.iloc[i]
         ax[1].plot(pose_df["position.x"], pose_df["position.y"], "b")
         ax[1].plot(curr_pose["position.x"], curr_pose["position.y"], "ro")
-        ax[1].set_title(
-            f"timestamp_diff: {(timestamp - timestamp0) / 1e9:.1f} sec, travel_distance: {travel_distance:.2f} m"
-        )
+        ax[1].set_title(f"time: {time_diff:.1f} sec, travel_distance: {travel_distance:.2f} m")
         ax[1].set_xlabel("x [m]")
         ax[1].set_ylabel("y [m]")
         ax[1].grid()
