@@ -1,23 +1,29 @@
-import cv2
-import os
+"""画像を左右に連結するスクリプト."""
+
 import argparse
-from glob import glob
+from pathlib import Path
+
+import cv2
 import numpy as np
 from tqdm import tqdm
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument('dir1', type=str)
-    parser.add_argument('dir2', type=str)
-    parser.add_argument('output_dir', type=str)
-    parser.add_argument('--text1', type=str, default="")
-    parser.add_argument('--text2', type=str, default="")
+    parser.add_argument("dir1", type=Path)
+    parser.add_argument("dir2", type=Path)
+    parser.add_argument("output_dir", type=Path)
+    parser.add_argument("--text1", type=str, default="")
+    parser.add_argument("--text2", type=str, default="")
     parser.add_argument("--ext", type=str, default="png")
     return parser.parse_args()
 
 
-def put_text(image, text, outline_color=(0, 0, 0)):
+def put_text(
+    image: np.ndarray,
+    text: str,
+    outline_color: tuple[int, int, int] = (0, 0, 0),
+) -> np.ndarray:
     color = (128, 255, 128)
     face = cv2.FONT_HERSHEY_SIMPLEX
     text_pixel = image.shape[0] // 24
@@ -29,49 +35,47 @@ def put_text(image, text, outline_color=(0, 0, 0)):
     return image
 
 
-def pad_images(image1, image2):
+def pad_images(image1: np.ndarray, image2: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     # 画像の高さが異なる場合、高さを揃える
     if image1.shape[0] != image2.shape[0]:
         # 差を計算
         diff = abs(image1.shape[0] - image2.shape[0])
         # 短い方の画像にパディングを追加
         if image1.shape[0] < image2.shape[0]:
-            padding = np.zeros(
-                (diff, image1.shape[1], image1.shape[2]), dtype=image1.dtype)
+            padding = np.zeros((diff, image1.shape[1], image1.shape[2]), dtype=image1.dtype)
             image1 = np.vstack((image1, padding))
         else:
-            padding = np.zeros(
-                (diff, image2.shape[1], image2.shape[2]), dtype=image2.dtype)
+            padding = np.zeros((diff, image2.shape[1], image2.shape[2]), dtype=image2.dtype)
             image2 = np.vstack((image2, padding))
 
     return image1, image2
 
 
-def main():
+def main() -> None:
     args = parse_args()
     dir1 = args.dir1
     dir2 = args.dir2
     output_dir = args.output_dir
     ext = args.ext
 
-    os.makedirs(output_dir, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    files1 = sorted(glob(f"{dir1}/*.{ext}"))
-    files2 = sorted(glob(f"{dir2}/*.{ext}"))
-    assert len(files1) == len(files1)
+    files1 = sorted(dir1.glob(f"*.{ext}"))
+    files2 = sorted(dir2.glob(f"*.{ext}"))
+    assert len(files1) == len(files2)
     progress = tqdm(total=len(files1))
 
     for file1, file2 in zip(files1, files2):
         progress.update(1)
-        image1 = cv2.imread(os.path.join(dir1, file1))
-        image2 = cv2.imread(os.path.join(dir2, file2))
+        image1 = cv2.imread(str(dir1 / file1))
+        image2 = cv2.imread(str(dir2 / file2))
 
         # 画像の高さを揃える
         image1, image2 = pad_images(image1, image2)
 
         # 文字を入れる
-        filename1 = os.path.basename(file1)
-        filename2 = os.path.basename(file2)
+        filename1 = file1.name
+        filename2 = file2.name
         put_text(image1, f"{args.text1}_{filename1}")
         put_text(image2, f"{args.text2}_{filename2}")
 
@@ -79,7 +83,7 @@ def main():
         new_image = cv2.hconcat([image1, image2])
 
         # 保存
-        output_path = f"{output_dir}/{os.path.basename(file1)}"
+        output_path = output_dir / file1.name
         cv2.imwrite(output_path, new_image)
 
 
