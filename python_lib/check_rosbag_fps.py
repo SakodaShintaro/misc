@@ -1,33 +1,36 @@
-""" rosbagから各トピックのFPSを求めるスクリプト
-"""
+"""rosbagから各トピックのFPSを求めるスクリプト."""
 
 import argparse
 import subprocess
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument('rosbag_path', type=str)
+    parser.add_argument("rosbag_path", type=str)
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
-    rosbag_info = subprocess.run(f"ros2 bag info {rosbag_path}",
-                                 shell=True, capture_output=True).stdout.decode()
+    rosbag_info = subprocess.run(
+        f"ros2 bag info {rosbag_path}",
+        shell=True,
+        check=True,
+        capture_output=True,
+    ).stdout.decode()
 
+    NUM_ELEMENTS = 2
     lines = rosbag_info.split("\n")
     duration = None
     for line in lines:
-        line = line.replace("Topic information: ", "")
-        elements = line.split("|")
+        elements = line.replace("Topic information: ", "").split("|")
         elements = [i.strip() for i in elements]
         topic_name = None
         topic_count = None
         for element in elements:
             kv = element.split(":")
-            if len(kv) != 2:
+            if len(kv) != NUM_ELEMENTS:
                 continue
             key, value = kv
             if key == "Duration":
