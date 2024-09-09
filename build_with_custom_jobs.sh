@@ -13,6 +13,14 @@ fi
 
 rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO
 
+# 存在する場合はCOLCON_IGNOREファイルを作成する
+if [ -e ./src/tools/planning/autoware_planning_data_analyzer/ ]; then
+  touch ./src/tools/planning/autoware_planning_data_analyzer/COLCON_IGNORE
+fi
+if [ -e ./src/tools/planning/planning_debug_tools/ ]; then
+  touch ./src/tools/planning/planning_debug_tools/COLCON_IGNORE
+fi
+
 MAKEFLAGS="-j${JOB_COUNT}" colcon build \
   --symlink-install \
   --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF \
