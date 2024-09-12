@@ -3,6 +3,7 @@
 set -eux
 
 TARGET_DIR=$1
+SUFFIX=${2:-png}
 
 # もとの連番前提のコマンド
 # ffmpeg -r 10 \
@@ -14,7 +15,7 @@ TARGET_DIR=$1
 #        ${TARGET_DIR}/../movie.mp4
 
 # 連番ではないpngファイルらをmp4にする（順番はソートする）
-file_list=$(find ${TARGET_DIR} -name "*.png" | sort -V)
+file_list=$(find ${TARGET_DIR} -name "*.${SUFFIX}" | sort -V)
 ffmpeg -r 10 \
        -f concat -safe 0 -i <(printf "file '%s'\n" ${file_list}) \
        -vcodec libx264 \
