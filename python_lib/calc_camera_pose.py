@@ -104,7 +104,7 @@ if __name__ == "__main__":
         # タイムスタンプがdf_camera_poseの範囲外のものは無理やり範囲内に収める
         timestamp_list = [max(t, df_camera_pose["timestamp"].iloc[0]) for t in timestamp_list]
 
-        df_camera_pose = interpolate_pose(df_camera_pose, timestamp_list)
+        df_camera_pose = interpolate_pose(df_camera_pose, pd.Series(timestamp_list))
         df_camera_pose.to_csv(
             output_dir / f"pose_{camera_name}.tsv",
             index=True,
