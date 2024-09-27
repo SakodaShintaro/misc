@@ -18,6 +18,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("rosbag_path", type=Path)
     parser.add_argument("--output_pose_array", action="store_true")
+    parser.add_argument("--start_time_from_zero", action="store_true")
     return parser.parse_args()
 
 
@@ -74,6 +75,7 @@ if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
     output_pose_array = args.output_pose_array
+    start_time_from_zero = args.start_time_from_zero
 
     target_topics = [
         "/localization/kinematic_state",
@@ -100,6 +102,9 @@ if __name__ == "__main__":
         if len(df) == 0:
             print(f"!{topic_name} is empty")
             continue
+        if start_time_from_zero and "timestamp" in df.columns:
+            df["timestamp"] -= df["timestamp"].iloc[0]
+
         filename = topic_name.replace("/localization/", "").replace("/", "_")
         df.to_csv(
             save_dir / f"{filename}.tsv",
