@@ -15,12 +15,15 @@ from parse_functions import parse_stamp
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("rosbag_path", type=Path)
+    parser.add_argument("--utc_time", action="store_true")
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
+    utc_time = args.utc_time
+
     serialization_format = "cdr"
     storage_options = rosbag2_py.StorageOptions(
         uri=str(rosbag_path),
@@ -90,6 +93,9 @@ if __name__ == "__main__":
     # ndt_scan_matcher #
     ####################
     df = pd.DataFrame(data_dict["ndt_scan_matcher: scan_matching_status"])
+    if not utc_time:
+        df["timestamp_header"] = (df["timestamp_header"] - df["timestamp_header"].min()) / 1e9
+        df["timestamp_rosbag"] = (df["timestamp_rosbag"] - df["timestamp_rosbag"].min()) / 1e9
 
     # plot
     key_list = [
@@ -137,6 +143,10 @@ if __name__ == "__main__":
     df = pd.DataFrame(data_dict["localization: ekf_localizer"])
     df = df[df["is_activated"] == "True"]
 
+    if not utc_time:
+        df["timestamp_header"] = (df["timestamp_header"] - df["timestamp_header"].min()) / 1e9
+        df["timestamp_rosbag"] = (df["timestamp_rosbag"] - df["timestamp_rosbag"].min()) / 1e9
+
     # plot
     key_list = [
         "pose_mahalanobis_distance",
@@ -171,6 +181,9 @@ if __name__ == "__main__":
     # pose_instability_detector #
     #############################
     df = pd.DataFrame(data_dict["localization: pose_instability_detector"])
+    if not utc_time:
+        df["timestamp_header"] = (df["timestamp_header"] - df["timestamp_header"].min()) / 1e9
+        df["timestamp_rosbag"] = (df["timestamp_rosbag"] - df["timestamp_rosbag"].min()) / 1e9
 
     # 2行に分けて表示する
     plt.figure(figsize=(6.4 * 2, 4.8 * 2))
@@ -245,6 +258,10 @@ if __name__ == "__main__":
     # localization_error_monitor #
     ##############################
     df = pd.DataFrame(data_dict["localization_error_monitor: ellipse_error_status"])
+    if not utc_time:
+        df["timestamp_header"] = (df["timestamp_header"] - df["timestamp_header"].min()) / 1e9
+        df["timestamp_rosbag"] = (df["timestamp_rosbag"] - df["timestamp_rosbag"].min()) / 1e9
+
     # plot
     key_list = [
         "localization_error_ellipse",
