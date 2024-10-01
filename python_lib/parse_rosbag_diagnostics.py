@@ -95,6 +95,7 @@ if __name__ == "__main__":
     key_list = [
         "execution_time",
         "iteration_num",
+        "sensor_points_size",
         "sensor_points_delay_time_sec",
         "skipping_publish_num",
         "transform_probability",
@@ -111,7 +112,7 @@ if __name__ == "__main__":
             continue
         df[key] = df[key].astype(float)
         df = df.dropna(subset=[key])
-        plt.subplot(5, 2, i + 1)
+        plt.subplot(4, 3, i + 1)
         plt.plot(df["timestamp_header"], df[key], label=key)
         if key == "nearest_voxel_transformation_likelihood":
             plt.plot(
