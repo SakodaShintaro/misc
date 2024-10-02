@@ -10,11 +10,7 @@ set +eux
 source $HOME/autoware/install/setup.bash
 set -eux
 
-# 実行前にマージとビルドが必要
-cd $HOME/autoware/src/sensor_kit/external/awsim_sensor_kit_launch/awsim_sensor_kit_launch
-~/misc/merge_from_url.sh https://github.com/knzo25/awsim_sensor_kit_launch/tree/test/awsim_nebula_integration
 cd $HOME/autoware
-~/misc/build_with_custom_jobs.sh 2
 ~/misc/change_autoware_for_localization.sh
 
 # AWSIMをバックグラウンドで起動
