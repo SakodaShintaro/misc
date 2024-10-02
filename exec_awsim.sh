@@ -1,6 +1,7 @@
 #!/bin/bash
-
 set -eux
+
+awsim_type=${1:-"1"}
 
 # スクリプトが終了する際にすべてのバックグラウンドプロセスを停止するためのトラップを設定
 trap "kill 0" EXIT
@@ -14,8 +15,17 @@ cd $HOME/autoware
 ~/misc/change_autoware_for_localization.sh
 
 # AWSIMをバックグラウンドで起動
-$HOME/Downloads/shinuku_binary_1_lidar_2024_07_30/AWSIM/AWSIM.x86_64 &
-# $HOME/Downloads/shinuku_binary_3_lidars_2024_07_30/AWSIM/AWSIM.x86_64 &
+if [ $awsim_type = "1" ]; then
+    $HOME/Downloads/shinuku_binary_1_lidar_2024_07_30/AWSIM/AWSIM.x86_64 &
+elif [ $awsim_type = "3" ]; then
+    $HOME/Downloads/shinuku_binary_3_lidars_2024_07_30/AWSIM/AWSIM.x86_64 &
+elif [ $awsim_type = "udp" ]; then
+    $HOME/Downloads/shinjuku_binary_1_lidar_2024_07_25/AWSIM/AWSIM.x86_64 \
+        --json_path $HOME/Downloads/shinjuku_binary_1_lidar_2024_07_25/AWSIM/config.json &
+else
+    echo "Invalid argument: $awsim_type"
+    exit 1
+fi
 
 # Autowareを起動
 ros2 launch autoware_launch e2e_simulator.launch.xml \
