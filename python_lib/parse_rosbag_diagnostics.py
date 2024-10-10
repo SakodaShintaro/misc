@@ -58,6 +58,9 @@ if __name__ == "__main__":
         msg_type = get_message(type_map[topic])
         msg = deserialize_message(data, msg_type)
         timestamp_header = parse_stamp(msg.header.stamp)
+        if len(msg.status) == 0:
+            print(msg)
+            raise RuntimeError(f"Message status length is zero: {len(msg.status)=}")
         for status in msg.status:
             for target in target_list:
                 if target in status.name:
