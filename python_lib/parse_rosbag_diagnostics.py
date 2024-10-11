@@ -20,6 +20,10 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def diag_name_to_filename(diag_name: str) -> str:
+    return diag_name.replace(":", "_").replace(" ", "_")
+
+
 if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
@@ -86,7 +90,7 @@ if __name__ == "__main__":
             if pd.api.types.is_numeric_dtype(df[col]):
                 df[col] = df[col].astype(float)
                 df[col] = df[col].apply(lambda x: int(x) if x.is_integer() else x)
-        filename = key.replace(":", "_").replace(" ", "_")
+        filename = diag_name_to_filename(key)
         df.to_csv(
             save_dir / f"{filename}.tsv",
             index=False,
@@ -107,7 +111,8 @@ if __name__ == "__main__":
     ####################
     # ndt_scan_matcher #
     ####################
-    df = pd.DataFrame(data_dict["ndt_scan_matcher: scan_matching_status"])
+    diag_name = "ndt_scan_matcher: scan_matching_status"
+    df = pd.DataFrame(data_dict[diag_name])
 
     # plot
     key_list = [
@@ -145,14 +150,15 @@ if __name__ == "__main__":
         plt.grid()
 
     plt.tight_layout()
-    save_path = save_dir / "diagnostics_ndt_scan_matcher.png"
+    save_path = save_dir / f"{diag_name_to_filename(diag_name)}.png"
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     print(f"Saved {save_path}")
 
     #################
     # ekf_localizer #
     #################
-    df = pd.DataFrame(data_dict["localization: ekf_localizer"])
+    diag_name = "localization: ekf_localizer"
+    df = pd.DataFrame(data_dict[diag_name])
     df = df[df["is_activated"] == "True"]
 
     # plot
@@ -181,14 +187,15 @@ if __name__ == "__main__":
         plt.grid()
 
     plt.tight_layout()
-    save_path = save_dir / "diagnostics_ekf_localizer.png"
+    save_path = save_dir / f"{diag_name_to_filename(diag_name)}.png"
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     print(f"Saved {save_path}")
 
     #############################
     # pose_instability_detector #
     #############################
-    df = pd.DataFrame(data_dict["localization: pose_instability_detector"])
+    diag_name = "localization: pose_instability_detector"
+    df = pd.DataFrame(data_dict[diag_name])
 
     # 2行に分けて表示する
     plt.figure(figsize=(6.4 * 2, 4.8 * 2))
@@ -255,14 +262,15 @@ if __name__ == "__main__":
     plt.grid()
 
     plt.tight_layout()
-    save_path = save_dir / "diagnostics_pose_instability_detector.png"
+    save_path = save_dir / f"{diag_name_to_filename(diag_name)}.png"
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     print(f"Saved {save_path}")
 
     ##############################
     # localization_error_monitor #
     ##############################
-    df = pd.DataFrame(data_dict["localization_error_monitor: ellipse_error_status"])
+    diag_name = "localization_error_monitor: ellipse_error_status"
+    df = pd.DataFrame(data_dict[diag_name])
 
     # plot
     key_list = [
@@ -282,6 +290,6 @@ if __name__ == "__main__":
     plt.grid()
     plt.legend()
     plt.tight_layout()
-    save_path = save_dir / "diagnostics_localization_error_monitor.png"
+    save_path = save_dir / f"{diag_name_to_filename(diag_name)}.png"
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
     print(f"Saved {save_path}")
