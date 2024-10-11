@@ -15,14 +15,14 @@ from parse_functions import parse_stamp
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("rosbag_path", type=Path)
-    parser.add_argument("--utc_time", action="store_true")
+    parser.add_argument("--relative_time", action="store_true")
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
-    utc_time = args.utc_time
+    relative_time = args.relative_time
 
     serialization_format = "cdr"
     storage_options = rosbag2_py.StorageOptions(
@@ -58,9 +58,9 @@ if __name__ == "__main__":
         msg_type = get_message(type_map[topic])
         msg = deserialize_message(data, msg_type)
         timestamp_header = parse_stamp(msg.header.stamp)
-        if len(msg.status) == 0:
-            print(msg)
-            raise RuntimeError(f"Message status length is zero: {len(msg.status)=}")
+        # if len(msg.status) == 0:
+        #     print(msg)
+        #     raise RuntimeError(f"Message status length is zero: {len(msg.status)=}")
         for status in msg.status:
             for target in target_list:
                 if target in status.name:
@@ -92,13 +92,20 @@ if __name__ == "__main__":
             float_format="%.9f",
         )
 
+    if relative_time:
+        for df in data_dict.values():
+            for key_value_map in df:
+                key_value_map["timestamp_header"] = (
+                    key_value_map["timestamp_header"] - df[0]["timestamp_header"]
+                )
+                key_value_map["timestamp_rosbag"] = (
+                    key_value_map["timestamp_rosbag"] - df[0]["timestamp_rosbag"]
+                )
+
     ####################
     # ndt_scan_matcher #
     ####################
     df = pd.DataFrame(data_dict["ndt_scan_matcher: scan_matching_status"])
-    if not utc_time:
-        df["timestamp_header"] = (df["timestamp_header"] - df["timestamp_header"].min()) / 1e9
-        df["timestamp_rosbag"] = (df["timestamp_rosbag"] - df["timestamp_rosbag"].min()) / 1e9
 
     # plot
     key_list = [
@@ -146,10 +153,6 @@ if __name__ == "__main__":
     df = pd.DataFrame(data_dict["localization: ekf_localizer"])
     df = df[df["is_activated"] == "True"]
 
-    if not utc_time:
-        df["timestamp_header"] = (df["timestamp_header"] - df["timestamp_header"].min()) / 1e9
-        df["timestamp_rosbag"] = (df["timestamp_rosbag"] - df["timestamp_rosbag"].min()) / 1e9
-
     # plot
     key_list = [
         "pose_mahalanobis_distance",
@@ -184,9 +187,6 @@ if __name__ == "__main__":
     # pose_instability_detector #
     #############################
     df = pd.DataFrame(data_dict["localization: pose_instability_detector"])
-    if not utc_time:
-        df["timestamp_header"] = (df["timestamp_header"] - df["timestamp_header"].min()) / 1e9
-        df["timestamp_rosbag"] = (df["timestamp_rosbag"] - df["timestamp_rosbag"].min()) / 1e9
 
     # 2行に分けて表示する
     plt.figure(figsize=(6.4 * 2, 4.8 * 2))
@@ -261,9 +261,6 @@ if __name__ == "__main__":
     # localization_error_monitor #
     ##############################
     df = pd.DataFrame(data_dict["localization_error_monitor: ellipse_error_status"])
-    if not utc_time:
-        df["timestamp_header"] = (df["timestamp_header"] - df["timestamp_header"].min()) / 1e9
-        df["timestamp_rosbag"] = (df["timestamp_rosbag"] - df["timestamp_rosbag"].min()) / 1e9
 
     # plot
     key_list = [
