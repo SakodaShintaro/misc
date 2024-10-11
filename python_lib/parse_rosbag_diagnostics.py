@@ -16,6 +16,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("rosbag_path", type=Path)
     parser.add_argument("--relative_time", action="store_true")
+    parser.add_argument("--check_empty", action="store_true")
     return parser.parse_args()
 
 
@@ -23,6 +24,7 @@ if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
     relative_time = args.relative_time
+    check_empty = args.check_empty
 
     serialization_format = "cdr"
     storage_options = rosbag2_py.StorageOptions(
@@ -58,9 +60,9 @@ if __name__ == "__main__":
         msg_type = get_message(type_map[topic])
         msg = deserialize_message(data, msg_type)
         timestamp_header = parse_stamp(msg.header.stamp)
-        # if len(msg.status) == 0:
-        #     print(msg)
-        #     raise RuntimeError(f"Message status length is zero: {len(msg.status)=}")
+        if check_empty and len(msg.status) == 0:
+            print(msg)
+            raise RuntimeError(f"Message status length is zero: {len(msg.status)=}")
         for status in msg.status:
             for target in target_list:
                 if target in status.name:
