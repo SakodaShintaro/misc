@@ -13,6 +13,11 @@ set -eux
 cd $HOME/autoware
 ~/misc/change_autoware_for_localization.sh
 
+cd ./src/sensor_component/external/nebula/
+~/misc/merge_from_url.sh https://github.com/msz-rai/nebula/tree/feature/disable-communication-option
+cd $HOME/autoware
+~/misc/build_with_custom_jobs.sh 2
+
 # AWSIMをバックグラウンドで起動
 $HOME/Downloads/shinjuku_binary_1_lidar_2024_07_25/AWSIM/AWSIM.x86_64 \
     --json_path $HOME/Downloads/shinjuku_binary_1_lidar_2024_07_25/AWSIM/config.json &
