@@ -31,6 +31,7 @@ class MissionPlanningNode(Node):
         )
         while not self.client_.wait_for_service(timeout_sec=1.0):
             self.get_logger().info("Service not available, waiting again...")
+        time.sleep(30)
         # Publish initially when the node starts
         self.current_position = 2
         self.publish_goal()
@@ -69,18 +70,6 @@ class MissionPlanningNode(Node):
         self.get_logger().info("Service call succeeded")
 
 
-def main(pos1: list, pos2: list) -> None:
-    rclpy.init()
-    mission_planning_node = MissionPlanningNode(pos1, pos2)
-    try:
-        rclpy.spin(mission_planning_node)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        mission_planning_node.destroy_node()
-        rclpy.shutdown()
-
-
 if __name__ == "__main__":
     pos1 = [
         81536.5703,
@@ -102,4 +91,12 @@ if __name__ == "__main__":
         +0.7700945734977722,
     ]
 
-    main(pos1, pos2)
+    rclpy.init()
+    mission_planning_node = MissionPlanningNode(pos1, pos2)
+    try:
+        rclpy.spin(mission_planning_node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        mission_planning_node.destroy_node()
+        rclpy.shutdown()
