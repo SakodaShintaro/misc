@@ -16,7 +16,7 @@ cd $HOME/autoware
 
 # AWSIMをバックグラウンドで起動
 if [ $awsim_type = "1" ]; then
-    $HOME/Downloads/shinuku_binary_1_lidar_2024_07_30/AWSIM/AWSIM.x86_64 &
+    $HOME/Downloads/AWSIM_v1.3.0/AWSIM.x86_64 &
 elif [ $awsim_type = "3" ]; then
     $HOME/Downloads/shinuku_binary_3_lidars_2024_07_30/AWSIM/AWSIM.x86_64 &
 else
