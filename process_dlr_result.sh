@@ -8,8 +8,6 @@ set -ux
 result_dir=$1
 dir_list=$(find $result_dir -mindepth 1 -maxdepth 1 -type d | sort)
 
-input_bag_dir="$HOME/driving_log_replayer_data/saved_scenarios/"
-
 for dir in $dir_list; do
   target_rosbag=$dir/result_bag
 
@@ -21,13 +19,12 @@ for dir in $dir_list; do
 
   # compare trajectories
   dir_name=$(basename $dir)
-  original_rosbag=$input_bag_dir/$dir_name/input_bag
   python3 ~/misc/python_lib/extract_pose_from_rosbag.py \
     --rosbag_path=$target_rosbag \
     --target_topic="/localization/kinematic_state" \
     --output_dir=$(dirname $target_rosbag)/compare_trajectories
   python3 ~/misc/python_lib/extract_pose_from_rosbag.py \
-    --rosbag_path=$original_rosbag \
+    --rosbag_path=$target_rosbag \
     --target_topic="/localization/reference_kinematic_state" \
     --output_dir=$(dirname $target_rosbag)/compare_trajectories
   python3 ~/misc/python_lib/compare_trajectories.py \
