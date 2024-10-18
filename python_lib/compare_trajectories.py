@@ -107,9 +107,23 @@ if __name__ == "__main__":
     plt.plot(df_relative["position.x"], label="x")
     plt.plot(df_relative["position.y"], label="y")
     plt.plot(df_relative["position.z"], label="z")
+    GUIDELINE_POSITION = 0.5
+    plt.plot(
+        [0, len(df_relative)],
+        [GUIDELINE_POSITION, GUIDELINE_POSITION],
+        linestyle="dashed",
+        color="red",
+        label=f"guideline = {GUIDELINE_POSITION}m",
+    )
+    plt.plot(
+        [0, len(df_relative)],
+        [-GUIDELINE_POSITION, -GUIDELINE_POSITION],
+        linestyle="dashed",
+        color="red",
+    )
     bottom, top = plt.ylim()
     plt.ylim(bottom=min(bottom, -1), top=max(top, 1))
-    plt.legend()
+    plt.legend(loc="upper left", bbox_to_anchor=(1, 1))
     plt.xlabel("frame number")
     plt.ylabel("relative position [m]")
     plt.grid()
@@ -119,9 +133,23 @@ if __name__ == "__main__":
     plt.plot(df_relative["angle.x"], label="roll")
     plt.plot(df_relative["angle.y"], label="pitch")
     plt.plot(df_relative["angle.z"], label="yaw")
+    GUIDELINE_ANGLE = 0.5
+    plt.plot(
+        [0, len(df_relative)],
+        [GUIDELINE_ANGLE, GUIDELINE_ANGLE],
+        linestyle="dashed",
+        color="red",
+        label=f"guideline = {GUIDELINE_ANGLE}deg",
+    )
+    plt.plot(
+        [0, len(df_relative)],
+        [-GUIDELINE_ANGLE, -GUIDELINE_ANGLE],
+        linestyle="dashed",
+        color="red",
+    )
     bottom, top = plt.ylim()
     plt.ylim(bottom=min(bottom, -1), top=max(top, 1))
-    plt.legend()
+    plt.legend(loc="upper left", bbox_to_anchor=(1, 1))
     plt.xlabel("frame number")
     plt.ylabel("relative angle [degree]")
     plt.grid()
