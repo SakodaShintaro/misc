@@ -31,7 +31,6 @@ class MissionPlanningNode(Node):
         )
         while not self.client_.wait_for_service(timeout_sec=1.0):
             self.get_logger().info("Service not available, waiting again...")
-        time.sleep(30)
         # Publish initially when the node starts
         self.current_position = 2
         self.publish_goal()
