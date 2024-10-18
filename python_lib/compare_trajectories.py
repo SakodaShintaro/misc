@@ -103,6 +103,7 @@ if __name__ == "__main__":
     print(f"mean error: {error_norm.mean():.3f} m")
 
     # plot (relative position)
+    plt.subplot(2, 1, 1)
     plt.plot(df_relative["position.x"], label="x")
     plt.plot(df_relative["position.y"], label="y")
     plt.plot(df_relative["position.z"], label="z")
@@ -111,15 +112,10 @@ if __name__ == "__main__":
     plt.legend()
     plt.xlabel("frame number")
     plt.ylabel("relative position [m]")
-    plt.savefig(
-        f"{save_dir}/relative_position.png",
-        bbox_inches="tight",
-        pad_inches=0.05,
-        dpi=300,
-    )
-    plt.close()
+    plt.grid()
 
     # plot (relative angle)
+    plt.subplot(2, 1, 2)
     plt.plot(df_relative["angle.x"], label="roll")
     plt.plot(df_relative["angle.y"], label="pitch")
     plt.plot(df_relative["angle.z"], label="yaw")
@@ -128,7 +124,16 @@ if __name__ == "__main__":
     plt.legend()
     plt.xlabel("frame number")
     plt.ylabel("relative angle [degree]")
-    plt.savefig(f"{save_dir}/relative_angle.png", bbox_inches="tight", pad_inches=0.05, dpi=300)
+    plt.grid()
+
+    plt.tight_layout()
+    plt.savefig(
+        f"{save_dir}/relative_pose.png",
+        bbox_inches="tight",
+        pad_inches=0.05,
+        dpi=300,
+    )
+    print(f"saved to {save_dir}/relative_pose.png")
     plt.close()
 
     # plot (relative_pose of each frame)
