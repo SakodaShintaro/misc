@@ -1,5 +1,6 @@
 """AWSIM + Autowareを動かしているときに無限周回させるためのスクリプト."""
 
+import sys
 import time
 
 import rclpy
@@ -52,18 +53,26 @@ class MissionPlanningNode(Node):
             self.get_logger().info("Service not available, waiting again...")
         # Publish initially when the node starts
         self.next_goal_index = 0
+        self.curr_loop_num = -1
+        self.target_loop_num = 0
         self.publish_goal()
         time.sleep(3)
-        self.call_service()
+        self.call_engage_service()
 
     def goal_callback(self, msg: RouteState) -> None:
         """Handle the RouteState message."""
         if msg.state == 3:
+            if self.next_goal_index == 0:
+                self.curr_loop_num += 1
+                self.get_logger().info(f"Loop number: {self.curr_loop_num}")
+            if self.curr_loop_num == self.target_loop_num:
+                self.get_logger().info("Finished the target loop")
+                sys.exit(0)
             self.next_goal_index += 1
             self.next_goal_index %= len(self.goal_list)
             self.publish_goal()
             time.sleep(3)
-            self.call_service()
+            self.call_engage_service()
 
     def publish_goal(self) -> None:
         """Publish the goal."""
@@ -82,7 +91,7 @@ class MissionPlanningNode(Node):
         self.publisher_.publish(goal)
         self.get_logger().info(f"Publishing: {goal}")
 
-    def call_service(self) -> None:
+    def call_engage_service(self) -> None:
         """Call the service to change the operation mode."""
         req = ChangeOperationMode.Request()
         future = self.client_.call_async(req)
@@ -93,8 +102,16 @@ class MissionPlanningNode(Node):
         try:
             response = future.result()
             self.get_logger().info(f"Service call succeeded {response=}")
+            if response.status.success:
+                self.get_logger().info("Engaged the autonomous mode")
+            else:
+                self.get_logger().error("Failed to engage the autonomous mode")
+                time.sleep(1)
+                self.call_engage_service()
         except Exception as e:  # noqa: BLE001
             self.get_logger().error(f"Service call failed: {e}")
+            time.sleep(1)
+            self.call_engage_service()
 
 
 if __name__ == "__main__":
