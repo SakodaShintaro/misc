@@ -14,10 +14,28 @@ from rclpy.node import Node
 class MissionPlanningNode(Node):
     """Node to publish goals and call service to change operation mode."""
 
-    def __init__(self, pos1: list, pos2: list) -> None:
+    def __init__(self) -> None:
         super().__init__("mission_planning_node")
-        self.pos1 = pos1
-        self.pos2 = pos2
+        self.goal_list = [
+            [
+                81536.5703,
+                50199.3632,
+                34.2321,
+                +0.0099193127825856,
+                -0.0045161009766161,
+                -0.0861385315656662,
+                -0.9962236285209656,
+            ],
+            [
+                81726.4218,
+                50069.6367,
+                41.0830,
+                -0.0042670401744544,
+                +0.0036174126435071,
+                -0.6379052996635437,
+                +0.7700945734977722,
+            ],
+        ]
         self.publisher_ = self.create_publisher(PoseStamped, "/rviz/routing/rough_goal", 10)
         self.subscription = self.create_subscription(
             RouteState,
@@ -32,7 +50,7 @@ class MissionPlanningNode(Node):
         while not self.client_.wait_for_service(timeout_sec=1.0):
             self.get_logger().info("Service not available, waiting again...")
         # Publish initially when the node starts
-        self.current_position = 2
+        self.next_goal_index = 0
         self.publish_goal()
         time.sleep(3)
         self.call_service()
@@ -40,6 +58,8 @@ class MissionPlanningNode(Node):
     def goal_callback(self, msg: RouteState) -> None:
         """Handle the RouteState message."""
         if msg.state == 3:
+            self.next_goal_index += 1
+            self.next_goal_index %= len(self.goal_list)
             self.publish_goal()
             time.sleep(3)
             self.call_service()
@@ -57,8 +77,7 @@ class MissionPlanningNode(Node):
             goal.pose.orientation.y,
             goal.pose.orientation.z,
             goal.pose.orientation.w,
-        ) = self.pos1 if self.current_position == 2 else self.pos2
-        self.current_position = 1 if self.current_position == 2 else 2
+        ) = self.goal_list[self.next_goal_index]
         self.publisher_.publish(goal)
         self.get_logger().info(f"Publishing: {goal}")
 
@@ -70,28 +89,8 @@ class MissionPlanningNode(Node):
 
 
 if __name__ == "__main__":
-    pos1 = [
-        81536.5703,
-        50199.3632,
-        34.2321,
-        +0.0099193127825856,
-        -0.0045161009766161,
-        -0.0861385315656662,
-        -0.9962236285209656,
-    ]
-
-    pos2 = [
-        81726.4218,
-        50069.6367,
-        41.0830,
-        -0.0042670401744544,
-        +0.0036174126435071,
-        -0.6379052996635437,
-        +0.7700945734977722,
-    ]
-
     rclpy.init()
-    mission_planning_node = MissionPlanningNode(pos1, pos2)
+    mission_planning_node = MissionPlanningNode()
     try:
         rclpy.spin(mission_planning_node)
     except KeyboardInterrupt:
