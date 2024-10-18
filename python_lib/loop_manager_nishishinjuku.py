@@ -7,6 +7,7 @@ from autoware_adapi_v1_msgs.msg import RouteState
 from autoware_adapi_v1_msgs.srv import ChangeOperationMode
 from geometry_msgs.msg import PoseStamped
 from rclpy.node import Node
+from rclpy.task import Future
 
 # ruff: noqa: ANN101
 
@@ -84,8 +85,16 @@ class MissionPlanningNode(Node):
     def call_service(self) -> None:
         """Call the service to change the operation mode."""
         req = ChangeOperationMode.Request()
-        _ = self.client_.call_async(req)
-        self.get_logger().info("Service call succeeded")
+        future = self.client_.call_async(req)
+        future.add_done_callback(self.service_callback)
+
+    def service_callback(self, future: Future) -> None:
+        """Handle the response from the service call."""
+        try:
+            response = future.result()
+            self.get_logger().info(f"Service call succeeded {response=}")
+        except Exception as e:  # noqa: BLE001
+            self.get_logger().error(f"Service call failed: {e}")
 
 
 if __name__ == "__main__":
