@@ -71,3 +71,12 @@ elapsed_time=$(date -u -d "@$SECONDS" +"%T")
 ```bash
 ros2 run rqt_diagnostic_graph_monitor rqt_diagnostic_graph_monitor
 ```
+
+## マウス速度
+
+```bash
+xinput list
+xinput list-props 11
+xinput --set-prop 11 "libinput Accel Speed" -0.2
+# 必要であれば~/.bashrcに追加する
+```
