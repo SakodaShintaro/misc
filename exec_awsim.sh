@@ -12,9 +12,6 @@ set +eux
 source $autoware_path/install/setup.bash
 set -eux
 
-cd $autoware_path
-~/misc/change_autoware_for_localization.sh
-
 # AWSIMをバックグラウンドで起動
 if [ $awsim_type = "1" ]; then
     $HOME/Downloads/AWSIM_v1.3.0/AWSIM.x86_64 &
