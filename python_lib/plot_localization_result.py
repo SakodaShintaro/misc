@@ -85,7 +85,6 @@ if __name__ == "__main__":
         "/localization/pose_estimator/nearest_voxel_transformation_likelihood",
         "/localization/pose_estimator/pose_with_covariance",
         "/localization/pose_estimator/transform_probability",
-        "/localization/pose_twist_fusion_filter/kinematic_state",
     ]
 
     df_dict = parse_rosbag(str(rosbag_path), target_topics)
