@@ -68,15 +68,14 @@ if __name__ == "__main__":
             print(msg)
             raise RuntimeError(f"Message status length is zero: {len(msg.status)=}")
         for status in msg.status:
-            for target in target_list:
-                if target in status.name:
-                    unique_status_name.add(status.name)
-                    key_value_map = {kv.key: kv.value for kv in status.values}  # noqa: PD011
-                    key_value_map["timestamp_rosbag"] = timestamp_rosbag
-                    key_value_map["timestamp_header"] = timestamp_header
-                    key_value_map["level"] = int.from_bytes(status.level, "big")
-                    key_value_map["message"] = status.message
-                    data_dict[target].append(key_value_map)
+            if status.name in target_list:
+                unique_status_name.add(status.name)
+                key_value_map = {kv.key: kv.value for kv in status.values}  # noqa: PD011
+                key_value_map["timestamp_rosbag"] = timestamp_rosbag
+                key_value_map["timestamp_header"] = timestamp_header
+                key_value_map["level"] = int.from_bytes(status.level, "big")
+                key_value_map["message"] = status.message
+                data_dict[status.name].append(key_value_map)
 
     print("unique_status_name")
     for name in sorted(unique_status_name):
