@@ -42,13 +42,6 @@ def plot_pose(
         interpolate_pose(
             df_pose,
             df_value["timestamp"],
-            POSITIONS_KEY=["position.x", "position.y", "position.z"],
-            ORIENTATIONS_KEY=[
-                "orientation.x",
-                "orientation.y",
-                "orientation.z",
-                "orientation.w",
-            ],
         )
         if df_value is not None
         else df_pose
