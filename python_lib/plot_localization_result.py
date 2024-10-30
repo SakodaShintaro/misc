@@ -1,4 +1,4 @@
-"""localizationの結果を読み込んでプロットするスクリプト."""
+"""A script that plots the results of localization."""
 
 import argparse
 import sys
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     ) / "localization_result"
     save_dir.mkdir(exist_ok=True)
 
-    # save as csv
+    # save as tsv
     for topic_name in target_topics:
         df = df_dict[topic_name]
         if len(df) == 0:
@@ -124,7 +124,7 @@ if __name__ == "__main__":
     df_marker = df_dict["/localization/pose_estimator/ndt_marker"]
     df_kinematic_state = df_dict["/localization/kinematic_state"]
 
-    # 共分散をbase_linkに変換
+    # Convert covariance to base_link
     if len(df_ndt_pose_with_covariance) > 0:
         df_ndt_pose_with_covariance = transform_covariance_from_map_to_base_link(
             df_ndt_pose_with_covariance,
@@ -132,14 +132,14 @@ if __name__ == "__main__":
     if len(df_kinematic_state) > 0:
         df_kinematic_state = transform_covariance_from_map_to_base_link(df_kinematic_state)
 
-    # dataとして変動量のノルムを計算
+    # Calculate the norm of the change amount as "data" column
     if len(df_initial_to_result_relative_pose) > 0:
         df_initial_to_result_relative_pose["data"] = df_initial_to_result_relative_pose.apply(
             lambda x: np.linalg.norm([x["position.x"], x["position.y"], x["position.z"]]),
             axis=1,
         )
 
-    # plotの縦サイズを大きくする
+    # Increase the vertical size of the plot
     plt.rcParams["figure.figsize"] = 9, 9
 
     # plot
@@ -248,10 +248,7 @@ if __name__ == "__main__":
     plt.close()
     print(f"saved to {save_path}")
 
-    # poseの可視化
-    plt.rcParams["figure.figsize"] = 9, 9
-
-    # poseの可視化
+    # plot pose
     plot_pose(df_ndt_pose_with_covariance, "ndt", save_dir, df_value=None)
     plot_pose(df_ndt_pose_with_covariance, "exe_time_ms", save_dir, df_value=df_exe_time_ms)
     plot_pose(
@@ -273,11 +270,11 @@ if __name__ == "__main__":
         df_value=df_initial_to_result_relative_pose,
     )
 
+    # if output_pose_array is not given, exit here
     if not output_pose_array:
         sys.exit(0)
 
-    # pose_arrayを気合で可視化
-    plt.rcParams["figure.figsize"] = 9, 9
+    # visualize pose array
     pose_array_result_dir = save_dir / "pose_array"
     yaw_array_result_dir = save_dir / "yaw_array"
     pose_array_result_dir.mkdir(exist_ok=True)
@@ -302,7 +299,7 @@ if __name__ == "__main__":
             ["orientation.x", "orientation.y", "orientation.z", "orientation.w"]
         ].to_numpy()
         plt.figure()
-        # indexで色付け(0 ~ 29), 0から1, 1から2,... へと矢印を描画
+        # Color by index (0 ~ 29), and draw arrows from 0 to 1, 1 to 2, ...
         for j in range(len(position_x) - 1):
             diff_x = position_x[j + 1] - position_x[j]
             diff_y = position_y[j + 1] - position_y[j]
@@ -325,7 +322,7 @@ if __name__ == "__main__":
         plt.savefig(pose_array_result_dir / f"{i:08d}.png")
         plt.close()
 
-        # quaternionを気合で可視化
+        # visualize angle
         plt.figure()
         r_list = []
         p_list = []
@@ -349,7 +346,7 @@ if __name__ == "__main__":
         plt.plot(p_list, label="pitch")
         plt.plot(y_list, label="yaw")
         plt.xlabel("iteration")
-        plt.ylabel("yaw [deg]")
+        plt.ylabel("degree")
         plt.ylim(-1, 1)
         plt.grid()
         plt.legend()
