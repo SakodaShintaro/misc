@@ -15,7 +15,7 @@ from parse_functions import parse_stamp
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("rosbag_path", type=Path)
-    parser.add_argument("--relative_time", action="store_true")
+    parser.add_argument("--start_time_from_zero", action="store_true")
     parser.add_argument("--check_empty", action="store_true")
     return parser.parse_args()
 
@@ -27,7 +27,7 @@ def diag_name_to_filename(diag_name: str) -> str:
 if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
-    relative_time = args.relative_time
+    start_time_from_zero = args.start_time_from_zero
     check_empty = args.check_empty
 
     serialization_format = "cdr"
@@ -91,7 +91,7 @@ if __name__ == "__main__":
             float_format="%.9f",
         )
 
-    if relative_time:
+    if start_time_from_zero:
         for df in data_dict.values():
             for key_value_map in df:
                 key_value_map["timestamp_header"] = (
