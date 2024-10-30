@@ -1,12 +1,13 @@
-""" The library to parse the data from rosbag file.
-"""
+"""The library to parse the data from rosbag file."""
 
+import sys
+from collections import defaultdict
+
+import pandas as pd
 import rosbag2_py
+from cv_bridge import CvBridge
 from rclpy.serialization import deserialize_message
 from rosidl_runtime_py.utilities import get_message
-from cv_bridge import CvBridge
-from collections import defaultdict
-import pandas as pd
 
 
 def parse_rosbag(rosbag_path: str, target_topic_list: list[str], limit: int = 0) -> dict:
@@ -53,33 +54,32 @@ def parse_msg(msg, msg_type):
     class_name = msg_type.__class__.__name__.replace("Metaclass_", "")
     if class_name == "Float32Stamped":
         return parse_Float32Stamped(msg)
-    elif class_name == "Int32Stamped":
-        return parse_Float32Stamped(msg)
-    elif class_name == "PoseStamped":
+    if class_name == "Int32Stamped":
+        return parse_Int32Stamped(msg)
+    if class_name == "PoseStamped":
         return parse_PoseStamped(msg)
-    elif class_name == "PoseWithCovarianceStamped":
+    if class_name == "PoseWithCovarianceStamped":
         return parse_PoseWithCovarianceStamped(msg)
-    elif class_name == "TwistWithCovarianceStamped":
+    if class_name == "TwistWithCovarianceStamped":
         return parse_TwistWithCovarianceStamped(msg)
-    elif class_name == "Odometry":
+    if class_name == "Odometry":
         return parse_Odometry(msg)
-    elif class_name == "MarkerArray":
+    if class_name == "MarkerArray":
         return parse_MarkerArray(msg)
-    elif class_name == "Image":
+    if class_name == "Image":
         return parse_Image(msg)
-    elif class_name == "CompressedImage":
+    if class_name == "CompressedImage":
         return parse_CompressedImage(msg)
-    elif class_name == "CameraInfo":
+    if class_name == "CameraInfo":
         return parse_CameraInfo(msg)
-    elif class_name == "TFMessage":
+    if class_name == "TFMessage":
         return parse_TFMessage(msg)
-    elif class_name == "Imu":
+    if class_name == "Imu":
         return parse_Imu(msg)
-    elif class_name == "VelocityReport":
+    if class_name == "VelocityReport":
         return parse_VelocityReport(msg)
-    else:
-        print(f"Error: {class_name} is not supported.")
-        exit(0)
+    print(f"Error: {class_name} is not supported.")
+    sys.exit(0)
 
 
 def parse_PoseStamped(msg):
