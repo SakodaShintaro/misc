@@ -197,9 +197,8 @@ if __name__ == "__main__":
     diag_name = "localization: pose_instability_detector"
     df = pd.DataFrame(data_dict[diag_name])
 
-    # 2行に分けて表示する
     plt.figure(figsize=(6.4 * 2, 4.8 * 2))
-    # 1行目:position
+    # row1 position
     plt.subplot(2, 1, 1)
     key_list = [
         "diff_position_x",
@@ -230,7 +229,7 @@ if __name__ == "__main__":
     plt.ylabel("diff_position [m]")
     plt.grid()
 
-    # 2行目:angle
+    # row2 angle
     plt.subplot(2, 1, 2)
     key_list = [
         "diff_angle_x",
@@ -271,8 +270,6 @@ if __name__ == "__main__":
     ##############################
     diag_name = "localization_error_monitor: ellipse_error_status"
     df = pd.DataFrame(data_dict[diag_name])
-
-    # plot
     key_list = [
         "localization_error_ellipse",
         "localization_error_ellipse_lateral_direction",
