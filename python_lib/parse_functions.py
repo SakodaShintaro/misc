@@ -52,34 +52,13 @@ def parse_stamp(stamp):
 
 def parse_msg(msg, msg_type):
     class_name = msg_type.__class__.__name__.replace("Metaclass_", "")
-    if class_name == "Float32Stamped":
-        return parse_Float32Stamped(msg)
-    if class_name == "Int32Stamped":
-        return parse_Int32Stamped(msg)
-    if class_name == "PoseStamped":
-        return parse_PoseStamped(msg)
-    if class_name == "PoseWithCovarianceStamped":
-        return parse_PoseWithCovarianceStamped(msg)
-    if class_name == "TwistWithCovarianceStamped":
-        return parse_TwistWithCovarianceStamped(msg)
-    if class_name == "Odometry":
-        return parse_Odometry(msg)
-    if class_name == "MarkerArray":
-        return parse_MarkerArray(msg)
-    if class_name == "Image":
-        return parse_Image(msg)
-    if class_name == "CompressedImage":
-        return parse_CompressedImage(msg)
-    if class_name == "CameraInfo":
-        return parse_CameraInfo(msg)
-    if class_name == "TFMessage":
-        return parse_TFMessage(msg)
-    if class_name == "Imu":
-        return parse_Imu(msg)
-    if class_name == "VelocityReport":
-        return parse_VelocityReport(msg)
-    print(f"Error: {class_name} is not supported.")
-    sys.exit(0)
+    try:
+        # parse_ + クラス名 の関数を動的に取得して実行
+        parser = globals()[f"parse_{class_name}"]
+        return parser(msg)
+    except KeyError:
+        print(f"Error: {class_name} is not supported.")
+        sys.exit(0)
 
 
 def parse_PoseStamped(msg):
