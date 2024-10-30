@@ -5,43 +5,39 @@ import pandas as pd
 from scipy.spatial.transform import Rotation
 
 
-def calc_relative_pose(df_pred: pd.DataFrame, df_true: pd.DataFrame) -> pd.DataFrame:
-    """df_trueから見たdf_predの相対位置・相対姿勢を計算する.
-
-    制約)
-    * df_predとdf_trueは必要なカラムを持つ
-    * df_predとdf_trueは同じフレーム数を持つ
-    """
-    positions_key = ["position.x", "position.y", "position.z"]
-    orientations_key = [
+def calc_relative_pose(df_prd: pd.DataFrame, df_ref: pd.DataFrame) -> pd.DataFrame:
+    """Calculate the relative position and orientation of df_prd with respect to df_ref."""
+    position_keys = ["position.x", "position.y", "position.z"]
+    orientation_keys = [
         "orientation.x",
         "orientation.y",
         "orientation.z",
         "orientation.w",
     ]
-    assert len(df_pred) == len(df_true)
+    assert len(df_prd) == len(df_ref)
 
-    df_relative = df_pred.copy()
-    df_relative[positions_key] = (
-        df_pred[positions_key].to_numpy() - df_true[positions_key].to_numpy()
+    df_relative = df_prd.copy()
+
+    # Calculate the relative orientation
+    rotation_prd = Rotation.from_quat(df_prd[orientation_keys].values)
+    rotation_ref = Rotation.from_quat(df_ref[orientation_keys].values)
+    df_relative[orientation_keys] = (rotation_prd * rotation_ref.inv()).as_quat()
+
+    # Calculate the relative position
+    df_relative[position_keys] = df_prd[position_keys].to_numpy() - df_ref[position_keys].to_numpy()
+    # Rotate the relative position of each frame by rotation_true.inv()
+    # This makes the relative position based on the pose of df_ref
+    df_relative[position_keys] = rotation_ref.inv().apply(
+        df_relative[position_keys].values,
     )
-    rotation_pred = Rotation.from_quat(df_pred[orientations_key].values)
-    rotation_true = Rotation.from_quat(df_true[orientations_key].values)
-    df_relative[orientations_key] = (rotation_pred * rotation_true.inv()).as_quat()
 
-    # 各フレームの相対位置をrotation_true.inv()で回転させる
-    # これにより、df_trueの姿勢を基準とした相対位置になる
-    df_relative[positions_key] = rotation_true.inv().apply(
-        df_relative[positions_key].values,
-    )
-
-    # ノルムの追加
+    # Add norm
     df_relative["position.norm"] = np.linalg.norm(
-        df_relative[positions_key].values,
+        df_relative[position_keys].values,
         axis=1,
     )
 
-    # roll, pitch, yawに変換したものも追加する
+    # Add rpy angle
     r = Rotation.from_quat(
         df_relative[["orientation.x", "orientation.y", "orientation.z", "orientation.w"]],
     )
@@ -51,13 +47,13 @@ def calc_relative_pose(df_pred: pd.DataFrame, df_true: pd.DataFrame) -> pd.DataF
     df_relative["angle.z"] = euler[:, 2]
     df_relative["angle.norm"] = np.linalg.norm(r.as_rotvec(), axis=1)
 
-    # 列の順番を整理
+    # Arrange the order of columns
     return df_relative[
         [
             "timestamp",
-            *positions_key,
+            *position_keys,
             "position.norm",
-            *orientations_key,
+            *orientation_keys,
             "angle.x",
             "angle.y",
             "angle.z",
