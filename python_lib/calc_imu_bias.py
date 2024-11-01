@@ -12,6 +12,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("rosbag_path", type=Path)
     parser.add_argument("--target_topic", type=str, default="/sensing/imu/imu_data")
+    parser.add_argument("--start_time_from_zero", action="store_true")
     return parser.parse_args()
 
 
@@ -19,6 +20,7 @@ if __name__ == "__main__":
     args = parse_args()
     rosbag_path = args.rosbag_path
     target_topic = args.target_topic
+    start_time_from_zero = args.start_time_from_zero
 
     df_dict = parse_rosbag(str(rosbag_path), [target_topic])
 
@@ -47,6 +49,9 @@ if __name__ == "__main__":
     3  1721370795412342401  tamagawa/imu_link           -0.001278           -0.001278            0.007776               0.042725              -0.085449              -9.796143            0.0            0.0            0.0            1.0
     4  1721370795417306159  tamagawa/imu_link           -0.000639           -0.002131            0.008629               0.070190              -0.119019              -9.768677            0.0            0.0            0.0            1.0
     """  # noqa: E501
+
+    if start_time_from_zero:
+        df["timestamp"] -= df["timestamp"].iloc[0]
 
     print(f"{df['angular_velocity.x'].mean()=:+.6f}")
     print(f"{df['angular_velocity.y'].mean()=:+.6f}")
