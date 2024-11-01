@@ -63,6 +63,7 @@ if __name__ == "__main__":
     df["angular_velocity.z"] = df["angular_velocity.z"].rolling(window=100).mean()
 
     # plot
+    df["timestamp"] /= 1e9  # ns -> s
     plt.plot(df["timestamp"], df["angular_velocity.x"], label="angular_velocity.x")
     plt.plot(df["timestamp"], df["angular_velocity.y"], label="angular_velocity.y")
     plt.plot(df["timestamp"], df["angular_velocity.z"], label="angular_velocity.z")
