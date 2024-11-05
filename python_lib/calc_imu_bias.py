@@ -13,6 +13,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("rosbag_path", type=Path)
     parser.add_argument("--target_topic", type=str, default="/sensing/imu/imu_data")
     parser.add_argument("--start_time_from_zero", action="store_true")
+    parser.add_argument("--time_begin_sec", type=float, default=0.0)
+    parser.add_argument("--time_end_sec", type=float, default=float("inf"))
     return parser.parse_args()
 
 
@@ -21,6 +23,8 @@ if __name__ == "__main__":
     rosbag_path = args.rosbag_path
     target_topic = args.target_topic
     start_time_from_zero = args.start_time_from_zero
+    time_begin_sec = args.time_begin_sec
+    time_end_sec = args.time_end_sec
 
     df_dict = parse_rosbag(str(rosbag_path), [target_topic])
 
@@ -52,6 +56,8 @@ if __name__ == "__main__":
 
     if start_time_from_zero:
         df["timestamp"] -= df["timestamp"].iloc[0]
+    df["timestamp"] /= 1e9  # ns -> s
+    df = df[(time_begin_sec <= df["timestamp"]) & (df["timestamp"] <= time_end_sec)]
 
     print(f"{df['angular_velocity.x'].mean()=:+.6f}")
     print(f"{df['angular_velocity.y'].mean()=:+.6f}")
@@ -63,7 +69,6 @@ if __name__ == "__main__":
     df["angular_velocity.z"] = df["angular_velocity.z"].rolling(window=100).mean()
 
     # plot
-    df["timestamp"] /= 1e9  # ns -> s
     plt.plot(df["timestamp"], df["angular_velocity.x"], label="angular_velocity.x")
     plt.plot(df["timestamp"], df["angular_velocity.y"], label="angular_velocity.y")
     plt.plot(df["timestamp"], df["angular_velocity.z"], label="angular_velocity.z")
