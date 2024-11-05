@@ -80,3 +80,7 @@ xinput list-props 11
 xinput --set-prop 11 "libinput Accel Speed" -0.2
 # 必要であれば~/.bashrcに追加する
 ```
+
+## 自動リブート処理とデーモン起動のためのコマンドスクリプト
+
+<https://nxmnpg.lemoda.net/ja/8/rc.local>
