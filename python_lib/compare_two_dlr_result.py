@@ -47,8 +47,12 @@ if __name__ == "__main__":
     for dir_name in common_dir_list:
         tsv1 = dlr_result_dir1 / dir_name / target_path
         tsv2 = dlr_result_dir2 / dir_name / target_path
-        df1 = pd.read_csv(tsv1, sep="\t")
-        df2 = pd.read_csv(tsv2, sep="\t")
+        try:
+            df1 = pd.read_csv(tsv1, sep="\t")
+            df2 = pd.read_csv(tsv2, sep="\t")
+        except:  # noqa: E722
+            print(f"Error: {dir_name}")
+            continue
         error_mean1 = df1["error_mean"].mean()
         error_mean2 = df2["error_mean"].mean()
         print(f"{dir_name:50} {error_mean1:.3f} {error_mean2:.3f}")
