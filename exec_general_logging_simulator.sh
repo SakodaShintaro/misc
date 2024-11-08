@@ -51,3 +51,7 @@ ros2 bag play ${ROSBAG} -r 1.0 --clock 200
 
 # 終了
 ./kill_autoware.sh
+
+# 結果のプロット
+python3 python_lib/plot_localization_result.py $SAVE_DIR/result_bag
+python3 python_lib/plot_diagnostics.py $SAVE_DIR/result_bag
