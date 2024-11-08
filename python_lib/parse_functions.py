@@ -161,6 +161,13 @@ def parse_Float32Stamped(msg):
     }
 
 
+def parse_Float64Stamped(msg):
+    return {
+        "timestamp": parse_stamp(msg.stamp),
+        "data": msg.data,
+    }
+
+
 def parse_Int32Stamped(msg):
     return {
         "timestamp": parse_stamp(msg.stamp),
