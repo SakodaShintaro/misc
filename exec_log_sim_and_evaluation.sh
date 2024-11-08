@@ -102,3 +102,4 @@ python3 python_lib/compare_trajectories.py \
 
 # その他プロット
 python3 python_lib/plot_localization_result.py $SAVE_DIR/result_rosbag
+python3 python_lib/plot_diagnostics.py $SAVE_DIR/result_rosbag
