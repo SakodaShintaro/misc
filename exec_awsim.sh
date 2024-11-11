@@ -1,8 +1,9 @@
 #!/bin/bash
 set -eux
 
-awsim_type=${1:-"1"}
-autoware_path=${2:-"$HOME/autoware"}
+goal_type=${1:-"none"} # choice: "none", "short", "medium", "long", "inf"
+awsim_type=${2:-"1"}
+autoware_path=${3:-"$HOME/autoware"}
 
 # スクリプトが終了する際にすべてのバックグラウンドプロセスを停止するためのトラップを設定
 trap "kill 0" EXIT
@@ -28,4 +29,22 @@ fi
 ros2 launch autoware_launch e2e_simulator.launch.xml \
     map_path:=$HOME/Downloads/nishishinjuku_autoware_map_divided \
     vehicle_model:=sample_vehicle \
-    sensor_model:=awsim_sensor_kit
+    sensor_model:=awsim_sensor_kit &
+
+sleep 50
+# ゴールを設定
+if [ $goal_type = "none" ]; then
+    # wait until the end
+    wait
+elif [ $goal_type = "short" ]; then
+    python3 ~/misc/python_lib/goal_manager.py --goals_yaml ~/misc/awsim_goal/goals_short.yaml
+elif [ $goal_type = "medium" ]; then
+    python3 ~/misc/python_lib/goal_manager.py --goals_yaml ~/misc/awsim_goal/goals_medium.yaml
+elif [ $goal_type = "long" ]; then
+    python3 ~/misc/python_lib/goal_manager.py --goals_yaml ~/misc/awsim_goal/goals_long.yaml
+elif [ $goal_type = "inf" ]; then
+    python3 ~/misc/python_lib/goal_manager.py --goals_yaml ~/misc/awsim_goal/goals_long.yaml --loop_num 0
+else
+    echo "Invalid argument: $goal_type"
+    exit 1
+fi

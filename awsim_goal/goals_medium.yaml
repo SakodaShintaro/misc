@@ -1,14 +1,14 @@
 - position_x: 81699.1640625
   position_y: 50047.34375
-  position_z: 0
-  orientation_x: 0
-  orientation_y: 0
+  position_z: 0.0
+  orientation_x: 0.0
+  orientation_y: 0.0
   orientation_z: 0.08854668680944533
   orientation_w: 0.99607202764412073
 - position_x: 81538.834375000006
   position_y: 50411.765625
-  position_z: 0
-  orientation_x: 0
-  orientation_y: 0
+  position_z: 0.0
+  orientation_x: 0.0
+  orientation_y: 0.0
   orientation_z: -0.62367018413932795
   orientation_w: 0.78168759835091206

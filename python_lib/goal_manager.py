@@ -1,9 +1,12 @@
 """AWSIM + Autowareを動かしているときに無限周回させるためのスクリプト."""
 
+import argparse
 import sys
 import time
+from pathlib import Path
 
 import rclpy
+import yaml
 from autoware_adapi_v1_msgs.msg import RouteState
 from autoware_adapi_v1_msgs.srv import ChangeOperationMode
 from geometry_msgs.msg import PoseStamped
@@ -13,31 +16,23 @@ from rclpy.task import Future
 # ruff: noqa: ANN101
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--goals_yaml", type=Path, required=True)
+    parser.add_argument("--loop_num", type=int, default=1, help="0 means infinite loop")
+    return parser.parse_args()
+
+
 class MissionPlanningNode(Node):
     """Node to publish goals and call service to change operation mode."""
 
-    def __init__(self) -> None:
+    def __init__(self, goals_yaml: Path, loop_num: int) -> None:
         super().__init__("mission_planning_node")
-        self.goal_list = [
-            [
-                81536.5703,
-                50199.3632,
-                34.2321,
-                +0.0099193127825856,
-                -0.0045161009766161,
-                -0.0861385315656662,
-                -0.9962236285209656,
-            ],
-            [
-                81726.4218,
-                50069.6367,
-                41.0830,
-                -0.0042670401744544,
-                +0.0036174126435071,
-                -0.6379052996635437,
-                +0.7700945734977722,
-            ],
-        ]
+
+        with goals_yaml.open() as f:
+            self.goal_list = yaml.safe_load(f)
+        for goal in self.goal_list:
+            print(goal)
         self.publisher_ = self.create_publisher(PoseStamped, "/rviz/routing/rough_goal", 10)
         self.subscription = self.create_subscription(
             RouteState,
@@ -53,8 +48,8 @@ class MissionPlanningNode(Node):
             self.get_logger().info("Service not available, waiting again...")
         # Publish initially when the node starts
         self.next_goal_index = 0
-        self.curr_loop_num = -1
-        self.target_loop_num = 0
+        self.curr_loop_num = 0
+        self.target_loop_num = loop_num
         self.publish_goal()
         time.sleep(3)
         self.call_engage_service()
@@ -62,14 +57,17 @@ class MissionPlanningNode(Node):
     def goal_callback(self, msg: RouteState) -> None:
         """Handle the RouteState message."""
         if msg.state == 3:
+            self.next_goal_index += 1
+            self.next_goal_index %= len(self.goal_list)
+
+            # check if the loop is finished
             if self.next_goal_index == 0:
                 self.curr_loop_num += 1
                 self.get_logger().info(f"Loop number: {self.curr_loop_num}")
             if self.curr_loop_num == self.target_loop_num:
                 self.get_logger().info("Finished the target loop")
                 sys.exit(0)
-            self.next_goal_index += 1
-            self.next_goal_index %= len(self.goal_list)
+
             self.publish_goal()
             time.sleep(3)
             self.call_engage_service()
@@ -79,15 +77,14 @@ class MissionPlanningNode(Node):
         goal = PoseStamped()
         goal.header.stamp = self.get_clock().now().to_msg()
         goal.header.frame_id = "map"
-        (
-            goal.pose.position.x,
-            goal.pose.position.y,
-            goal.pose.position.z,
-            goal.pose.orientation.x,
-            goal.pose.orientation.y,
-            goal.pose.orientation.z,
-            goal.pose.orientation.w,
-        ) = self.goal_list[self.next_goal_index]
+        curr_goal = self.goal_list[self.next_goal_index]
+        goal.pose.position.x = curr_goal["position_x"]
+        goal.pose.position.y = curr_goal["position_y"]
+        goal.pose.position.z = curr_goal["position_z"]
+        goal.pose.orientation.x = curr_goal["orientation_x"]
+        goal.pose.orientation.y = curr_goal["orientation_y"]
+        goal.pose.orientation.z = curr_goal["orientation_z"]
+        goal.pose.orientation.w = curr_goal["orientation_w"]
         self.publisher_.publish(goal)
         self.get_logger().info(f"Publishing: {goal}")
 
@@ -115,8 +112,12 @@ class MissionPlanningNode(Node):
 
 
 if __name__ == "__main__":
+    args = parse_args()
+    goals_yaml = args.goals_yaml
+    loop_num = args.loop_num
+
     rclpy.init()
-    mission_planning_node = MissionPlanningNode()
+    mission_planning_node = MissionPlanningNode(goals_yaml, loop_num)
     try:
         rclpy.spin(mission_planning_node)
     except KeyboardInterrupt:
