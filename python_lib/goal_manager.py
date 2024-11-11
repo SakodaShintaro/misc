@@ -33,7 +33,8 @@ class MissionPlanningNode(Node):
             self.goal_list = yaml.safe_load(f)
         for goal in self.goal_list:
             print(goal)
-        self.publisher_ = self.create_publisher(PoseStamped, "/rviz/routing/rough_goal", 10)
+        # self.publisher_ = self.create_publisher(PoseStamped, "/rviz/routing/rough_goal", 10)
+        self.publisher_ = self.create_publisher(PoseStamped, "/planning/mission_planning/goal", 10)
         self.subscription = self.create_subscription(
             RouteState,
             "/api/routing/state",
