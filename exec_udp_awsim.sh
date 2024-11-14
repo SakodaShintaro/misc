@@ -11,7 +11,11 @@ source $HOME/autoware/install/setup.bash
 set -eux
 
 cd $HOME/autoware/src/sensor_component/external/nebula/
-~/misc/merge_from_url.sh https://github.com/msz-rai/nebula/tree/feature/disable-communication-option
+git checkout v0.2.2
+cd $HOME/autoware/src/sensor_kit/external/awsim_sensor_kit_launch
+~/misc/merge_from_url.sh https://github.com/SakodaShintaro/awsim_sensor_kit_launch/tree/fix/add_udp_only
+cd $HOME/autoware/src/sensor_kit/sample_sensor_kit_launch
+~/misc/merge_from_url.sh https://github.com/SakodaShintaro/sample_sensor_kit_launch/tree/fix/add_udp_only
 cd $HOME/autoware
 ~/misc/build_with_custom_jobs.sh 2
 
