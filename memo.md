@@ -84,3 +84,10 @@ xinput --set-prop 11 "libinput Accel Speed" -0.2
 ## 自動リブート処理とデーモン起動のためのコマンドスクリプト
 
 <https://nxmnpg.lemoda.net/ja/8/rc.local>
+
+## swapの積極性変更
+
+```bash
+sudo vim /etc/sysctl.conf
+vm.swappiness=10
+```
