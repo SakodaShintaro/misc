@@ -58,6 +58,7 @@ if __name__ == "__main__":
         "localization: ekf_localizer",
         "localization_error_monitor: ellipse_error_status",
         "localization: pose_instability_detector",
+        "gyro_bias_validator: gyro_bias_validator",
     ]
     data_dict: dict = {key: [] for key in target_list}
 
@@ -287,6 +288,41 @@ if __name__ == "__main__":
         plt.plot(df["timestamp_header"], df[key], label=key)
     plt.xlabel("time [s]")
     plt.ylabel("error_ellipse [m]")
+    plt.grid()
+    plt.legend()
+    plt.tight_layout()
+    save_path = save_dir / f"{diag_name_to_filename(diag_name)}.png"
+    plt.savefig(save_path, bbox_inches="tight", pad_inches=0.05)
+    print(f"Saved {save_path}")
+
+    #######################
+    # gyro_bias_validator #
+    #######################
+    diag_name = "gyro_bias_validator: gyro_bias_validator"
+    df = pd.DataFrame(data_dict[diag_name])
+    key_list = [
+        "estimated_gyro_bias_x",
+        "estimated_gyro_bias_y",
+        "estimated_gyro_bias_z",
+    ]
+    plt.figure(figsize=(6.4 * 2, 4.8 * 2))
+    for _, key in enumerate(key_list):
+        if key not in df.columns:
+            print(f"Skip {key}")
+            continue
+        df[key] = df[key].astype(float)
+        plt.plot(df["timestamp_header"], df[key], label=key)
+    plt.plot(
+        df["timestamp_header"],
+        df["gyro_bias_threshold"].astype(float),
+        linestyle="dashed",
+    )
+    plt.plot(
+        df["timestamp_header"],
+        -df["gyro_bias_threshold"].astype(float),
+        linestyle="dashed",
+    )
+    plt.xlabel("time [s]")
     plt.grid()
     plt.legend()
     plt.tight_layout()
