@@ -1,6 +1,7 @@
 """A script to parse diagnostics messages from a rosbag file."""
 
 import argparse
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -17,6 +18,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("rosbag_path", type=Path)
     parser.add_argument("--start_time_from_zero", action="store_true")
     parser.add_argument("--check_empty", action="store_true")
+    parser.add_argument("--print_status_name_set", action="store_true")
     return parser.parse_args()
 
 
@@ -29,6 +31,7 @@ if __name__ == "__main__":
     rosbag_path = args.rosbag_path
     start_time_from_zero = args.start_time_from_zero
     check_empty = args.check_empty
+    print_status_name_set = args.print_status_name_set
 
     serialization_format = "cdr"
     storage_options = rosbag2_py.StorageOptions(
@@ -58,6 +61,8 @@ if __name__ == "__main__":
     ]
     data_dict: dict = {key: [] for key in target_list}
 
+    status_name_set = set()
+
     while reader.has_next():
         (topic, data, timestamp_rosbag) = reader.read_next()
         msg_type = get_message(type_map[topic])
@@ -67,6 +72,7 @@ if __name__ == "__main__":
             print(msg)
             raise RuntimeError(f"Message status length is zero: {len(msg.status)=}")
         for status in msg.status:
+            status_name_set.add(status.name)
             if status.name in target_list:
                 key_value_map = {kv.key: kv.value for kv in status.values}  # noqa: PD011
                 key_value_map["timestamp_rosbag"] = timestamp_rosbag
@@ -74,6 +80,10 @@ if __name__ == "__main__":
                 key_value_map["level"] = int.from_bytes(status.level, "big")
                 key_value_map["message"] = status.message
                 data_dict[status.name].append(key_value_map)
+
+    if print_status_name_set:
+        print(status_name_set)
+        sys.exit(0)
 
     save_dir = rosbag_path.parent / "diagnostics_result"
     save_dir.mkdir(exist_ok=True)
