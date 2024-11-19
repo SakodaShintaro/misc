@@ -31,7 +31,7 @@ ros2 launch autoware_launch e2e_simulator.launch.xml \
     vehicle_model:=sample_vehicle \
     sensor_model:=awsim_sensor_kit &
 
-sleep 50
+sleep 65
 # ゴールを設定
 if [ $goal_type = "none" ]; then
     # wait until the end
