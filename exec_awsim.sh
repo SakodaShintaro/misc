@@ -31,7 +31,12 @@ ros2 launch autoware_launch e2e_simulator.launch.xml \
     vehicle_model:=sample_vehicle \
     sensor_model:=awsim_sensor_kit &
 
-sleep 65
+# サービス呼び出しを立ち上がりの確認とする
+ros2 service call /localization/pose_twist_fusion_filter/trigger_node std_srvs/srv/SetBool "{data: false}"
+
+# 安定性のため少し待つ
+sleep 15
+
 # ゴールを設定
 if [ $goal_type = "none" ]; then
     # wait until the end
