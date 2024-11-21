@@ -92,3 +92,12 @@ sudo vim /etc/sysctl.conf
 vm.swappiness=10
 sudo sysctl -p
 ```
+
+## GitHubへのアクセスをsshで行う
+
+`~/.gitconfig` 下に以下を追記する
+
+```bash
+[url "git@github.com:"]
+  insteadOf = https://github.com/
+```
