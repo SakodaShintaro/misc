@@ -90,4 +90,5 @@ xinput --set-prop 11 "libinput Accel Speed" -0.2
 ```bash
 sudo vim /etc/sysctl.conf
 vm.swappiness=10
+sudo sysctl -p
 ```
