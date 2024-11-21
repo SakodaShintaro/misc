@@ -44,14 +44,14 @@ ros2 service call /localization/pose_twist_fusion_filter/trigger_node std_srvs/s
 sleep 3
 
 # 保存
-./record_localization_result.sh $SAVE_DIR/result_bag &
+~/misc/record_localization_result.sh $SAVE_DIR/result_bag &
 
 # rosbagをリプレイ
 ros2 bag play ${ROSBAG} -r 1.0 --clock 200
 
 # 終了
-./kill_autoware.sh
+~/misc/kill_autoware.sh
 
 # 結果のプロット
-python3 python_lib/plot_localization_result.py $SAVE_DIR/result_bag
-python3 python_lib/plot_diagnostics.py $SAVE_DIR/result_bag
+python3 ~/misc/python_lib/plot_localization_result.py $SAVE_DIR/result_bag
+python3 ~/misc/python_lib/plot_diagnostics.py $SAVE_DIR/result_bag

@@ -78,6 +78,7 @@ if __name__ == "__main__":
         "/localization/pose_estimator/nearest_voxel_transformation_likelihood",
         "/localization/pose_estimator/pose_with_covariance",
         "/localization/pose_estimator/transform_probability",
+        "/localization/pose_twist_fusion_filter/estimated_yaw_bias",
     ]
 
     df_dict = parse_rosbag(str(rosbag_path), target_topics)
@@ -116,6 +117,7 @@ if __name__ == "__main__":
     ]
     df_marker = df_dict["/localization/pose_estimator/ndt_marker"]
     df_kinematic_state = df_dict["/localization/kinematic_state"]
+    df_estimated_yaw_bias = df_dict["/localization/pose_twist_fusion_filter/estimated_yaw_bias"]
 
     # Convert covariance to base_link
     if len(df_ndt_pose_with_covariance) > 0:
@@ -136,7 +138,7 @@ if __name__ == "__main__":
     plt.rcParams["figure.figsize"] = 9, 9
 
     # plot
-    PLOT_NUM = 4
+    PLOT_NUM = 5
     if len(df_exe_time_ms) > 0:
         with (save_dir / "exe_time_ms_mean.txt").open("w") as f:
             f.write(f"{df_exe_time_ms['data'].mean():.1f} [ms]")
@@ -213,6 +215,17 @@ if __name__ == "__main__":
         plt.ylim(bottom=0)
         plt.grid()
         plt.legend()
+
+    if len(df_estimated_yaw_bias) > 0:
+        plt.subplot(PLOT_NUM, 1, 5)
+        plt.plot(
+            df_estimated_yaw_bias["timestamp"] / 1e9,
+            df_estimated_yaw_bias["data"],
+            label="estimated_yaw_bias",
+        )
+        plt.xlabel("time [s]")
+        plt.ylabel("estimated_yaw_bias [rad]")
+        plt.grid()
 
     plt.subplot(PLOT_NUM, 1, 4)
     plt.plot(
