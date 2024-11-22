@@ -312,16 +312,17 @@ if __name__ == "__main__":
             continue
         df[key] = df[key].astype(float)
         plt.plot(df["timestamp_header"], df[key], label=key)
-    plt.plot(
-        df["timestamp_header"],
-        df["gyro_bias_threshold"].astype(float),
-        linestyle="dashed",
-    )
-    plt.plot(
-        df["timestamp_header"],
-        -df["gyro_bias_threshold"].astype(float),
-        linestyle="dashed",
-    )
+    if "gyro_bias_threshold" in df.columns:
+        plt.plot(
+            df["timestamp_header"],
+            df["gyro_bias_threshold"].astype(float),
+            linestyle="dashed",
+        )
+        plt.plot(
+            df["timestamp_header"],
+            -df["gyro_bias_threshold"].astype(float),
+            linestyle="dashed",
+        )
     plt.xlabel("time [s]")
     plt.grid()
     plt.legend()
