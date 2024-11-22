@@ -1,21 +1,13 @@
-import sqlite3
+"""A script to delete topics with zero messages from a rosbag database."""
+
 import argparse
+import sqlite3
 from pathlib import Path
+
 from rosbag2_py import Reindexer, StorageOptions
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Delete topics with zero messages from a rosbag database."
-    )
-    parser.add_argument("rosbag_db3_file", type=Path)
-    return parser.parse_args()
-
-
-if __name__ == "__main__":
-    args = parse_args()
-    rosbag_db3_file = args.rosbag_db3_file
-
+def delete_topics_with_zero_messages(rosbag_db3_file: Path) -> None:
     conn = sqlite3.connect(rosbag_db3_file)
     cursor = conn.cursor()
 
@@ -38,6 +30,24 @@ if __name__ == "__main__":
 
     conn.commit()
     conn.close()
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("rosbag_db3_file", type=Path)
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    rosbag_db3_file = args.rosbag_db3_file
+
+    if rosbag_db3_file.is_dir():
+        rosbag_db3_file_list = list(rosbag_db3_file.glob("*.db3"))
+        for rosbag_db3_file in rosbag_db3_file_list:
+            delete_topics_with_zero_messages(rosbag_db3_file)
+    else:
+        delete_topics_with_zero_messages(rosbag_db3_file)
 
     print("Completed deleting topics with zero messages.")
     storage_options = StorageOptions(
