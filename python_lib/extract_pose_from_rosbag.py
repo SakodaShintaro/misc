@@ -59,5 +59,8 @@ if __name__ == "__main__":
     plt.close()
 
     df.to_csv(
-        f"{output_dir}/{save_name}.tsv", index=False, sep="\t", float_format="%.9f"
+        f"{output_dir}/{save_name}.tsv",
+        index=False,
+        sep="\t",
+        float_format="%.9f",
     )
