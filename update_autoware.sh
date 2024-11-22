@@ -5,6 +5,7 @@ set -eux
 JOB_COUNT=${1:-2}
 
 $(dirname $0)/reset_autoware.sh
+git checkout main
 git pull
 vcs import src < autoware.repos
 vcs import src < simulator.repos
