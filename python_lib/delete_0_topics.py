@@ -19,7 +19,7 @@ def delete_topics_with_zero_messages(rosbag_db3_file: Path) -> None:
         ON topics.id = messages.topic_id
         GROUP BY topics.id
         HAVING COUNT(messages.topic_id) = 0
-    """
+        """,
     )
     topics_to_delete = cursor.fetchall()
 
