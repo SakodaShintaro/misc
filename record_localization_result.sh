@@ -23,4 +23,5 @@ ros2 bag record -o "$SAVE_DIR" --use-sim-time \
   /localization/pose_twist_fusion_filter/kinematic_state \
   /localization/pose_twist_fusion_filter/estimated_yaw_bias \
   /localization/pose_twist_fusion_filter/pose_instability_detector/debug/diff_pose \
+  /localization/pose_twist_fusion_filter/debug/processing_time_ms \
   /localization/util/downsample/pointcloud
