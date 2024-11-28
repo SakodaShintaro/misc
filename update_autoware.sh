@@ -10,6 +10,7 @@ git pull
 vcs import src < autoware.repos
 vcs import src < simulator.repos
 vcs import src < tools.repos
+vcs import src < autoware-nightly.repos
 vcs pull src
 vcs export src --exact > my_autoware_$(date +"%Y%m%d").repos
 rosdep update
