@@ -37,7 +37,8 @@ ros2 launch autoware_launch logging_simulator.launch.xml \
     rviz:=${LAUNCH_RVIZ} \
     perception:=false \
     planning:=false \
-    control:=false &
+    control:=false \
+    launch_system_monitor:=true &
 
 # 立ち上がるまで待つ
 # サービス呼び出しを立ち上がりの確認とする
@@ -99,6 +100,11 @@ python3 python_lib/compare_trajectories.py \
 python3 python_lib/compare_trajectories.py \
     $SAVE_DIR/localization__pose_estimator__pose_with_covariance.tsv \
     $SAVE_DIR/awsim__ground_truth__localization__kinematic_state.tsv
+
+# system_monitor_report
+cd $SAVE_DIR
+python3 ~/work/system-performance-evaluation/analysis/system_monitor_report/main.py $SAVE_DIR/result_rosbag/
+cd -
 
 # その他プロット
 python3 python_lib/plot_localization_result.py $SAVE_DIR/result_rosbag
