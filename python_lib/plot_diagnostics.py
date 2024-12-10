@@ -16,7 +16,7 @@ from parse_functions import parse_stamp
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("rosbag_path", type=Path)
-    parser.add_argument("--start_time_from_zero", action="store_true")
+    parser.add_argument("--start_time_from_zero", action="store_true", default=True)
     parser.add_argument("--check_empty", action="store_true")
     parser.add_argument("--print_status_name_set", action="store_true")
     return parser.parse_args()
@@ -103,14 +103,17 @@ if __name__ == "__main__":
         )
 
     if start_time_from_zero:
-        for df in data_dict.values():
-            for key_value_map in df:
-                key_value_map["timestamp_header"] = (
-                    key_value_map["timestamp_header"] - df[0]["timestamp_header"]
-                )
-                key_value_map["timestamp_rosbag"] = (
-                    key_value_map["timestamp_rosbag"] - df[0]["timestamp_rosbag"]
-                )
+        for one_data_dict_key in data_dict:
+            one_data_dict = data_dict[one_data_dict_key]
+            if len(one_data_dict) == 0:
+                continue
+            first_h = int(one_data_dict[0]["timestamp_header"])
+            first_r = int(one_data_dict[0]["timestamp_rosbag"])
+            for row in one_data_dict:
+                row["timestamp_header"] = int(row["timestamp_header"]) - first_h
+                row["timestamp_rosbag"] = int(row["timestamp_rosbag"]) - first_r
+                row["timestamp_header"] /= 1e9
+                row["timestamp_rosbag"] /= 1e9
 
     ####################
     # ndt_scan_matcher #
