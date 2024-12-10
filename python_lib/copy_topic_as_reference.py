@@ -82,7 +82,9 @@ if __name__ == "__main__":
         if topic == output_topic_name:
             continue
         topic_info = rosbag2_py.TopicMetadata(
-            name=topic, type=type_map[topic], serialization_format=serialization_format
+            name=topic,
+            type=type_map[topic],
+            serialization_format=serialization_format,
         )
         writer.create_topic(topic_info)
     topic_info = rosbag2_py.TopicMetadata(
