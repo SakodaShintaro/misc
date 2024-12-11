@@ -20,12 +20,9 @@ SAVE_DIR=$(readlink -f $4)
 # rviz
 LAUNCH_RVIZ=${5:-true}
 
-# このディレクトリに移動
-cd $(dirname $0)
-
 # 読み込み
 set +eux
-source $HOME/autoware/install/setup.bash
+source ./install/setup.bash
 set -eux
 
 # Autowareをバックグラウンドで起動
@@ -51,7 +48,7 @@ sleep 5
 mkdir -p $SAVE_DIR
 
 # 保存
-./record_localization_result.sh $SAVE_DIR/result_rosbag &
+~/misc/record_localization_result.sh $SAVE_DIR/result_rosbag &
 
 # CPU利用率の表示
 mpstat 1 > $SAVE_DIR/cpu_usage.txt &
@@ -66,38 +63,38 @@ ros2 bag play ${ROSBAG} --rate 1.0 \
   --remap /localization/pose_twist_fusion_filter/biased_pose_with_covariance:=/null
 
 # 終了
-./kill_autoware.sh
+~/misc/kill_autoware.sh
 
 # gtが無ければgtを生成
 if [ ! -e $SAVE_DIR/ground_truth.tsv ]; then
-    python3 python_lib/extract_pose_from_rosbag.py \
+    python3 ~/misc/python_lib/extract_pose_from_rosbag.py \
         --rosbag_path=$ROSBAG \
         --target_topic="/awsim/ground_truth/localization/kinematic_state" \
         --output_dir=$SAVE_DIR
 fi
 
 # rosbagからtsvに変換
-python3 python_lib/extract_pose_from_rosbag.py \
+python3 ~/misc/python_lib/extract_pose_from_rosbag.py \
     --rosbag_path=$SAVE_DIR/result_rosbag \
     --target_topic="/localization/kinematic_state" \
     --output_dir=$SAVE_DIR
-python3 python_lib/extract_pose_from_rosbag.py \
+python3 ~/misc/python_lib/extract_pose_from_rosbag.py \
     --rosbag_path=$SAVE_DIR/result_rosbag \
     --target_topic="/localization/pose_twist_fusion_filter/pose" \
     --output_dir=$SAVE_DIR
-python3 python_lib/extract_pose_from_rosbag.py \
+python3 ~/misc/python_lib/extract_pose_from_rosbag.py \
     --rosbag_path=$SAVE_DIR/result_rosbag \
     --target_topic="/localization/pose_estimator/pose_with_covariance" \
     --output_dir=$SAVE_DIR
 
 # 評価
-python3 python_lib/compare_trajectories.py \
+python3 ~/misc/python_lib/compare_trajectories.py \
     $SAVE_DIR/localization__kinematic_state.tsv \
     $SAVE_DIR/awsim__ground_truth__localization__kinematic_state.tsv
-python3 python_lib/compare_trajectories.py \
+python3 ~/misc/python_lib/compare_trajectories.py \
     $SAVE_DIR/localization__pose_twist_fusion_filter__pose.tsv \
     $SAVE_DIR/awsim__ground_truth__localization__kinematic_state.tsv
-python3 python_lib/compare_trajectories.py \
+python3 ~/misc/python_lib/compare_trajectories.py \
     $SAVE_DIR/localization__pose_estimator__pose_with_covariance.tsv \
     $SAVE_DIR/awsim__ground_truth__localization__kinematic_state.tsv
 
@@ -107,5 +104,5 @@ python3 ~/work/system-performance-evaluation/analysis/system_monitor_report/main
 cd -
 
 # その他プロット
-python3 python_lib/plot_localization_result.py $SAVE_DIR/result_rosbag
-python3 python_lib/plot_diagnostics.py $SAVE_DIR/result_rosbag
+python3 ~/misc/python_lib/plot_localization_result.py $SAVE_DIR/result_rosbag
+python3 ~/misc/python_lib/plot_diagnostics.py $SAVE_DIR/result_rosbag
