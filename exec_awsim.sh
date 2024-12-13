@@ -3,14 +3,13 @@ set -eux
 
 goal_type=${1:-"none"} # choice: "none", "short", "medium", "long", "inf"
 awsim_type=${2:-"1"}
-autoware_path=${3:-"$HOME/autoware"}
 
 # スクリプトが終了する際にすべてのバックグラウンドプロセスを停止するためのトラップを設定
 trap "kill 0" EXIT
 
 # 読み込み
 set +eux
-source $autoware_path/install/setup.bash
+source ./install/setup.bash
 set -eux
 
 # AWSIMをバックグラウンドで起動
