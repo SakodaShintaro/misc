@@ -65,9 +65,9 @@ class MissionPlanningNode(Node):
             if self.next_goal_index == 0:
                 self.curr_loop_num += 1
                 self.get_logger().info(f"Loop number: {self.curr_loop_num}")
-            if self.target_loop_num > 1 and self.curr_loop_num == self.target_loop_num:
-                self.get_logger().info("Finished the target loop")
-                sys.exit(0)
+                if self.curr_loop_num == self.target_loop_num:
+                    self.get_logger().info("Finished the target loop")
+                    sys.exit(0)
 
             self.publish_goal()
             time.sleep(3)
