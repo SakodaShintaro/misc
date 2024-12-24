@@ -4,6 +4,13 @@ set -eux
 
 JOB_COUNT=${1:-2}
 
+# 現状のディレクトリがautowareというプレフィックスを持つことを確認する
+current_dir=$(basename $(pwd))
+if [[ ! $current_dir =~ ^(autoware) ]]; then
+    echo "This script must be run in a directory with a prefix of autoware."
+    exit 1
+fi
+
 $(dirname $0)/reset_autoware.sh
 git checkout main
 git pull
