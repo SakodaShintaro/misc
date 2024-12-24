@@ -22,3 +22,9 @@ ros2 service call /localization/pose_estimator/trigger_node std_srvs/srv/SetBool
 
 # rosbagをリプレイ
 ros2 bag play $HOME/autoware_map/sample-rosbag/sample.db3 -r 0.5 -s sqlite3
+
+# logを確認
+dir_path=$(find ~/.ros/log -maxdepth 1 -type d | sort | tail -n 1)
+log_path=$dir_path/launch.log
+cat $log_path | grep "ERROR"
+cat $log_path | grep "died"

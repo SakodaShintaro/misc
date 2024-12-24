@@ -57,3 +57,9 @@ sleep 1
 # engage
 ros2 topic pub /autoware/engage autoware_vehicle_msgs/msg/Engage "engage: true" -1
 sleep 25
+
+# logを確認
+dir_path=$(find ~/.ros/log -maxdepth 1 -type d | sort | tail -n 1)
+log_path=$dir_path/launch.log
+cat $log_path | grep "ERROR"
+cat $log_path | grep "died"
