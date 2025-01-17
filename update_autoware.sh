@@ -1,8 +1,7 @@
 #!/bin/bash
-
 set -eux
 
-JOB_COUNT=${1:-2}
+USE_NIGHTLY=${2:-true}
 
 # 現状のディレクトリがautowareというプレフィックスを持つことを確認する
 current_dir=$(basename $(pwd))
@@ -17,10 +16,12 @@ git pull
 vcs import src < autoware.repos
 vcs import src < simulator.repos
 vcs import src < tools.repos
-vcs import src < autoware-nightly.repos
+if [ $USE_NIGHTLY = true ]; then
+    vcs import src < autoware-nightly.repos
+fi
 vcs pull src
 vcs export src --exact > my_autoware_$(date +"%Y%m%d").repos
 rosdep update
 rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO
-$(dirname $0)/build_with_custom_jobs.sh ${JOB_COUNT}
+$(dirname $0)/build_with_custom_jobs.sh 2
 $(dirname $0)/change_autoware_for_localization.sh
