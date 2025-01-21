@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eux
 
-USE_NIGHTLY=${2:-true}
+USE_NIGHTLY=${1:-true}
 
 # 現状のディレクトリがautowareというプレフィックスを持つことを確認する
 current_dir=$(basename $(pwd))
