@@ -13,6 +13,11 @@ fi
 
 rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO
 
+# なぜか再ビルドだとエラー起きまくるので一度削除
+rm -rf \
+    build/autoware_remaining_distance_time_calculator \
+    install/autoware_remaining_distance_time_calculator
+
 MAKEFLAGS="-j${JOB_COUNT}" colcon build \
   --symlink-install \
   --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF \
