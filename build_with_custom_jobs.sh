@@ -18,6 +18,12 @@ rm -rf \
     build/autoware_remaining_distance_time_calculator \
     install/autoware_remaining_distance_time_calculator
 
+MAKEFLAGS="-j8" colcon build \
+  --symlink-install \
+  --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF \
+  --continue-on-error \
+  --packages-up-to openscenario_interpreter
+
 MAKEFLAGS="-j${JOB_COUNT}" colcon build \
   --symlink-install \
   --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF \
