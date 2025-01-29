@@ -101,3 +101,17 @@ sudo sysctl -p
 [url "git@github.com:"]
   insteadOf = https://github.com/
 ```
+
+## CAPS LOCKキー(Aキーの左のキー)に、Controlキーの機能を割り当てる方法
+
+/etc/default/keyboard に以下の設定を行う。
+
+```txt
+sudo vim /etc/default/keyboard
+XKBOPTIONS="ctrl:nocaps"
+
+sudo dpkg-reconfigure keyboard-configuration
+sudo udevadm trigger --subsystem-match=input --action=change
+
+sudo reboot
+```
