@@ -115,3 +115,7 @@ sudo udevadm trigger --subsystem-match=input --action=change
 
 sudo reboot
 ```
+
+## Ubuntuで半角/全角切り替え改善
+
+<https://magidropack.hatenablog.com/entry/2018/11/30/120602>
