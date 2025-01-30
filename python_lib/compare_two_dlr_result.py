@@ -15,6 +15,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--label1", type=str, default="result1")
     parser.add_argument("--label2", type=str, default="result2")
     parser.add_argument("--anonymous_print", action="store_true")
+    parser.add_argument("--skip_abnormal_data", action="store_true")
     return parser.parse_args()
 
 
@@ -26,6 +27,7 @@ if __name__ == "__main__":
     label1 = args.label1
     label2 = args.label2
     anonymous_print = args.anonymous_print
+    skip_abnormal_data = args.skip_abnormal_data
 
     dir_list1 = sorted(dlr_result_dir1.glob("*/"))
     dir_list2 = sorted(dlr_result_dir2.glob("*/"))
@@ -54,10 +56,12 @@ if __name__ == "__main__":
         except:  # noqa: E722
             print(f"Error: {dir_name}")
             continue
-        x_label_list.append(dir_name.replace("LM_regression_", ""))
         error_mean1 = df1["error_mean"].mean()
         error_mean2 = df2["error_mean"].mean()
+        if skip_abnormal_data and (error_mean1 > 0.5 or error_mean2 > 0.5):
+            continue
         print(f"{dir_name:50} {error_mean1:.3f} {error_mean2:.3f}")
+        x_label_list.append(dir_name.replace("LM_regression_", ""))
         error_mean_list1.append(error_mean1)
         error_mean_list2.append(error_mean2)
 
