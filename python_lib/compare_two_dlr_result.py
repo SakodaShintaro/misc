@@ -41,6 +41,7 @@ if __name__ == "__main__":
         "compare_trajectories/localization__kinematic_state_result/relative_pose_summary.tsv"
     )
 
+    x_label_list = []
     error_mean_list1 = []
     error_mean_list2 = []
 
@@ -53,28 +54,27 @@ if __name__ == "__main__":
         except:  # noqa: E722
             print(f"Error: {dir_name}")
             continue
+        x_label_list.append(dir_name.replace("LM_regression_", ""))
         error_mean1 = df1["error_mean"].mean()
         error_mean2 = df2["error_mean"].mean()
         print(f"{dir_name:50} {error_mean1:.3f} {error_mean2:.3f}")
         error_mean_list1.append(error_mean1)
         error_mean_list2.append(error_mean2)
 
-    common_dir_list = [s.replace("LM_regression_", "") for s in common_dir_list]
-
     plt.plot(error_mean_list1, marker=".", label=label1)
     plt.plot(error_mean_list2, marker=".", label=label2)
     GUIDELINE = 0.5
-    plt.plot([GUIDELINE] * len(common_dir_list), label=f"Guideline({GUIDELINE}m)", linestyle="--")
+    plt.plot([GUIDELINE] * len(x_label_list), label=f"Guideline({GUIDELINE}m)", linestyle="--")
     plt.legend()
     plt.grid()
     if anonymous_print:
         plt.xticks(
-            range(len(common_dir_list)),
-            [f"location{i:2d}" for i in range(len(common_dir_list))],
+            range(len(x_label_list)),
+            [f"location{i:2d}" for i in range(len(x_label_list))],
             rotation=-90,
         )
     else:
-        plt.xticks(range(len(common_dir_list)), common_dir_list, rotation=-90)
+        plt.xticks(range(len(x_label_list)), x_label_list, rotation=-90)
     plt.yscale("log")
     plt.ylabel("Mean Error [m]")
     save_path = output_dir / "compare_result.png"
