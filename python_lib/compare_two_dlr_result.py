@@ -74,7 +74,7 @@ if __name__ == "__main__":
     if anonymous_print:
         plt.xticks(
             range(len(x_label_list)),
-            [f"location{i:2d}" for i in range(len(x_label_list))],
+            [f"data{i:2d}" for i in range(len(x_label_list))],
             rotation=-90,
         )
     else:
