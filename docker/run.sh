@@ -1,7 +1,9 @@
 #!/bin/bash
 set -eux
 
-IMAGE_NAME=rl_practice:latest
+cd $(dirname $0)
+
+IMAGE_NAME=${1}
 
 docker build \
     --build-arg USER_NAME=$(whoami) \
@@ -16,4 +18,7 @@ docker run -it \
     --env="DISPLAY" \
     --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
     --volume=$HOME/work:$HOME/work \
+    --volume=$HOME/data:$HOME/data \
+    --volume $HOME/.cache/:$HOME/.cache/ \
+    --volume /media:/media \
     ${IMAGE_NAME} bash
