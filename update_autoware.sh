@@ -18,6 +18,8 @@ vcs import src < simulator.repos
 vcs import src < tools.repos
 if [ $USE_NIGHTLY = true ]; then
     vcs import src < autoware-nightly.repos
+    vcs import src < simulator-nightly.repos
+    vcs import src < tools-nightly.repos
 fi
 vcs pull src
 vcs export src --exact > my_autoware_$(date +"%Y%m%d").repos
