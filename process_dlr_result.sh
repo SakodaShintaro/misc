@@ -17,7 +17,7 @@ for dir in $dir_list; do
   python3 $script_dir/python_lib/plot_localization_result.py $target_rosbag
 
   # plot diagnostics
-  python3 $script_dir/python_lib/plot_diagnostics.py $target_rosbag
+  ros2 run autoware_localization_evaluation_scripts plot_diagnostics.py $target_rosbag
 
   # compare trajectories
   dir_name=$(basename $dir)

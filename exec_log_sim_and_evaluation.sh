@@ -105,4 +105,4 @@ cd -
 
 # その他プロット
 python3 ~/misc/python_lib/plot_localization_result.py $SAVE_DIR/result_rosbag
-python3 ~/misc/python_lib/plot_diagnostics.py $SAVE_DIR/result_rosbag
+ros2 run autoware_localization_evaluation_scripts plot_diagnostics.py $SAVE_DIR/result_rosbag
