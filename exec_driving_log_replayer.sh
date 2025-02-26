@@ -9,5 +9,7 @@ elif [ $version -eq 2 ]; then
     set +eux
     source ~/autoware/install/setup.bash
     set -eux
-    ros2 launch driving_log_replayer_v2 driving_log_replayer_v2.launch.py scenario_path:=$HOME/log_evaluator_data/localization/sample/scenario.yaml
+    ros2 launch driving_log_replayer_v2 driving_log_replayer_v2.launch.py \
+        play_rate:=0.125 \
+        scenario_path:=$HOME/log_evaluator_data/localization/sample/scenario.yaml
 fi
