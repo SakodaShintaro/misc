@@ -50,9 +50,6 @@ mkdir -p $SAVE_DIR
 # 保存
 ~/misc/record_localization_result.sh $SAVE_DIR/result_rosbag &
 
-# CPU利用率の表示
-mpstat 1 > $SAVE_DIR/cpu_usage.txt &
-
 # rosbagをリプレイ
 # 【以前のコマンド】
 # ros2 bag play ${ROSBAG} -r 0.75 -s sqlite3 --remap /localization/pose_twist_fusion_filter/biased_pose_with_covariance:=/null
