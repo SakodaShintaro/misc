@@ -64,14 +64,14 @@ ros2 bag play ${ROSBAG} --rate 1.0 \
 
 # gtが無ければgtを生成
 if [ ! -e $SAVE_DIR/ground_truth.tsv ]; then
-    python3 ~/misc/python_lib/extract_pose_from_rosbag.py \
+    ros2 run autoware_localization_evaluation_scripts extract_pose_from_rosbag.py \
         $ROSBAG \
         --save_dir=$SAVE_DIR \
         --target_topics="/awsim/ground_truth/localization/kinematic_state"
 fi
 
 # rosbagからtsvに変換
-python3 ~/misc/python_lib/extract_pose_from_rosbag.py \
+ros2 run autoware_localization_evaluation_scripts extract_pose_from_rosbag.py \
     $SAVE_DIR/result_rosbag \
     --save_dir $SAVE_DIR \
     --target_topics "/localization/kinematic_state" \
@@ -79,13 +79,13 @@ python3 ~/misc/python_lib/extract_pose_from_rosbag.py \
                     "/localization/pose_estimator/pose_with_covariance"
 
 # 評価
-python3 ~/misc/python_lib/compare_trajectories.py \
+ros2 run autoware_localization_evaluation_scripts compare_trajectories.py \
     $SAVE_DIR/localization__kinematic_state.tsv \
     $SAVE_DIR/awsim__ground_truth__localization__kinematic_state.tsv
-python3 ~/misc/python_lib/compare_trajectories.py \
+ros2 run autoware_localization_evaluation_scripts compare_trajectories.py \
     $SAVE_DIR/localization__pose_twist_fusion_filter__pose.tsv \
     $SAVE_DIR/awsim__ground_truth__localization__kinematic_state.tsv
-python3 ~/misc/python_lib/compare_trajectories.py \
+ros2 run autoware_localization_evaluation_scripts compare_trajectories.py \
     $SAVE_DIR/localization__pose_estimator__pose_with_covariance.tsv \
     $SAVE_DIR/awsim__ground_truth__localization__kinematic_state.tsv
 

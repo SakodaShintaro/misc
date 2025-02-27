@@ -23,12 +23,12 @@ for dir in $dir_list; do
 
   # compare trajectories
   dir_name=$(basename $dir)
-  python3 $script_dir/python_lib/extract_pose_from_rosbag.py \
+  ros2 run autoware_localization_evaluation_scripts extract_pose_from_rosbag.py \
     $target_rosbag \
     --save_dir $compare_result_dir \
     --target_topics "/localization/kinematic_state" \
                     "/localization/reference_kinematic_state"
-  python3 $script_dir/python_lib/compare_trajectories.py \
+  ros2 run autoware_localization_evaluation_scripts compare_trajectories.py \
     $compare_result_dir/localization__kinematic_state.tsv \
     $compare_result_dir/localization__reference_kinematic_state.tsv
 
