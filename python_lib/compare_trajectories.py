@@ -12,25 +12,25 @@ from interpolate_pose import interpolate_pose
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("prediction_tsv", type=Path)
+    parser.add_argument("subject_tsv", type=Path)
     parser.add_argument("reference_tsv", type=Path)
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
-    prediction_tsv = args.prediction_tsv
+    subject_tsv = args.subject_tsv
     reference_tsv = args.reference_tsv
 
-    result_name = prediction_tsv.stem
-    save_dir = prediction_tsv.parent / f"{result_name}_result"
+    result_name = subject_tsv.stem
+    save_dir = subject_tsv.parent / f"{result_name}_result"
     save_dir.mkdir(parents=True, exist_ok=True)
 
-    df_prd = pd.read_csv(prediction_tsv, sep="\t")
+    df_sub = pd.read_csv(subject_tsv, sep="\t")
     df_ref = pd.read_csv(reference_tsv, sep="\t")
 
     # plot
-    plt.plot(df_prd["position.x"], df_prd["position.y"], label="prediction")
+    plt.plot(df_sub["position.x"], df_sub["position.y"], label="subject")
     plt.plot(df_ref["position.x"], df_ref["position.y"], label="reference")
     plt.legend()
     plt.axis("equal")
@@ -45,30 +45,30 @@ if __name__ == "__main__":
     plt.close()
 
     # sort by timestamp
-    df_prd = df_prd.sort_values(by="timestamp")
+    df_sub = df_sub.sort_values(by="timestamp")
     df_ref = df_ref.sort_values(by="timestamp")
 
     # interpolate
-    timestamp = df_prd["timestamp"]
+    timestamp = df_sub["timestamp"]
     ok_mask = (timestamp > df_ref["timestamp"].min()) * (timestamp < df_ref["timestamp"].max())
-    df_prd = df_prd[ok_mask]
+    df_sub = df_sub[ok_mask]
     timestamp = timestamp[ok_mask]
     df_ref = interpolate_pose(df_ref, timestamp)
 
     # reset index
-    df_prd = df_prd.reset_index(drop=True)
+    df_sub = df_sub.reset_index(drop=True)
     df_ref = df_ref.reset_index(drop=True)
 
-    assert len(df_prd) == len(df_ref), f"len(df_pr)={len(df_prd)}, len(df_gt)={len(df_ref)}"
+    assert len(df_sub) == len(df_ref), f"len(df_pr)={len(df_sub)}, len(df_gt)={len(df_ref)}"
 
     # calc mean error
-    diff_x = df_prd["position.x"].to_numpy() - df_ref["position.x"].to_numpy()
-    diff_y = df_prd["position.y"].to_numpy() - df_ref["position.y"].to_numpy()
-    diff_z = df_prd["position.z"].to_numpy() - df_ref["position.z"].to_numpy()
+    diff_x = df_sub["position.x"].to_numpy() - df_ref["position.x"].to_numpy()
+    diff_y = df_sub["position.y"].to_numpy() - df_ref["position.y"].to_numpy()
+    diff_z = df_sub["position.z"].to_numpy() - df_ref["position.z"].to_numpy()
     diff_meter = (diff_x**2 + diff_y**2 + diff_z**2) ** 0.5
 
     # calc relative pose
-    df_relative = calc_relative_pose(df_prd, df_ref)
+    df_relative = calc_relative_pose(df_sub, df_ref)
     df_relative.to_csv(f"{save_dir}/relative_pose.tsv", sep="\t", index=False)
 
     x_diff_mean = df_relative["position.x"].abs().mean()
