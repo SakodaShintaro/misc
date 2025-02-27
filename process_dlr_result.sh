@@ -24,12 +24,9 @@ for dir in $dir_list; do
   dir_name=$(basename $dir)
   python3 $script_dir/python_lib/extract_pose_from_rosbag.py \
     $target_rosbag \
-    --target_topics="/localization/kinematic_state" \
-    --save_dir=$parent_dir/compare_trajectories
-  python3 $script_dir/python_lib/extract_pose_from_rosbag.py \
-    $target_rosbag \
-    --target_topics="/localization/reference_kinematic_state" \
-    --save_dir=$parent_dir/compare_trajectories
+    --save_dir $parent_dir/compare_trajectories \
+    --target_topics "/localization/kinematic_state" \
+                    "/localization/reference_kinematic_state"
   python3 $script_dir/python_lib/compare_trajectories.py \
     $parent_dir/compare_trajectories/localization__kinematic_state.tsv \
     $parent_dir/compare_trajectories/localization__reference_kinematic_state.tsv
