@@ -69,23 +69,17 @@ ros2 bag play ${ROSBAG} --rate 1.0 \
 if [ ! -e $SAVE_DIR/ground_truth.tsv ]; then
     python3 ~/misc/python_lib/extract_pose_from_rosbag.py \
         --rosbag_path=$ROSBAG \
-        --target_topic="/awsim/ground_truth/localization/kinematic_state" \
+        --target_topics="/awsim/ground_truth/localization/kinematic_state" \
         --output_dir=$SAVE_DIR
 fi
 
 # rosbagからtsvに変換
 python3 ~/misc/python_lib/extract_pose_from_rosbag.py \
-    --rosbag_path=$SAVE_DIR/result_rosbag \
-    --target_topic="/localization/kinematic_state" \
-    --output_dir=$SAVE_DIR
-python3 ~/misc/python_lib/extract_pose_from_rosbag.py \
-    --rosbag_path=$SAVE_DIR/result_rosbag \
-    --target_topic="/localization/pose_twist_fusion_filter/pose" \
-    --output_dir=$SAVE_DIR
-python3 ~/misc/python_lib/extract_pose_from_rosbag.py \
-    --rosbag_path=$SAVE_DIR/result_rosbag \
-    --target_topic="/localization/pose_estimator/pose_with_covariance" \
-    --output_dir=$SAVE_DIR
+    --rosbag_path $SAVE_DIR/result_rosbag \
+    --output_dir $SAVE_DIR \
+    --target_topics "/localization/kinematic_state" \
+                    "/localization/pose_twist_fusion_filter/pose" \
+                    "/localization/pose_estimator/pose_with_covariance"
 
 # 評価
 python3 ~/misc/python_lib/compare_trajectories.py \
