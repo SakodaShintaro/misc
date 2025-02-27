@@ -14,9 +14,9 @@ python3 $HOME/misc/python_lib/extract_images_from_rosbag.py \
 
 # poseを抽出
 python3 $HOME/misc/python_lib/extract_pose_from_rosbag.py \
-  --rosbag_path=$rosbag_path \
-  --target_topic=$pose_topic \
-  --output_dir=$output_dir/images
+  $rosbag_path \
+  --target_topics=$pose_topic \
+  --save_dir=$output_dir/images
 
 # poseをカメラposeに変換
 python3 $HOME/misc/python_lib/calc_camera_pose.py \

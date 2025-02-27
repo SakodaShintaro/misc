@@ -22,13 +22,13 @@ for dir in $dir_list; do
   # compare trajectories
   dir_name=$(basename $dir)
   python3 $script_dir/python_lib/extract_pose_from_rosbag.py \
-    --rosbag_path=$target_rosbag \
-    --target_topic="/localization/kinematic_state" \
-    --output_dir=$(dirname $target_rosbag)/compare_trajectories
+    $target_rosbag \
+    --target_topics="/localization/kinematic_state" \
+    --save_dir=$(dirname $target_rosbag)/compare_trajectories
   python3 $script_dir/python_lib/extract_pose_from_rosbag.py \
-    --rosbag_path=$target_rosbag \
-    --target_topic="/localization/reference_kinematic_state" \
-    --output_dir=$(dirname $target_rosbag)/compare_trajectories
+    $target_rosbag \
+    --target_topics="/localization/reference_kinematic_state" \
+    --save_dir=$(dirname $target_rosbag)/compare_trajectories
   python3 $script_dir/python_lib/compare_trajectories.py \
     $(dirname $target_rosbag)/compare_trajectories/localization__kinematic_state.tsv \
     $(dirname $target_rosbag)/compare_trajectories/localization__reference_kinematic_state.tsv
