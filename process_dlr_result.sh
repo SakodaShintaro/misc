@@ -12,6 +12,7 @@ dir_list=$(find $result_dir -mindepth 1 -maxdepth 1 -type d | sort)
 
 for dir in $dir_list; do
   target_rosbag=$dir/result_bag
+  parent_dir=$(dirname $target_rosbag)
 
   # plot localization result
   python3 $script_dir/python_lib/plot_localization_result.py $target_rosbag
@@ -24,14 +25,14 @@ for dir in $dir_list; do
   python3 $script_dir/python_lib/extract_pose_from_rosbag.py \
     $target_rosbag \
     --target_topics="/localization/kinematic_state" \
-    --save_dir=$(dirname $target_rosbag)/compare_trajectories
+    --save_dir=$parent_dir/compare_trajectories
   python3 $script_dir/python_lib/extract_pose_from_rosbag.py \
     $target_rosbag \
     --target_topics="/localization/reference_kinematic_state" \
-    --save_dir=$(dirname $target_rosbag)/compare_trajectories
+    --save_dir=$parent_dir/compare_trajectories
   python3 $script_dir/python_lib/compare_trajectories.py \
-    $(dirname $target_rosbag)/compare_trajectories/localization__kinematic_state.tsv \
-    $(dirname $target_rosbag)/compare_trajectories/localization__reference_kinematic_state.tsv
+    $parent_dir/compare_trajectories/localization__kinematic_state.tsv \
+    $parent_dir/compare_trajectories/localization__reference_kinematic_state.tsv
 
   elapsed_time=$(date -ud "@$SECONDS" +"%T")
 done
