@@ -4,6 +4,7 @@ set -eux
 cd $(dirname $0)
 
 IMAGE_NAME=${1}
+CONTAINER_NAME=${2}
 
 docker build \
     --build-arg USER_NAME=$(whoami) \
@@ -12,6 +13,7 @@ docker build \
     -t ${IMAGE_NAME} .
 
 docker run -it \
+    --name ${CONTAINER_NAME} \
     --user $(id -u):$(id -g) \
     --gpus all \
     --ipc=host \
