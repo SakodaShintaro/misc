@@ -20,5 +20,5 @@ docker run -it \
     --volume=$HOME/work:$HOME/work \
     --volume=$HOME/data:$HOME/data \
     --volume $HOME/.cache/:$HOME/.cache/ \
-    --volume /media:/media \
+    --volume /media:/media:rwx,shared \
     ${IMAGE_NAME} bash
