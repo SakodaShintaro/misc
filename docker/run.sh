@@ -17,10 +17,13 @@ docker run -it \
     --user $(id -u):$(id -g) \
     --gpus all \
     --ipc=host \
+    --network=host \
     --env="DISPLAY" \
     --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
     --volume=$HOME/work:$HOME/work \
     --volume=$HOME/data:$HOME/data \
+    --volume=$HOME/misc:$HOME/misc \
+    --volume=$HOME/autoware:$HOME/autoware \
     --volume $HOME/.cache/:$HOME/.cache/ \
     --volume /media:/media:rw,shared \
     ${IMAGE_NAME} bash
