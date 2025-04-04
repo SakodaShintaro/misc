@@ -52,6 +52,15 @@ ros2 topic pub -1 /planning/mission_planning/goal geometry_msgs/msg/PoseStamped 
     orientation: { x: 0.0, y: 0.0, z: 0.25517065791082694, w: 0.9668960312987926 }
   }
 }'
+# ros2 topic pub -1 /planning/mission_planning/goal geometry_msgs/msg/PoseStamped '{
+#   header: {
+#     stamp: {sec: 181, nanosec: 289995947},
+#     frame_id: 'map'},
+#   pose: {
+#     position: { x: 3713.93994140625, y: 73769.125, z: 0.0 },
+#     orientation: { x: 0.0, y: 0.0, z: 0.24573643403017062, w: 0.9693366829900412 }
+#   }
+# }'
 sleep 1
 
 # engage
