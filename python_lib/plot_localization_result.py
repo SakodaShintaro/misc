@@ -247,6 +247,14 @@ if __name__ == "__main__":
     plt.ylabel("velocity [m/s]")
     plt.grid()
     plt.legend()
+    plt.xticks(
+        np.arange(
+            df_kinematic_state["timestamp"].iloc[0] / 1e9,
+            df_kinematic_state["timestamp"].iloc[-1] / 1e9,
+            60,
+        ),
+        rotation=45,
+    )
 
     plt.tight_layout()
     save_path = save_dir / "localization_result.png"
