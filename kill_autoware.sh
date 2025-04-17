@@ -3,7 +3,7 @@
 pkill ros2
 pkill rviz2
 pkill aggregator_node
-pkill -f -9 autoware_
+# pkill -f -9 autoware_
 ps aux | grep python3 | grep ros2 | grep -v grep | awk '{ print "kill ", $2 }' | sh
 ps aux | grep python3 | grep rqt_reconfigure | grep -v grep | awk '{ print "kill ", $2 }' | sh
 ps aux | grep component_container | grep -v grep | awk '{ print "kill ", $2 }' | sh
