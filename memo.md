@@ -125,3 +125,64 @@ sudo reboot
 ```bash
 docker builder prune
 ```
+
+## 電源起動時の設定
+
+```bash
+$ sudo cat /etc/rc.local
+#!/bin/bash
+sysctl -w net.core.rmem_max=2147483647
+ip link set lo multicast on
+```
+
+## 仮想環境作成
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+## apt更新
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+sudo apt autoremove -y
+```
+
+## シャットダウン
+
+```bash
+sudo shutdown -h now
+```
+
+## CUDA削除
+
+```bash
+sudo apt remove libcudnn8-dev libnvinfer-dev libnvinfer-plugin-dev libnvonnxparsers-dev libnvparsers-dev *cuda*
+```
+
+## 再帰的に更新順で並べる
+
+```bash
+find . -type f | xargs ls -l --time-style='+%Y%m%d%H%M%S' | sort -k6,6
+```
+
+## メモリ消費確認
+
+psやtopではなくpmap -x
+
+## 動画についての高速データローダー
+
+<https://github.com/dmlc/decord>
+
+## tqdmで進捗を可視化しながら並列化
+
+```python
+from concurrent.futures import ProcessPoolExecutor
+progress = tqdm(total=N)
+with ProcessPoolExecutor(max_workers=os.cpu_count() // 2) as executor:
+    for i in range(N):
+        future = executor.submit(f, args)
+        future.add_done_callback(lambda _: progress.update())
+```
