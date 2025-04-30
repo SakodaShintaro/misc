@@ -13,7 +13,7 @@ python3 $HOME/misc/python_lib/extract_images_from_rosbag.py \
   $output_dir/images
 
 # poseを抽出
-ros2 run autoware_localization_evaluation_scripts extract_pose_from_rosbag.py \
+ros2 run autoware_localization_evaluation_scripts extract_values_from_rosbag.py \
   $rosbag_path \
   --target_topics=$pose_topic \
   --save_dir=$output_dir/images

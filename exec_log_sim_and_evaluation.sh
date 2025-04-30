@@ -64,14 +64,14 @@ ros2 bag play ${ROSBAG} --rate 1.0 \
 
 # gtが無ければgtを生成
 if [ ! -e $SAVE_DIR/ground_truth.tsv ]; then
-    ros2 run autoware_localization_evaluation_scripts extract_pose_from_rosbag.py \
+    ros2 run autoware_localization_evaluation_scripts extract_values_from_rosbag.py \
         $ROSBAG \
         --save_dir=$SAVE_DIR \
         --target_topics="/awsim/ground_truth/localization/kinematic_state"
 fi
 
 # rosbagからtsvに変換
-ros2 run autoware_localization_evaluation_scripts extract_pose_from_rosbag.py \
+ros2 run autoware_localization_evaluation_scripts extract_values_from_rosbag.py \
     $SAVE_DIR/result_rosbag \
     --save_dir $SAVE_DIR \
     --target_topics "/localization/kinematic_state" \

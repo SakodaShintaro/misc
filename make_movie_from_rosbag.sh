@@ -15,7 +15,7 @@ python3 ~/misc/python_lib/extract_images_from_rosbag.py \
   --target_camera_name=$TARGET_TOPIC \
   --skip_num=5
 
-# python3 ~/misc/python_lib/extract_poses_from_rosbag.py
+# python3 ~/misc/python_lib/extract_valuess_from_rosbag.py
 # python3 ~/misc/python_lib/calc_camera_pose.py
 # python3 ~/misc/python_lib/plot_camera_and_pose.py
 # ~/misc/ffmpeg_lib/make_mp4_from_unsequential_png.sh
