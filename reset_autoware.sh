@@ -21,7 +21,10 @@ for git_dir in $REPOSITORIES; do
     )
 done
 
+git reset --hard @{u}
+git clean -df
+
 # 変更ファイルを差し戻す
 if [[ $current_dir =~ ^(autoware) ]]; then
-    cp $(dirname $0)/simulator.repos ./
+    cat $(dirname $0)/simulator.repos >> ./simulator.repos
 fi
