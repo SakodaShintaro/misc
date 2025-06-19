@@ -38,7 +38,7 @@ ros2 bag record -s mcap --all
 git config --global core.editor "vim"
 ```
 
-## Dockerメモ
+## Docker容量系メモ
 
 ```bash
 docker system df
@@ -119,12 +119,6 @@ sudo reboot
 ## Ubuntuで半角/全角切り替え改善
 
 <https://magidropack.hatenablog.com/entry/2018/11/30/120602>
-
-## Docker容量空ける
-
-```bash
-docker builder prune
-```
 
 ## 電源起動時の設定
 
