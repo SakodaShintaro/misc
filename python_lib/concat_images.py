@@ -30,8 +30,8 @@ def put_text(
     scale = cv2.getFontScaleFromHeight(face, text_pixel)
     x = 0
     y = text_pixel
-    cv2.putText(image, text, (x, y), face, scale, outline_color, 5, cv2.LINE_AA)
-    cv2.putText(image, text, (x, y), face, scale, color, 2, cv2.LINE_AA)
+    cv2.putText(image, text, (x, y), face, scale, outline_color, 4, cv2.LINE_AA)
+    cv2.putText(image, text, (x, y), face, scale, color, 1, cv2.LINE_AA)
     return image
 
 
@@ -62,7 +62,7 @@ def main() -> None:
 
     files1 = sorted(dir1.glob(f"*.{ext}"))
     files2 = sorted(dir2.glob(f"*.{ext}"))
-    assert len(files1) == len(files2)
+    assert len(files1) == len(files2), f"{len(files1)} != {len(files2)}"
     progress = tqdm(total=len(files1))
 
     for file1, file2 in zip(files1, files2):
@@ -74,10 +74,8 @@ def main() -> None:
         image1, image2 = pad_images(image1, image2)
 
         # 文字を入れる
-        filename1 = file1.name
-        filename2 = file2.name
-        put_text(image1, f"{args.text1}_{filename1}")
-        put_text(image2, f"{args.text2}_{filename2}")
+        put_text(image1, f"{args.text1}")
+        put_text(image2, f"{args.text2}")
 
         # 連結
         new_image = cv2.hconcat([image1, image2])
