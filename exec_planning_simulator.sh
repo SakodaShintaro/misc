@@ -63,66 +63,66 @@ ros2 topic pub -1 /planning/mission_planning/goal geometry_msgs/msg/PoseStamped 
 }'
 sleep 1
 
-ros2 topic pub -1 /simulation/dummy_perception_publisher/object_info tier4_simulation_msgs/msg/DummyObject '{
-  header: {
-    stamp: {sec: 181, nanosec: 289995947},
-    frame_id: 'map'},
-  id: { uuid: [224, 179, 108, 65, 32, 224, 108, 69, 5, 199, 73, 132, 26, 165, 235, 142] },
-  initial_state: {
-    pose_covariance: {
-      pose: {
-        position: { x: 3768.849609375, y: 73727.6171875, z: 0.0 },
-        orientation: { x: 0.0, y: 0.0, z: -0.5259276490507606, w: 0.850529310467276 }
-      },
-      covariance: [0.0009, 0.0,  0.0, 0.0, 0.0, 0.0,
-                   0.0,  0.0009, 0.0, 0.0, 0.0, 0.0,
-                   0.0,  0.0, 0.0009, 0.0, 0.0, 0.0,
-                   0.0,  0.0,  0.0, 0.0, 0.0, 0.0,
-                   0.0,  0.0,  0.0, 0.0, 0.0, 0.0,
-                   0.0,  0.0,  0.0, 0.0, 0.0, 0.007]
-    },
-    twist_covariance: {
-      twist: {
-        linear: { x: 0.0, y: 0.0, z: 0.0 },
-        angular: { x: 0.0, y: 0.0, z: 0.0 }
-      },
-      covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    },
-    accel_covariance: {
-      accel: {
-        linear: { x: 0.0, y: 0.0, z: 0.0 },
-        angular: { x: 0.0, y: 0.0, z: 0.0 }
-      },
-      covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    }
-  },
-  classification: {
-    label: 3,
-    probability: 1.0
-  },
-  shape: {
-    type: 0,
-    footprint: { points: [] },
-    dimensions: {
-      x: 10.5,
-      y: 2.5,
-      z: 3.5
-    }
-  },
-  max_velocity: 33.29999923706055,
-  min_velocity: -33.29999923706055,
-  action: 0
-}'
+# ros2 topic pub -1 /simulation/dummy_perception_publisher/object_info tier4_simulation_msgs/msg/DummyObject '{
+#   header: {
+#     stamp: {sec: 181, nanosec: 289995947},
+#     frame_id: 'map'},
+#   id: { uuid: [224, 179, 108, 65, 32, 224, 108, 69, 5, 199, 73, 132, 26, 165, 235, 142] },
+#   initial_state: {
+#     pose_covariance: {
+#       pose: {
+#         position: { x: 3768.849609375, y: 73727.6171875, z: 0.0 },
+#         orientation: { x: 0.0, y: 0.0, z: -0.5259276490507606, w: 0.850529310467276 }
+#       },
+#       covariance: [0.0009, 0.0,  0.0, 0.0, 0.0, 0.0,
+#                    0.0,  0.0009, 0.0, 0.0, 0.0, 0.0,
+#                    0.0,  0.0, 0.0009, 0.0, 0.0, 0.0,
+#                    0.0,  0.0,  0.0, 0.0, 0.0, 0.0,
+#                    0.0,  0.0,  0.0, 0.0, 0.0, 0.0,
+#                    0.0,  0.0,  0.0, 0.0, 0.0, 0.007]
+#     },
+#     twist_covariance: {
+#       twist: {
+#         linear: { x: 0.0, y: 0.0, z: 0.0 },
+#         angular: { x: 0.0, y: 0.0, z: 0.0 }
+#       },
+#       covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+#                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+#                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+#                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+#                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+#                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+#     },
+#     accel_covariance: {
+#       accel: {
+#         linear: { x: 0.0, y: 0.0, z: 0.0 },
+#         angular: { x: 0.0, y: 0.0, z: 0.0 }
+#       },
+#       covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+#                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+#                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+#                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+#                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+#                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+#     }
+#   },
+#   classification: {
+#     label: 3,
+#     probability: 1.0
+#   },
+#   shape: {
+#     type: 0,
+#     footprint: { points: [] },
+#     dimensions: {
+#       x: 10.5,
+#       y: 2.5,
+#       z: 3.5
+#     }
+#   },
+#   max_velocity: 33.29999923706055,
+#   min_velocity: -33.29999923706055,
+#   action: 0
+# }'
 sleep 1
 
 # engage
