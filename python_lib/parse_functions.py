@@ -22,9 +22,7 @@ def parse_rosbag(rosbag_path: str, target_topic_list: list[str], limit: int = 0)
     reader.open(storage_options, converter_options)
 
     topic_types = reader.get_all_topics_and_types()
-    type_map = {
-        topic_types[i].name: topic_types[i].type for i in range(len(topic_types))
-    }
+    type_map = {topic_types[i].name: topic_types[i].type for i in range(len(topic_types))}
 
     storage_filter = rosbag2_py.StorageFilter(topics=target_topic_list)
     reader.set_filter(storage_filter)
@@ -254,3 +252,13 @@ def parse_VelocityReport(msg):
         "lateral_velocity": msg.lateral_velocity,
         "heading_rate": msg.heading_rate,
     }
+
+
+def parse_ProcessingTimeTree(msg):
+    nodes = msg.nodes
+    result_dict = {}
+
+    for node in nodes:
+        result_dict[node.name] = float(node.processing_time)
+
+    return result_dict
