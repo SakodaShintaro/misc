@@ -46,11 +46,14 @@ def get_topic_stats(reader: SequentialReader) -> list:
 
     dict_size = defaultdict(int)
     dict_num = defaultdict(int)
+    topic_timestamps = defaultdict(list)  # 各トピックのタイムスタンプを記録
+
     while reader.has_next():
-        (topic, data, _) = reader.read_next()
+        (topic, data, timestamp) = reader.read_next()
         if topic != "/rosout":
             dict_size[topic] += np.int64(len(data))
             dict_num[topic] += 1
+            topic_timestamps[topic].append(timestamp)
 
     # トピックごとの統計を計算
     topic_stats = []
@@ -60,6 +63,16 @@ def get_topic_stats(reader: SequentialReader) -> list:
         average_size = total_size / num_messages if num_messages > 0 else 0
         total_size_mb = total_size / (1024 * 1024)  # MB単位に変換
 
+        # 周波数を計算
+        frequency_hz = 0.0
+        if len(topic_timestamps[topic]) > 1:
+            timestamps = topic_timestamps[topic]
+            start_time = min(timestamps)
+            end_time = max(timestamps)
+            duration_seconds = (end_time - start_time) / 1e9  # ナノ秒から秒に変換
+            if duration_seconds > 0:
+                frequency_hz = (num_messages - 1) / duration_seconds  # メッセージ間隔を考慮
+
         topic_stats.append(
             {
                 "topic": topic,
@@ -67,6 +80,7 @@ def get_topic_stats(reader: SequentialReader) -> list:
                 "total_size_mb": round(total_size_mb, 2),
                 "num_messages": num_messages,
                 "average_size_bytes": round(average_size, 2),
+                "frequency_hz": round(frequency_hz, 2),
             },
         )
 
@@ -94,12 +108,13 @@ def display_watch_topics(topic_stats: list, watch_topics: list) -> None:
             missing_topics.append(topic)
 
     if found_topics:
-        print(f"{'Topic':<50} {'Size(MB)':<10} {'Messages':<10} {'Avg(bytes)':<12}")
-        print("-" * 90)
+        print(f"{'Topic':<50} {'Size(MB)':<10} {'Messages':<10} {'Avg(bytes)':<12} {'Hz':<8}")
+        print("-" * 98)
         for topic, stats in found_topics:
             print(
                 f"{topic:<50} {stats['total_size_mb']:<10} "
-                f"{stats['num_messages']:<10} {stats['average_size_bytes']:<12}",
+                f"{stats['num_messages']:<10} {stats['average_size_bytes']:<12} "
+                f"{stats['frequency_hz']:<8}",
             )
 
     if missing_topics:
@@ -149,14 +164,17 @@ if __name__ == "__main__":
     print(f"Total topics: {len(topic_stats)}")
     print()
     print("Top 10 largest topics:")
-    print("-" * 80)
-    print(f"{'Rank':<4} {'Topic':<40} {'Size(MB)':<10} {'Messages':<10} {'Avg(bytes)':<12}")
-    print("-" * 80)
+    print("-" * 95)
+    print(
+        f"{'Rank':<4} {'Topic':<40} {'Size(MB)':<10} {'Messages':<10} {'Avg(bytes)':<12} {'Hz':<8}",
+    )
+    print("-" * 95)
 
     for i, stats in enumerate(topic_stats[:10], 1):
         print(
             f"{i:<4} {stats['topic']:<40} {stats['total_size_mb']:<10} "
-            f"{stats['num_messages']:<10} {stats['average_size_bytes']:<12}",
+            f"{stats['num_messages']:<10} {stats['average_size_bytes']:<12} "
+            f"{stats['frequency_hz']:<8}",
         )
 
     # 指定されたトピックの情報を表示
