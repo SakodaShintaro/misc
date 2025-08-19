@@ -3806,6 +3806,36 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /planning/trajectory_generator/diffusion_planner_node/debug/route_marker
       Value: true
+    - Class: rviz_plugins/CandidateTrajectories
+      Enabled: true
+      Name: CandidateTrajectories
+      Topic: /planning/generator/diffusion_planner/candidate_trajectories
+      Value: true
+      View Generator Names:
+        Generator Text Scale: 0.5
+        Value: false
+      View Path:
+        Alpha: 1
+        Coloring Mode:
+          Index Color 1: 255; 128; 128
+          Index Color 2: 128; 255; 128
+          Index Color 3: 128; 128; 255
+          Index Color 4: 255; 255; 128
+          Max Velocity Color: 0; 230; 120
+          Mid Velocity Color: 32; 138; 174
+          Min Velocity Color: 63; 46; 227
+          Value: Velocity Based
+          Vel Max [m/s]: 3
+        Constant Width: true
+        Fade Out Distance [m]: 0
+        Value: true
+        Width: 0.25
+      View Velocity:
+        Alpha: 1
+        Color: 0; 0; 0
+        Constant Color: false
+        Scale: 0.30000001192092896
+        Value: true
   Enabled: true
   Global Options:
     Background Color: 42; 42; 42
