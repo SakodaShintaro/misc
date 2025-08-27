@@ -8,10 +8,6 @@
 export CMAKE_EXPORT_COMPILE_COMMANDS=1
 ```
 
-## ビルドコマンドメモ
-
-colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to
-
 ## cspell
 
 ```bash
