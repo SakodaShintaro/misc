@@ -81,6 +81,13 @@ xinput --set-prop 11 "libinput Accel Speed" -0.2
 
 <https://nxmnpg.lemoda.net/ja/8/rc.local>
 
+```bash
+$ sudo cat /etc/rc.local
+#!/bin/bash
+sysctl -w net.core.rmem_max=2147483647
+ip link set lo multicast on
+```
+
 ## swapの積極性変更
 
 ```bash
@@ -116,34 +123,11 @@ sudo reboot
 
 <https://magidropack.hatenablog.com/entry/2018/11/30/120602>
 
-## 電源起動時の設定
-
-```bash
-$ sudo cat /etc/rc.local
-#!/bin/bash
-sysctl -w net.core.rmem_max=2147483647
-ip link set lo multicast on
-```
-
 ## 仮想環境作成
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-```
-
-## apt更新
-
-```bash
-sudo apt update
-sudo apt upgrade -y
-sudo apt autoremove -y
-```
-
-## シャットダウン
-
-```bash
-sudo shutdown -h now
 ```
 
 ## CUDA削除
@@ -165,14 +149,3 @@ psやtopではなくpmap -x
 ## 動画についての高速データローダー
 
 <https://github.com/dmlc/decord>
-
-## tqdmで進捗を可視化しながら並列化
-
-```python
-from concurrent.futures import ProcessPoolExecutor
-progress = tqdm(total=N)
-with ProcessPoolExecutor(max_workers=os.cpu_count() // 2) as executor:
-    for i in range(N):
-        future = executor.submit(f, args)
-        future.add_done_callback(lambda _: progress.update())
-```
