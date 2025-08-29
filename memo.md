@@ -149,3 +149,11 @@ psやtopではなくpmap -x
 ## 動画についての高速データローダー
 
 <https://github.com/dmlc/decord>
+
+## snap
+
+```bash
+sudo snap refresh
+sudo fwupdmgr refresh --force
+sudo fwupdmgr update
+```
