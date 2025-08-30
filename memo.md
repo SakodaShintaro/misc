@@ -157,3 +157,27 @@ sudo snap refresh
 sudo fwupdmgr refresh --force
 sudo fwupdmgr update
 ```
+
+## 仮想HDMIでのchrome-remote-desktop
+
+```bash
+# WaylandEnable=falseをコメントアウトする
+sudo vim /etc/gdm3/custom.conf
+
+# 再起動
+sudo systemctl restart gdm3
+
+# exec /usr/bin/gnome-session --session=gnome-classic を書き込む
+# もしかすると exec /usr/bin/gnome-session --session=ubuntu でも良いかも
+vim ~/.chrome-remote-desktop-session
+
+# ユーザ
+sudo groupadd chrome-remote-desktop
+sudo usermod -a -G chrome-remote-desktop $USER
+
+# sakoda ALL=(ALL) NOPASSWD: ALL を末尾に追加する
+sudo visudo
+
+sudo systemctl restart chrome-remote-desktop
+sudo systemctl status chrome-remote-desktop
+```
