@@ -38,8 +38,9 @@ git config --global core.editor "vim"
 
 ```bash
 docker system df
-docker builder prune
-docker system prune -a
+docker builder prune --all
+docker system prune --all
+docker volume prune --all
 ```
 
 ## サブディレクトリを1階層分だけ
