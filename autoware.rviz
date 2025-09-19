@@ -3836,6 +3836,68 @@ Visualization Manager:
         Constant Color: false
         Scale: 0.30000001192092896
         Value: true
+    - BUS:
+        Alpha: 0.9990000128746033
+        Color: 30; 144; 255
+      CAR:
+        Alpha: 0.9990000128746033
+        Color: 30; 144; 255
+      CYCLIST:
+        Alpha: 0.9990000128746033
+        Color: 119; 11; 32
+      Class: autoware_perception_rviz_plugin/PredictedObjects
+      Confidence Interval: 95%
+      Display Acceleration: true
+      Display Existence Probability: false
+      Display Label: true
+      Display Pose Covariance: true
+      Display Predicted Path Confidence: true
+      Display Predicted Paths: true
+      Display Twist: true
+      Display Twist Covariance: false
+      Display UUID: true
+      Display Velocity: true
+      Display Yaw Covariance: false
+      Display Yaw Rate: false
+      Display Yaw Rate Covariance: false
+      Enabled: true
+      Line Width: 0.029999999329447746
+      MOTORCYCLE:
+        Alpha: 0.9990000128746033
+        Color: 119; 11; 32
+      Name: PredictedObjects
+      Namespaces:
+        acceleration: true
+        label: true
+        path: true
+        path confidence: true
+        position covariance: true
+        shape: true
+        twist: true
+        uuid: true
+        velocity: true
+      Object Fill Type: skeleton
+      PEDESTRIAN:
+        Alpha: 0.9990000128746033
+        Color: 255; 192; 203
+      Polygon Type: 3d
+      TRAILER:
+        Alpha: 0.9990000128746033
+        Color: 30; 144; 255
+      TRUCK:
+        Alpha: 0.9990000128746033
+        Color: 30; 144; 255
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /planning/trajectory_generator/diffusion_planner_node/output/predicted_objects
+      UNKNOWN:
+        Alpha: 0.9990000128746033
+        Color: 255; 255; 255
+      Value: true
+      Visualization Type: Normal
   Enabled: true
   Global Options:
     Background Color: 42; 42; 42
