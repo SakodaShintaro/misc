@@ -50,17 +50,3 @@ index 642f5abc04..24bef4dd7a 100644
          <remap from="~/output/hazard_lights_cmd" to="/planning/behavior_path_planner/hazard_lights_cmd"/>
          <remap from="~/output/modified_goal" to="/planning/scenario_planning/modified_goal"/>
          <remap from="~/output/stop_reasons" to="/planning/scenario_planning/status/stop_reasons"/>
-diff --git a/planning/autoware_diffusion_planner/config/diffusion_planner.param.yaml b/planning/autoware_diffusion_planner/config/diffusion_planner.param.yaml
-index c82958e311..5e2567160a 100644
---- a/planning/autoware_diffusion_planner/config/diffusion_planner.param.yaml
-+++ b/planning/autoware_diffusion_planner/config/diffusion_planner.param.yaml
-@@ -14,7 +14,7 @@
-     build_only: false
-     batch_size: 1
-     temperature: [0.5]
--    velocity_smoothing_window: 1
-+    velocity_smoothing_window: 8
-     debug_params:
--      publish_debug_route: false
-+      publish_debug_route: true
-       publish_debug_map: false
