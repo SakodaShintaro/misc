@@ -1,8 +1,8 @@
 diff --git a/launch/tier4_planning_launch/launch/planning.launch.xml b/launch/tier4_planning_launch/launch/planning.launch.xml
-index 4e50cf4525..cf9ca72396 100644
+index 4e50cf4525..79228a3f68 100644
 --- a/launch/tier4_planning_launch/launch/planning.launch.xml
 +++ b/launch/tier4_planning_launch/launch/planning.launch.xml
-@@ -40,12 +40,33 @@
+@@ -40,12 +40,34 @@
        </include>
      </group>
  
@@ -16,6 +16,7 @@ index 4e50cf4525..cf9ca72396 100644
 +        <arg name="input_traffic_signals" value="/perception/traffic_light_recognition/traffic_signals"/>
 +        <arg name="input_tracked_objects" value="/perception/object_recognition/tracking/objects"/>
 +        <arg name="input_vector_map" value="/map/vector_map"/>
++        <arg name="input_turn_indicators" value="/vehicle/status/turn_indicators_status"/>
 +        <!-- <arg name="output_trajectory" value="/planning/trajectory"/> -->
 +        <arg name="output_trajectories" value="/planning/generator/diffusion_planner/candidate_trajectories"/>
 +        <arg name="output_turn_indicators" value="/planning/turn_indicators_cmd"/>
