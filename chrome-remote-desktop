@@ -109,7 +109,7 @@ SYSTEM_PRE_SESSION_FILE_PATH = "/etc/chrome-remote-desktop-pre-session"
 DEBIAN_XSESSION_PATH = "/etc/X11/Xsession"
 
 X_LOCK_FILE_TEMPLATE = "/tmp/.X%d-lock"
-FIRST_X_DISPLAY_NUMBER = 1
+FIRST_X_DISPLAY_NUMBER = 0
 
 # Amount of time to wait between relaunching processes.
 SHORT_BACKOFF_TIME = 5
