@@ -227,8 +227,8 @@ Visualization Manager:
               Name: VehicleModel
               TF Prefix: ""
               Update Interval: 0
-              Value: true
-              Visual Enabled: true
+              Value: false
+              Visual Enabled: false
             - Class: rviz_plugins/PolarGridDisplay
               Color: 255; 255; 255
               Delta Range: 10
