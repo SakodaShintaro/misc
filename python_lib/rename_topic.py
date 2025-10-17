@@ -1,4 +1,4 @@
-"""A script to add bias to imu."""
+"""A script to rename a topic in a rosbag."""
 
 import argparse
 from pathlib import Path
