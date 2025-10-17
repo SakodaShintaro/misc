@@ -2,6 +2,7 @@
 
 import argparse
 from pathlib import Path
+from shutil import rmtree
 
 from rosbags.rosbag2 import Reader, Writer
 
@@ -21,6 +22,8 @@ if __name__ == "__main__":
     topic_name_after = args.topic_name_after
 
     output_bag = input_bag.with_name(f"{input_bag.stem}_renamed{input_bag.suffix}")
+    if output_bag.exists():
+        rmtree(output_bag)
 
     reader = Reader(input_bag)
     writer = Writer(output_bag)
