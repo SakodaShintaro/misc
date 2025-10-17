@@ -11,16 +11,23 @@ import rosbag2_py
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("input_bag", type=Path)
-    parser.add_argument("topic_name_before", type=str)
-    parser.add_argument("topic_name_after", type=str)
+    parser.add_argument("--topic_names_before", nargs="+", required=True)
+    parser.add_argument("--topic_names_after", nargs="+", required=True)
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
     input_bag = args.input_bag
-    topic_name_before = args.topic_name_before
-    topic_name_after = args.topic_name_after
+    topic_names_before = args.topic_names_before
+    topic_names_after = args.topic_names_after
+
+    if len(topic_names_before) != len(topic_names_after):
+        raise ValueError("The number of source topics must match the number of target topics.")  # noqa: EM101
+    if len(set(topic_names_after)) != len(topic_names_after):
+        raise ValueError("Target topic names must be unique.")  # noqa: EM101
+
+    rename_map = dict(zip(topic_names_before, topic_names_after, strict=True))
 
     bag_dir = input_bag if input_bag.is_dir() else input_bag.parent
 
@@ -41,16 +48,23 @@ if __name__ == "__main__":
     )
     topic_metadata_list = list(reader.get_all_topics_and_types())
 
-    if topic_name_before == topic_name_after:
+    if all(before == after for before, after in rename_map.items()):
         print("Topic names are identical; nothing to rename.")
         sys.exit(0)
 
     original_names = {topic.name for topic in topic_metadata_list}
-    if topic_name_before not in original_names:
-        raise RuntimeError(f"Topic '{topic_name_before}' not found in bag.")
-    if topic_name_after in original_names:
+    missing_topics = [name for name in topic_names_before if name not in original_names]
+    if missing_topics:
+        raise RuntimeError(f"Topics not found in bag: {', '.join(missing_topics)}")
+
+    conflict_topics = {
+        new_name
+        for new_name in topic_names_after
+        if new_name in original_names and new_name not in rename_map
+    }
+    if conflict_topics:
         raise RuntimeError(
-            f"Topic '{topic_name_after}' already exists in bag. Choose a different new name.",
+            "Target topics already exist in bag: " + ", ".join(sorted(conflict_topics)),
         )
 
     writer = rosbag2_py.SequentialWriter()
@@ -63,7 +77,7 @@ if __name__ == "__main__":
     created_topics: set[str] = set()
 
     for topic in topic_metadata_list:
-        new_name = topic_name_after if topic.name == topic_name_before else topic.name
+        new_name = rename_map.get(topic.name, topic.name)
         topic_name_map[topic.name] = new_name
         if new_name in created_topics:
             continue
