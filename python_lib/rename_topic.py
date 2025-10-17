@@ -1,10 +1,11 @@
-"""A script to rename a topic in a rosbag."""
+"""Rename a topic in a ROS 2 bag."""
 
 import argparse
+import sys
 from pathlib import Path
 from shutil import rmtree
 
-from rosbags.rosbag2 import Reader, Writer
+import rosbag2_py
 
 
 def parse_args() -> argparse.Namespace:
@@ -21,37 +22,64 @@ if __name__ == "__main__":
     topic_name_before = args.topic_name_before
     topic_name_after = args.topic_name_after
 
-    output_bag = input_bag.with_name(f"{input_bag.stem}_renamed{input_bag.suffix}")
+    bag_dir = input_bag if input_bag.is_dir() else input_bag.parent
+
+    output_bag = bag_dir.with_name(f"{bag_dir.name}_renamed")
     if output_bag.exists():
         rmtree(output_bag)
 
-    reader = Reader(input_bag)
-    writer = Writer(output_bag)
-    reader.open()
-    writer.open()
+    storage_id = "sqlite3"
+    converter_options = rosbag2_py.ConverterOptions(
+        input_serialization_format="cdr",
+        output_serialization_format="cdr",
+    )
 
-    topic_name_to_connection = {}
-    for connection in reader.connections:
-        if connection.topic == topic_name_before:
-            topic_name_to_connection[topic_name_after] = writer.add_connection(
-                topic_name_after,
-                connection.msgtype,
-                offered_qos_profiles=connection.ext.offered_qos_profiles,
-            )
-        else:
-            topic_name_to_connection[connection.topic] = writer.add_connection(
-                connection.topic,
-                connection.msgtype,
-                offered_qos_profiles=connection.ext.offered_qos_profiles,
-            )
+    reader = rosbag2_py.SequentialReader()
+    reader.open(
+        rosbag2_py.StorageOptions(uri=str(bag_dir), storage_id=storage_id),
+        converter_options,
+    )
+    topic_metadata_list = list(reader.get_all_topics_and_types())
 
-    for connection, timestamp, rawdata in reader.messages():
-        if connection.topic == topic_name_before:
-            writer.write(topic_name_to_connection[topic_name_after], timestamp, rawdata)
-        else:
-            writer.write(topic_name_to_connection[connection.topic], timestamp, rawdata)
+    if topic_name_before == topic_name_after:
+        print("Topic names are identical; nothing to rename.")
+        sys.exit(0)
 
-    reader.close()
-    writer.close()
+    original_names = {topic.name for topic in topic_metadata_list}
+    if topic_name_before not in original_names:
+        raise RuntimeError(f"Topic '{topic_name_before}' not found in bag.")
+    if topic_name_after in original_names:
+        raise RuntimeError(
+            f"Topic '{topic_name_after}' already exists in bag. Choose a different new name.",
+        )
 
-    print(f"Saved to {output_bag}")
+    writer = rosbag2_py.SequentialWriter()
+    writer.open(
+        rosbag2_py.StorageOptions(uri=str(output_bag), storage_id=storage_id),
+        converter_options,
+    )
+
+    topic_name_map: dict[str, str] = {}
+    created_topics: set[str] = set()
+
+    for topic in topic_metadata_list:
+        new_name = topic_name_after if topic.name == topic_name_before else topic.name
+        topic_name_map[topic.name] = new_name
+        if new_name in created_topics:
+            continue
+        new_metadata = rosbag2_py.TopicMetadata(
+            name=new_name,
+            type=topic.type,
+            serialization_format=topic.serialization_format,
+            offered_qos_profiles=topic.offered_qos_profiles,
+        )
+        writer.create_topic(new_metadata)
+        created_topics.add(new_name)
+
+    message_count = 0
+    while reader.has_next():
+        topic_name, data, timestamp = reader.read_next()
+        writer.write(topic_name_map[topic_name], data, timestamp)
+        message_count += 1
+
+    print(f"Saved {message_count} messages to {output_bag}")
