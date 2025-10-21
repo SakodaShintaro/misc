@@ -3850,7 +3850,7 @@ Visualization Manager:
       Display Acceleration: true
       Display Existence Probability: false
       Display Label: true
-      Display Pose Covariance: true
+      Display Pose Covariance: false
       Display Predicted Path Confidence: false
       Display Predicted Paths: true
       Display Twist: true
