@@ -718,7 +718,7 @@ Visualization Manager:
                   Display 3d polygon: true
                   Display Label: true
                   Display PoseWithCovariance: true
-                  Display Predicted Path Confidence: true
+                  Display Predicted Path Confidence: false
                   Display Predicted Paths: true
                   Display Twist: true
                   Display UUID: true
@@ -766,7 +766,7 @@ Visualization Manager:
                   Display 3d polygon: true
                   Display Label: true
                   Display PoseWithCovariance: true
-                  Display Predicted Path Confidence: true
+                  Display Predicted Path Confidence: false
                   Display Predicted Paths: true
                   Display Twist: true
                   Display UUID: true
@@ -814,7 +814,7 @@ Visualization Manager:
                   Display 3d polygon: true
                   Display Label: true
                   Display PoseWithCovariance: false
-                  Display Predicted Path Confidence: true
+                  Display Predicted Path Confidence: false
                   Display Predicted Paths: true
                   Display Twist: true
                   Display UUID: true
@@ -2821,7 +2821,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Label: true
               Display PoseWithCovariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display UUID: true
@@ -2978,7 +2978,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Label: true
               Display PoseWithCovariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display UUID: true
@@ -3025,7 +3025,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Label: true
               Display PoseWithCovariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display UUID: true
@@ -3072,7 +3072,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Label: true
               Display PoseWithCovariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display UUID: true
@@ -3119,7 +3119,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Label: true
               Display PoseWithCovariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display UUID: true
@@ -3166,7 +3166,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Label: true
               Display PoseWithCovariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display UUID: true
@@ -3213,7 +3213,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Label: true
               Display PoseWithCovariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display UUID: true
@@ -3260,7 +3260,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Label: true
               Display PoseWithCovariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display UUID: true
@@ -3307,7 +3307,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Label: true
               Display PoseWithCovariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display UUID: true
@@ -3354,7 +3354,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Label: true
               Display PoseWithCovariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display UUID: true
@@ -3401,7 +3401,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Label: true
               Display PoseWithCovariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display UUID: true
@@ -3448,7 +3448,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Label: true
               Display PoseWithCovariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display UUID: true
@@ -3495,7 +3495,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Label: true
               Display PoseWithCovariance: false
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display UUID: true
@@ -3851,7 +3851,7 @@ Visualization Manager:
       Display Existence Probability: false
       Display Label: true
       Display Pose Covariance: true
-      Display Predicted Path Confidence: true
+      Display Predicted Path Confidence: false
       Display Predicted Paths: true
       Display Twist: true
       Display Twist Covariance: false
@@ -3870,7 +3870,7 @@ Visualization Manager:
         acceleration: true
         label: true
         path: true
-        path confidence: true
+        Path Confidence: false
         position covariance: true
         shape: true
         twist: true

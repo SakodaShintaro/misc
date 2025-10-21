@@ -747,7 +747,7 @@ Visualization Manager:
                   Display Existence Probability: false
                   Display Label: true
                   Display Pose Covariance: true
-                  Display Predicted Path Confidence: true
+                  Display Predicted Path Confidence: false
                   Display Predicted Paths: true
                   Display Twist: true
                   Display Twist Covariance: false
@@ -805,7 +805,7 @@ Visualization Manager:
                   Display Existence Probability: false
                   Display Label: true
                   Display Pose Covariance: true
-                  Display Predicted Path Confidence: true
+                  Display Predicted Path Confidence: false
                   Display Predicted Paths: true
                   Display Twist: true
                   Display Twist Covariance: false
@@ -864,7 +864,7 @@ Visualization Manager:
                   Display Existence Probability: false
                   Display Label: true
                   Display Pose Covariance: true
-                  Display Predicted Path Confidence: true
+                  Display Predicted Path Confidence: false
                   Display Predicted Paths: true
                   Display Twist: true
                   Display Twist Covariance: false
@@ -3463,7 +3463,7 @@ Visualization Manager:
               Display Existence Probability: false
               Display Label: true
               Display Pose Covariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display Twist Covariance: false
@@ -3627,7 +3627,7 @@ Visualization Manager:
               Display Existence Probability: false
               Display Label: true
               Display Pose Covariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display Twist Covariance: false
@@ -3681,7 +3681,7 @@ Visualization Manager:
               Display Existence Probability: false
               Display Label: true
               Display Pose Covariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display Twist Covariance: false
@@ -3735,7 +3735,7 @@ Visualization Manager:
               Display Existence Probability: false
               Display Label: true
               Display Pose Covariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display Twist Covariance: false
@@ -3789,7 +3789,7 @@ Visualization Manager:
               Display Existence Probability: false
               Display Label: true
               Display Pose Covariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display Twist Covariance: false
@@ -3843,7 +3843,7 @@ Visualization Manager:
               Display Existence Probability: false
               Display Label: true
               Display Pose Covariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display Twist Covariance: false
@@ -3897,7 +3897,7 @@ Visualization Manager:
               Display Existence Probability: false
               Display Label: true
               Display Pose Covariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display Twist Covariance: false
@@ -3951,7 +3951,7 @@ Visualization Manager:
               Display Existence Probability: false
               Display Label: true
               Display Pose Covariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display Twist Covariance: false
@@ -4005,7 +4005,7 @@ Visualization Manager:
               Display Existence Probability: false
               Display Label: true
               Display Pose Covariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display Twist Covariance: false
@@ -4059,7 +4059,7 @@ Visualization Manager:
               Display Existence Probability: false
               Display Label: true
               Display Pose Covariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display Twist Covariance: false
@@ -4113,7 +4113,7 @@ Visualization Manager:
               Display Existence Probability: false
               Display Label: true
               Display Pose Covariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display Twist Covariance: false
@@ -4167,7 +4167,7 @@ Visualization Manager:
               Display Existence Probability: false
               Display Label: true
               Display Pose Covariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display Twist Covariance: false
@@ -4222,7 +4222,7 @@ Visualization Manager:
               Display Existence Probability: false
               Display Label: true
               Display Pose Covariance: true
-              Display Predicted Path Confidence: true
+              Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
               Display Twist Covariance: false
@@ -4583,7 +4583,7 @@ Visualization Manager:
       Display Existence Probability: false
       Display Label: true
       Display Pose Covariance: true
-      Display Predicted Path Confidence: true
+      Display Predicted Path Confidence: false
       Display Predicted Paths: true
       Display Twist: true
       Display Twist Covariance: false
