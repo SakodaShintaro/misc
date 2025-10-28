@@ -4,7 +4,6 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Map1/Lanelet2VectorMap1
         - /Sensing1/LiDAR1/ConcatenatePointCloud1/Autocompute Value Bounds1
       Splitter Ratio: 0.557669460773468
     Tree Height: 356
@@ -220,7 +219,7 @@ Visualization Manager:
               TF Prefix: ""
               Update Interval: 0
               Value: true
-              Visual Enabled: false
+              Visual Enabled: true
             - Class: rviz_plugins/PolarGridDisplay
               Color: 255; 255; 255
               Delta Range: 10
@@ -738,7 +737,7 @@ Visualization Manager:
                   Display Acceleration: true
                   Display Existence Probability: false
                   Display Label: true
-                  Display Pose Covariance: false
+                  Display Pose Covariance: true
                   Display Predicted Path Confidence: false
                   Display Predicted Paths: true
                   Display Twist: true
@@ -796,7 +795,7 @@ Visualization Manager:
                   Display Acceleration: true
                   Display Existence Probability: false
                   Display Label: true
-                  Display Pose Covariance: false
+                  Display Pose Covariance: true
                   Display Predicted Path Confidence: false
                   Display Predicted Paths: true
                   Display Twist: true
@@ -855,7 +854,7 @@ Visualization Manager:
                   Display Acceleration: true
                   Display Existence Probability: false
                   Display Label: true
-                  Display Pose Covariance: false
+                  Display Pose Covariance: true
                   Display Predicted Path Confidence: false
                   Display Predicted Paths: true
                   Display Twist: true
@@ -1034,21 +1033,21 @@ Visualization Manager:
               Value: true
               View Footprint:
                 Alpha: 1
-                Color: 230; 230; 50
+                Color: 255; 0; 0
                 Offset from BaseLink: 0
                 Rear Overhang: 1.100000023841858
-                Value: false
+                Value: true
                 Vehicle Length: 4.889999866485596
                 Vehicle Width: 1.8960000276565552
               View Path:
                 Alpha: 0.9990000128746033
-                Constant Width: false
+                Constant Width: true
                 Fade Out Distance: 0
-                Max Velocity Color: 0; 230; 120
-                Mid Velocity Color: 32; 138; 174
-                Min Velocity Color: 63; 46; 227
-                Value: false
-                Width: 2
+                Max Velocity Color: 255; 0; 0
+                Mid Velocity Color: 255; 0; 0
+                Min Velocity Color: 255; 0; 0
+                Value: true
+                Width: 0.10000000149011612
               View Point:
                 Alpha: 1
                 Color: 0; 60; 255
@@ -1066,9 +1065,9 @@ Visualization Manager:
                 Value: false
               View Velocity:
                 Alpha: 0.9990000128746033
-                Color: 0; 0; 0
-                Constant Color: false
-                Scale: 1
+                Color: 255; 0; 0
+                Constant Color: true
+                Scale: 0.30000001192092896
                 Value: true
             - Class: rviz_common/Group
               Displays:
@@ -3141,7 +3140,7 @@ Visualization Manager:
             Reliability Policy: Reliable
             Value: /control/autonomous_emergency_braking/info/markers
           Value: true
-      Enabled: true
+      Enabled: false
       Name: Control
     - Class: rviz_common/Group
       Displays:
@@ -3165,7 +3164,6 @@ Visualization Manager:
                 Value: /sensing/camera/camera6/image_raw
               Value: true
               Visibility:
-                "": true
                 CandidateTrajectories: true
                 Control:
                   Debug/AEB: true
@@ -3186,7 +3184,18 @@ Visualization Manager:
                     Value: true
                   Map: true
                   Perception:
-                    "": true
+                    CameraLidarFusion(purple): true
+                    Centerpoint(red1): true
+                    CenterpointROIFusion(red2): true
+                    CenterpointValidator(red3): true
+                    Detection(yellow): true
+                    DetectionByTracker(orange): true
+                    PointPainting(light_green1): true
+                    PointPaintingROIFusion(light_green2): true
+                    PointPaintingValidator(light_green3): true
+                    Prediction(light_blue): true
+                    RadarFarObjects(white): true
+                    Tracking(green): true
                     Value: true
                   Planning:
                     "":
@@ -3198,7 +3207,6 @@ Visualization Manager:
                     RadarRawObjects(white): true
                     Value: true
                   Value: true
-                Grid: true
                 Localization:
                   EKF:
                     PoseWithCovarianceHistory: true
@@ -3375,6 +3383,7 @@ Visualization Manager:
                 PointCloud2: true
                 PoseWithCovariance: true
                 PredictedObjects: true
+                ScenarioTrajectory: true
                 Sensing:
                   GNSS:
                     PoseWithCovariance: true
@@ -3395,7 +3404,6 @@ Visualization Manager:
                     Value: true
                     VehicleModel: true
                 Value: true
-                VelocityHistory: true
               Zoom Factor: 1
             - Alpha: 1
               Autocompute Intensity Bounds: true
@@ -3445,7 +3453,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Existence Probability: false
               Display Label: true
-              Display Pose Covariance: false
+              Display Pose Covariance: true
               Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
@@ -3609,7 +3617,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Existence Probability: false
               Display Label: true
-              Display Pose Covariance: false
+              Display Pose Covariance: true
               Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
@@ -3663,7 +3671,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Existence Probability: false
               Display Label: true
-              Display Pose Covariance: false
+              Display Pose Covariance: true
               Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
@@ -3717,7 +3725,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Existence Probability: false
               Display Label: true
-              Display Pose Covariance: false
+              Display Pose Covariance: true
               Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
@@ -3771,7 +3779,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Existence Probability: false
               Display Label: true
-              Display Pose Covariance: false
+              Display Pose Covariance: true
               Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
@@ -3825,7 +3833,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Existence Probability: false
               Display Label: true
-              Display Pose Covariance: false
+              Display Pose Covariance: true
               Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
@@ -3879,7 +3887,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Existence Probability: false
               Display Label: true
-              Display Pose Covariance: false
+              Display Pose Covariance: true
               Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
@@ -3933,7 +3941,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Existence Probability: false
               Display Label: true
-              Display Pose Covariance: false
+              Display Pose Covariance: true
               Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
@@ -3987,7 +3995,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Existence Probability: false
               Display Label: true
-              Display Pose Covariance: false
+              Display Pose Covariance: true
               Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
@@ -4041,7 +4049,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Existence Probability: false
               Display Label: true
-              Display Pose Covariance: false
+              Display Pose Covariance: true
               Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
@@ -4095,7 +4103,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Existence Probability: false
               Display Label: true
-              Display Pose Covariance: false
+              Display Pose Covariance: true
               Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
@@ -4149,7 +4157,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Existence Probability: false
               Display Label: true
-              Display Pose Covariance: false
+              Display Pose Covariance: true
               Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
@@ -4204,7 +4212,7 @@ Visualization Manager:
               Display Acceleration: true
               Display Existence Probability: false
               Display Label: true
-              Display Pose Covariance: false
+              Display Pose Covariance: true
               Display Predicted Path Confidence: false
               Display Predicted Paths: true
               Display Twist: true
@@ -4498,7 +4506,7 @@ Visualization Manager:
       Use rainbow: true
       Value: true
     - Class: rviz_default_plugins/MarkerArray
-      Enabled: false
+      Enabled: true
       Name: MarkerArray
       Namespaces:
         {}
@@ -4508,19 +4516,22 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /planning/trajectory_generator/diffusion_planner_node/debug/lane_marker
-      Value: false
+      Value: true
     - Class: rviz_default_plugins/MarkerArray
-      Enabled: false
+      Enabled: true
       Name: MarkerArray
       Namespaces:
-        {}
+        lane: true
+        lane_lb: true
+        lane_rb: true
+        sphere: true
       Topic:
         Depth: 5
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /planning/trajectory_generator/diffusion_planner_node/debug/route_marker
-      Value: false
+      Value: true
     - Class: rviz_plugins/CandidateTrajectories
       Enabled: false
       Name: CandidateTrajectories
@@ -4605,41 +4616,6 @@ Visualization Manager:
         Color: 255; 255; 255
       Value: true
       Visualization Type: Normal
-    - Alpha: 1
-      Class: rviz_plugins/VelocityHistory
-      Color Border Vel Max: 3
-      Constant Color:
-        Color: 0; 0; 0
-        Value: false
-      Enabled: true
-      Name: VelocityHistory
-      Scale: 1
-      Timeout: 10
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /vehicle/status/velocity_status
-      Value: true
-    - Alpha: 0.5
-      Cell Size: 1
-      Class: rviz_default_plugins/Grid
-      Color: 160; 160; 164
-      Enabled: true
-      Line Style:
-        Line Width: 0.029999999329447746
-        Value: Lines
-      Name: Grid
-      Normal Cell Count: 0
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Plane: XZ
-      Plane Cell Count: 29
-      Reference Frame: base_link
-      Value: true
     - Class: rviz_plugins/Trajectory
       Color Border Vel Max: 3
       Enabled: true
@@ -4654,21 +4630,21 @@ Visualization Manager:
       Value: true
       View Footprint:
         Alpha: 1
-        Color: 230; 230; 50
+        Color: 0; 255; 0
         Offset from BaseLink: 0
         Rear Overhang: 1.100000023841858
-        Value: false
+        Value: true
         Vehicle Length: 4.889999866485596
         Vehicle Width: 1.8960000276565552
       View Path:
         Alpha: 0.9990000128746033
-        Constant Width: false
+        Constant Width: true
         Fade Out Distance: 0
-        Max Velocity Color: 0; 230; 120
-        Mid Velocity Color: 32; 138; 174
-        Min Velocity Color: 63; 46; 227
-        Value: false
-        Width: 2
+        Max Velocity Color: 0; 255; 0
+        Mid Velocity Color: 0; 255; 0
+        Min Velocity Color: 0; 255; 0
+        Value: true
+        Width: 0.10000000149011612
       View Point:
         Alpha: 1
         Color: 0; 60; 255
@@ -4686,9 +4662,9 @@ Visualization Manager:
         Value: false
       View Velocity:
         Alpha: 0.9990000128746033
-        Color: 255; 255; 0
+        Color: 0; 255; 0
         Constant Color: true
-        Scale: 1
+        Scale: 0.30000001192092896
         Value: true
   Enabled: true
   Global Options:
@@ -4790,26 +4766,21 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Class: rviz_default_plugins/ThirdPersonFollower
-      Distance: 60
+      Angle: 0
+      Class: rviz_default_plugins/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
-      Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
-      Focal Shape Fixed Size: true
-      Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0
+      Scale: 10
       Target Frame: base_link
-      Value: ThirdPersonFollower (rviz)
-      Yaw: 1.4615907669067383
+      Value: TopDownOrtho (rviz_default_plugins)
+      X: 0
+      Y: 0
     Saved:
       - Class: rviz_default_plugins/ThirdPersonFollower
         Distance: 18
@@ -4860,7 +4831,7 @@ Window Geometry:
   Hide Right Dock: false
   PointcloudOnCamera:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd000000040000000000000202000004fdfc020000000ffb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005500fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb00000024004100750074006f00770061007200650053007400610074006500500061006e0065006c0100000042000001e80000006700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d0065007200610100000682000000eb0000000000000000fb0000000a0049006d0061006700650100000505000002680000000000000000fb0000002c0049006e0069007400690061006c0050006f007300650042007500740074006f006e00500061006e0065006c000000068f000000de0000000000000000fb0000002c0049006e0069007400690061006c0050006f007300650042007500740074006f006e00500061006e0065006c000000068f000000de0000000000000000fb00000030005200650063006f0067006e006900740069006f006e0052006500730075006c0074004f006e0049006d0061006700650100000239000000bb0000003100fffffffb0000002a004100750074006f0077006100720065004400610074006500540069006d006500500061006e0065006c0000000332000000720000004900fffffffb000000240050006f0069006e00740063006c006f00750064004f006e00430061006d006500720061000000039d000000560000003100fffffffb00000034004100750074006f0077006100720065004100750074006f006d00610074006900630047006f0061006c00500061006e0065006c01000003030000023c000001a300ffffff00000001000001ab000004fdfc0200000004fb000000100044006900730070006c0061007900730100000042000001b8000000d200fffffffc0000020900000336000000c20100001dfa000000000100000002fb0000000a0056006900650077007301000005d5000001ab0000019b00fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000000ffffffff0000009600fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000e7a0000005afc0100000001fb0000000a00560069006500770073030000004e00000080000002e1000001970000000300000e7a0000005afc0100000002fb0000000800540069006d0065010000000000000e7a0000000000000000fb0000000800540069006d00650100000000000004500000000000000000000005ef000004fd00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd000000040000000000000202000004fdfc020000000ffb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005500fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb00000024004100750074006f00770061007200650053007400610074006500500061006e0065006c0100000042000002440000006700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d0065007200610100000682000000eb0000000000000000fb0000000a0049006d0061006700650100000505000002680000000000000000fb0000002c0049006e0069007400690061006c0050006f007300650042007500740074006f006e00500061006e0065006c000000068f000000de0000000000000000fb0000002c0049006e0069007400690061006c0050006f007300650042007500740074006f006e00500061006e0065006c000000068f000000de0000000000000000fb00000030005200650063006f0067006e006900740069006f006e0052006500730075006c0074004f006e0049006d0061006700650100000295000000de0000003100fffffffb0000002a004100750074006f0077006100720065004400610074006500540069006d006500500061006e0065006c0000000332000000720000004900fffffffb000000240050006f0069006e00740063006c006f00750064004f006e00430061006d006500720061000000039d000000560000003100fffffffb00000034004100750074006f0077006100720065004100750074006f006d00610074006900630047006f0061006c00500061006e0065006c0100000382000001bd000001a300ffffff00000001000001ab000004fdfc0200000004fb000000100044006900730070006c0061007900730100000042000001b8000000d200fffffffc0000020900000336000000c20100001dfa000000000100000002fb0000000a0056006900650077007301000005d5000001ab0000019b00fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000000ffffffff0000009600fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000e7a0000005afc0100000001fb0000000a00560069006500770073030000004e00000080000002e1000001970000000300000e7a0000005afc0100000002fb0000000800540069006d0065010000000000000e7a0000000000000000fb0000000800540069006d00650100000000000004500000000000000000000005ef000004fd00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   RecognitionResultOnImage:
     collapsed: false
   Selection:
@@ -4870,5 +4841,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 2490
-  X: 2630
+  X: 70
   Y: 27
