@@ -965,7 +965,7 @@ Visualization Manager:
               Value: true
           Enabled: false
           Name: OccupancyGrid
-      Enabled: true
+      Enabled: false
       Name: Perception
     - Class: rviz_common/Group
       Displays:
