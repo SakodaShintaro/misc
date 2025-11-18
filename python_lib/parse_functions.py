@@ -262,3 +262,22 @@ def parse_ProcessingTimeTree(msg):
         result_dict[node.name] = float(node.processing_time)
 
     return result_dict
+
+
+def parse_TrafficLightGroupArray(msg):
+    result_dict = {}
+    result_dict["timestamp"] = parse_stamp(msg.stamp)
+    result_dict["traffic_light_groups"] = list()
+    for group in msg.traffic_light_groups:
+        one_group = {}
+        one_group["traffic_light_group_id"] = group.traffic_light_group_id
+        one_group["elements"] = list()
+        for element in group.elements:
+            one_element = {}
+            one_element["color"] = element.color
+            one_element["shape"] = element.shape
+            one_element["status"] = element.status
+            one_element["confidence"] = element.confidence
+            one_group["elements"].append(one_element)
+        result_dict["traffic_light_groups"].append(one_group)
+    return result_dict
