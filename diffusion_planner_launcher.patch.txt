@@ -1,27 +1,7 @@
-diff --git a/autoware_launch/config/control/control_validator/control_validator.param.yaml b/autoware_launch/config/control/control_validator/control_validator.param.yaml
-index cff20f06..5e1c3fb0 100644
---- a/autoware_launch/config/control/control_validator/control_validator.param.yaml
-+++ b/autoware_launch/config/control/control_validator/control_validator.param.yaml
-@@ -13,7 +13,7 @@
-       acc_error_offset: 0.8
-       acc_error_scale: 0.2
-       rolling_back_velocity: 0.5
--      over_velocity_offset: 2.0
-+      over_velocity_offset: 4.0
-       over_velocity_ratio: 0.2
-       overrun_stop_point_dist: 0.8
-       will_overrun_stop_point_dist: 1.0
 diff --git a/autoware_launch/config/control/trajectory_follower/longitudinal/pid.param.yaml b/autoware_launch/config/control/trajectory_follower/longitudinal/pid.param.yaml
-index 9dfa666a..85a861bc 100644
 --- a/autoware_launch/config/control/trajectory_follower/longitudinal/pid.param.yaml
 +++ b/autoware_launch/config/control/trajectory_follower/longitudinal/pid.param.yaml
-@@ -1,12 +1,12 @@
- /**:
-   ros__parameters:
--    delay_compensation_time: 0.1
-+    delay_compensation_time: 0.4
- 
-     enable_smooth_stop: true
+@@ -6,7 +6,7 @@
      enable_overshoot_emergency: false
      enable_large_tracking_error_emergency: true
      enable_slope_compensation: true
@@ -30,17 +10,7 @@ index 9dfa666a..85a861bc 100644
  
      # state transition
      drive_state_stop_dist: 0.5
-@@ -18,7 +18,7 @@
-     emergency_state_overshoot_stop_dist: 1.5
- 
-     # drive state
--    kp: 1.0
-+    kp: 0.4
-     ki: 0.1
-     kd: 0.0
-     max_out: 1.0
 diff --git a/autoware_launch/config/system/diagnostics/planning.yaml b/autoware_launch/config/system/diagnostics/planning.yaml
-index a66d15c5..eb0a804d 100644
 --- a/autoware_launch/config/system/diagnostics/planning.yaml
 +++ b/autoware_launch/config/system/diagnostics/planning.yaml
 @@ -11,19 +11,7 @@ units:
