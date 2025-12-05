@@ -281,3 +281,17 @@ def parse_TrafficLightGroupArray(msg):
             one_group["elements"].append(one_element)
         result_dict["traffic_light_groups"].append(one_group)
     return result_dict
+
+
+def parse_TurnIndicatorsCommand(msg):
+    return {
+        "timestamp": parse_stamp(msg.stamp),
+        "command": msg.command,
+    }
+
+
+def parse_TurnIndicatorsReport(msg):
+    return {
+        "timestamp": parse_stamp(msg.stamp),
+        "report": msg.report,
+    }
