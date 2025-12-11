@@ -2,12 +2,17 @@
 
 set -eux
 
-target_dir=$(readlink -f $1)
-script_path=$(readlink -f $(dirname $0)/make_mp4_from_unsequential_png.sh)
+target_dir=$(readlink -f "$1")
+script_path=$(readlink -f "$(dirname "$0")/make_mp4_from_unsequential_png.sh")
 
-# target_dir以下のすべてのpngファイルの親ディレクトリの集合を作成
-dir_set=$(find "$target_dir" -type f -name '*.png' -exec dirname {} \; | sort | uniq)
+declare -A processed_dirs=()
 
-for dir in $dir_set; do
+# findからの出力を逐次処理し、同じディレクトリは1度だけ処理する
+while IFS= read -r -d '' png_file; do
+    dir=$(dirname "$png_file")
+    if [[ -n "${processed_dirs[$dir]+x}" ]]; then
+        continue
+    fi
+    processed_dirs["$dir"]=1
     bash "$script_path" "$dir"
-done
+done < <(find "$target_dir" -type f -name '*.png' -print0)
