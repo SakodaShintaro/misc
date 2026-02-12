@@ -8,8 +8,5 @@ if [[ ! $current_dir =~ ^(autoware|pilot-auto) ]]; then
     exit 1
 fi
 
-sed -i '/launch_traffic_light_module/,/default/s/true/false/' \
-  ./src/launcher/autoware_launch/autoware_launch/config/planning/preset/default_preset.yaml
-
 sed -i 's/max_vel: 4.17/max_vel: 22.2/' \
   ./src/launcher/autoware_launch/autoware_launch/config/planning/scenario_planning/common/common.param.yaml
