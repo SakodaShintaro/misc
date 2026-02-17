@@ -13,13 +13,13 @@ fi
 $(dirname $0)/reset_autoware.sh
 git checkout main
 git pull
-vcs import src < repositories/autoware.repos
-vcs import src < repositories/simulator.repos
-vcs import src < repositories/tools.repos
+vcs import --recursive src < repositories/autoware.repos
+vcs import --recursive src < repositories/simulator.repos
+vcs import --recursive src < repositories/tools.repos
 if [ $USE_NIGHTLY = true ]; then
-    vcs import src < repositories/autoware-nightly.repos
-    vcs import src < repositories/simulator-nightly.repos
-    vcs import src < repositories/tools-nightly.repos
+    vcs import --recursive src < repositories/autoware-nightly.repos
+    vcs import --recursive src < repositories/simulator-nightly.repos
+    vcs import --recursive src < repositories/tools-nightly.repos
 fi
 vcs pull src
 vcs export src --exact > my_autoware_$(date +"%Y%m%d").repos
