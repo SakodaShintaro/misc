@@ -25,4 +25,4 @@ vcs pull src
 vcs export src --exact > my_autoware_$(date +"%Y%m%d").repos
 rosdep update
 rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO
-$(dirname $0)/build_with_custom_jobs.sh 2
+$(dirname $0)/build_with_custom_jobs.sh 1
