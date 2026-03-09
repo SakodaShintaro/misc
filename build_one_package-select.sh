@@ -1,6 +1,7 @@
 #!/bin/bash
-
 set -eux
+
+PKG_NAME=${1:-"autoware_diffusion_planner"}
 
 # 現状のディレクトリがautowareまたはpilot-autoというプレフィックスを持つことを確認する
 current_dir=$(basename $(pwd))
@@ -9,4 +10,4 @@ if [[ ! $current_dir =~ ^(autoware|pilot-auto) ]]; then
     exit 1
 fi
 
-colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOL=ON --packages-select $1
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOL=ON --packages-select $PKG_NAME
