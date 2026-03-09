@@ -4665,6 +4665,19 @@ Visualization Manager:
         Constant Color: true
         Scale: 0.30000001192092896
         Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: MarkerArray
+      Namespaces:
+        road_border: true
+        stop_line: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /planning/trajectory_generator/diffusion_planner_node/debug/linestring_marker
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 42; 42; 42
