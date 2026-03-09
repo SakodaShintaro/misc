@@ -27,7 +27,8 @@ MAKEFLAGS="-j8" colcon build \
 MAKEFLAGS="-j${JOB_COUNT}" colcon build \
   --symlink-install \
   --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF \
-  --continue-on-error
+  --continue-on-error \
+  --packages-skip autoware_static_centerline_generator
 
 # 後処理
 if [[ $current_dir =~ ^(autoware) ]]; then
