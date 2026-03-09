@@ -88,6 +88,28 @@ index a1c14eea..bb83a0a4 100644
          <arg name="input_objects_topic_name" value="$(var input_objects_topic_name)"/>
          <arg name="input_pointcloud_topic_name" value="$(var input_pointcloud_topic_name)"/>
          <arg name="planning_validator_param_path" value="$(var planning_validator_param_path)"/>
+diff --git a/tier4_universe_launch/tier4_planning_launch/launch/scenario_planning/lane_driving/behavior_planning/behavior_planning.launch.xml b/tier4_universe_launch/tier4_planning_launch/launch/scenario_planning/lane_driving/behavior_planning/behavior_planning.launch.xml
+index 22410043..f796cf0c 100644
+--- a/tier4_universe_launch/tier4_planning_launch/launch/scenario_planning/lane_driving/behavior_planning/behavior_planning.launch.xml
++++ b/tier4_universe_launch/tier4_planning_launch/launch/scenario_planning/lane_driving/behavior_planning/behavior_planning.launch.xml
+@@ -240,7 +240,7 @@
+         <remap from="~/input/accel" to="/localization/acceleration"/>
+         <remap from="~/input/scenario" to="/planning/scenario_planning/scenario"/>
+         <remap from="~/output/path" to="path_with_lane_id"/>
+-        <remap from="~/output/turn_indicators_cmd" to="/planning/turn_indicators_cmd"/>
++        <remap from="~/output/turn_indicators_cmd" to="/planning/turn_indicators_cmd/unused"/>
+         <remap from="~/output/hazard_lights_cmd" to="/planning/behavior_path_planner/hazard_lights_cmd"/>
+         <remap from="~/output/modified_goal" to="/planning/scenario_planning/modified_goal"/>
+         <remap from="~/output/stop_reasons" to="/planning/scenario_planning/status/stop_reasons"/>
+@@ -276,7 +276,7 @@
+         <remap from="~/input/vector_map" to="$(var input_vector_map_topic_name)"/>
+         <remap from="~/input/odometry" to="/localization/kinematic_state"/>
+         <remap from="~/output/path" to="path_with_lane_id"/>
+-        <remap from="~/output/turn_indicators_cmd" to="/planning/turn_indicators_cmd"/>
++        <remap from="~/output/turn_indicators_cmd" to="/planning/turn_indicators_cmd/unused"/>
+         <remap from="~/output/hazard_lights_cmd" to="/planning/hazard_lights_cmd"/>
+         <!-- params -->
+         <param from="$(var vehicle_param_file)"/>
 diff --git a/tier4_universe_launch/tier4_planning_launch/launch/scenario_planning/lane_driving/behavior_planning/behavior_planning_deprecated.launch.xml b/tier4_universe_launch/tier4_planning_launch/launch/scenario_planning/lane_driving/behavior_planning/behavior_planning_deprecated.launch.xml
 index 642f5abc..24bef4dd 100644
 --- a/tier4_universe_launch/tier4_planning_launch/launch/scenario_planning/lane_driving/behavior_planning/behavior_planning_deprecated.launch.xml
