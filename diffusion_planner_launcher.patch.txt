@@ -89,10 +89,10 @@ index a1c14eea..bb83a0a4 100644
          <arg name="input_pointcloud_topic_name" value="$(var input_pointcloud_topic_name)"/>
          <arg name="planning_validator_param_path" value="$(var planning_validator_param_path)"/>
 diff --git a/tier4_universe_launch/tier4_planning_launch/launch/scenario_planning/lane_driving/behavior_planning/behavior_planning.launch.xml b/tier4_universe_launch/tier4_planning_launch/launch/scenario_planning/lane_driving/behavior_planning/behavior_planning.launch.xml
-index 22410043..f796cf0c 100644
+index c0bd65db..3deef2e6 100644
 --- a/tier4_universe_launch/tier4_planning_launch/launch/scenario_planning/lane_driving/behavior_planning/behavior_planning.launch.xml
 +++ b/tier4_universe_launch/tier4_planning_launch/launch/scenario_planning/lane_driving/behavior_planning/behavior_planning.launch.xml
-@@ -240,7 +240,7 @@
+@@ -239,7 +239,7 @@
          <remap from="~/input/accel" to="/localization/acceleration"/>
          <remap from="~/input/scenario" to="/planning/scenario_planning/scenario"/>
          <remap from="~/output/path" to="path_with_lane_id"/>
@@ -101,7 +101,7 @@ index 22410043..f796cf0c 100644
          <remap from="~/output/hazard_lights_cmd" to="/planning/behavior_path_planner/hazard_lights_cmd"/>
          <remap from="~/output/modified_goal" to="/planning/scenario_planning/modified_goal"/>
          <remap from="~/output/stop_reasons" to="/planning/scenario_planning/status/stop_reasons"/>
-@@ -276,7 +276,7 @@
+@@ -275,7 +275,7 @@
          <remap from="~/input/vector_map" to="$(var input_vector_map_topic_name)"/>
          <remap from="~/input/odometry" to="/localization/kinematic_state"/>
          <remap from="~/output/path" to="path_with_lane_id"/>
@@ -111,10 +111,10 @@ index 22410043..f796cf0c 100644
          <!-- params -->
          <param from="$(var vehicle_param_file)"/>
 diff --git a/tier4_universe_launch/tier4_planning_launch/launch/scenario_planning/lane_driving/behavior_planning/behavior_planning_deprecated.launch.xml b/tier4_universe_launch/tier4_planning_launch/launch/scenario_planning/lane_driving/behavior_planning/behavior_planning_deprecated.launch.xml
-index 642f5abc..24bef4dd 100644
+index 8a6e67db..0c2b0a6a 100644
 --- a/tier4_universe_launch/tier4_planning_launch/launch/scenario_planning/lane_driving/behavior_planning/behavior_planning_deprecated.launch.xml
 +++ b/tier4_universe_launch/tier4_planning_launch/launch/scenario_planning/lane_driving/behavior_planning/behavior_planning_deprecated.launch.xml
-@@ -240,7 +240,7 @@
+@@ -239,7 +239,7 @@
          <remap from="~/input/accel" to="/localization/acceleration"/>
          <remap from="~/input/scenario" to="/planning/scenario_planning/scenario"/>
          <remap from="~/output/path" to="path_with_lane_id"/>
@@ -123,3 +123,35 @@ index 642f5abc..24bef4dd 100644
          <remap from="~/output/hazard_lights_cmd" to="/planning/behavior_path_planner/hazard_lights_cmd"/>
          <remap from="~/output/modified_goal" to="/planning/scenario_planning/modified_goal"/>
          <remap from="~/output/stop_reasons" to="/planning/scenario_planning/status/stop_reasons"/>
+diff --git a/tier4_universe_launch/tier4_simulator_launch/launch/simulator.launch.xml b/tier4_universe_launch/tier4_simulator_launch/launch/simulator.launch.xml
+index 8cc38187..6b87e602 100644
+--- a/tier4_universe_launch/tier4_simulator_launch/launch/simulator.launch.xml
++++ b/tier4_universe_launch/tier4_simulator_launch/launch/simulator.launch.xml
+@@ -1,5 +1,7 @@
+ <launch>
+   <!-- Parameter files -->
++  <arg name="simulator_type" default="simple_planning_simulator"/>
++  <arg name="n_delay_steps" default="0" description="delay step for perfect tracker"/>
+   <arg name="fault_injection_param_path"/>
+   <arg name="obstacle_segmentation_ground_segmentation_elevation_map_param_path"/>
+   <arg name="laserscan_based_occupancy_grid_map_param_path"/>
+@@ -260,7 +262,7 @@
+   </group>
+ 
+   <!-- Simulator model -->
+-  <group if="$(var launch_dummy_vehicle)">
++  <group if="$(eval &quot;'$(var simulator_type)'=='simple_planning_simulator'&quot;)">
+     <arg name="simulator_model" default="$(var vehicle_model_pkg)/config/simulator_model.param.yaml" description="path to the file of simulator model"/>
+     <!-- 'pose_only' mode publishes the pose topic as an alternative to ndt_localizer. 'full_motion' mode publishes the odometry and acceleration topics as an alternative to localization modules. -->
+     <let name="motion_publish_mode" value="pose_only" if="$(eval '&quot;$(var localization_sim_mode)&quot;==&quot;pose_twist_estimator&quot;')"/>
+@@ -273,4 +275,10 @@
+       <arg name="motion_publish_mode" value="$(var motion_publish_mode)"/>
+     </include>
+   </group>
++
++  <group if="$(eval &quot;'$(var simulator_type)'=='perfect_tracker'&quot;)">
++    <include file="$(find-pkg-share autoware_perfect_tracker)/launch/perfect_tracker.launch.xml">
++      <arg name="n_delay_steps" value="$(var n_delay_steps)"/>
++    </include>
++  </group>
+ </launch>
