@@ -127,12 +127,15 @@ diff --git a/tier4_universe_launch/tier4_simulator_launch/launch/simulator.launc
 index 8cc38187..6b87e602 100644
 --- a/tier4_universe_launch/tier4_simulator_launch/launch/simulator.launch.xml
 +++ b/tier4_universe_launch/tier4_simulator_launch/launch/simulator.launch.xml
-@@ -1,5 +1,7 @@
+@@ -1,8 +1,10 @@
  <launch>
    <!-- Parameter files -->
 +  <arg name="simulator_type" default="simple_planning_simulator"/>
 +  <arg name="n_delay_steps" default="0" description="delay step for perfect tracker"/>
+   <arg name="launch_fault_injection" default="false"/>
    <arg name="fault_injection_param_path"/>
+   <arg name="fault_injection_input_diagnostics" default="/diagnostics"/>
+   <arg name="fault_injection_output_diagnostics" default="/diagnostics/fault_injection"/>
    <arg name="obstacle_segmentation_ground_segmentation_elevation_map_param_path"/>
    <arg name="laserscan_based_occupancy_grid_map_param_path"/>
 @@ -260,7 +262,7 @@
