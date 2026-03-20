@@ -13,7 +13,8 @@ set -eux
 # planning_simulator
 ros2 launch autoware_launch planning_simulator.launch.xml \
   map_path:=$HOME/autoware_map/sample-map-planning \
-  vehicle_model:=sample_vehicle sensor_model:=sample_sensor_kit &
+  vehicle_model:=sample_vehicle sensor_model:=sample_sensor_kit \
+  enable_all_modules_auto_mode:=false &
 
 # 立ち上がるまで待つ
 while ! ros2 service type /planning/scenario_planning/scenario_selector/get_parameters; do
