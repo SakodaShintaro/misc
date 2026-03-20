@@ -34,7 +34,7 @@ if [ "$REMOTE_EXISTS" -eq "0" ]; then
 fi
 
 # リモートから最新情報をフェッチ
-git fetch "$REMOTE_NAME"
+git fetch "$REMOTE_NAME" "$BRANCH_NAME"
 
 # マージ
 git merge --no-ff --no-edit "$REMOTE_NAME/$BRANCH_NAME"
