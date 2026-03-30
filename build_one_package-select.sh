@@ -10,4 +10,4 @@ if [[ ! $current_dir =~ ^(autoware|pilot-auto) ]]; then
     exit 1
 fi
 
-colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOL=ON --packages-select $PKG_NAME
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select $PKG_NAME
