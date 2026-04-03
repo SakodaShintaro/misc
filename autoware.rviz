@@ -4678,6 +4678,21 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /planning/trajectory_generator/diffusion_planner_node/debug/linestring_marker
       Value: true
+    - Class: tier4_planning_factor_rviz_plugin/PlanningFactorRvizPlugin
+      Enabled: true
+      Name: PlanningFactorRvizPlugin
+      Namespaces:
+        stop_factor_text: true
+        stop_virtual_wall: true
+      Show Safety Factors: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /planning/planning_factors/diffusion_planner
+      Value: true
+      show_safety_factors: true
   Enabled: true
   Global Options:
     Background Color: 42; 42; 42
