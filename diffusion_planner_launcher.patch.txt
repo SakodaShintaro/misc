@@ -138,18 +138,17 @@ index 8cc38187..6b87e602 100644
    <arg name="fault_injection_output_diagnostics" default="/diagnostics/fault_injection"/>
    <arg name="obstacle_segmentation_ground_segmentation_elevation_map_param_path"/>
    <arg name="laserscan_based_occupancy_grid_map_param_path"/>
-@@ -260,7 +262,7 @@
+@@ -267,7 +269,7 @@
    </group>
- 
+
    <!-- Simulator model -->
 -  <group if="$(var launch_dummy_vehicle)">
 +  <group if="$(eval &quot;'$(var simulator_type)'=='simple_planning_simulator'&quot;)">
      <arg name="simulator_model" default="$(var vehicle_model_pkg)/config/simulator_model.param.yaml" description="path to the file of simulator model"/>
      <!-- 'pose_only' mode publishes the pose topic as an alternative to ndt_localizer. 'full_motion' mode publishes the odometry and acceleration topics as an alternative to localization modules. -->
      <let name="motion_publish_mode" value="pose_only" if="$(eval '&quot;$(var localization_sim_mode)&quot;==&quot;pose_twist_estimator&quot;')"/>
-@@ -273,4 +275,10 @@
-       <arg name="motion_publish_mode" value="$(var motion_publish_mode)"/>
-     </include>
+@@ -289,3 +291,9 @@
+     </group>
    </group>
 +
 +  <group if="$(eval &quot;'$(var simulator_type)'=='perfect_tracker'&quot;)">
