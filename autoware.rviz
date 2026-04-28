@@ -4514,7 +4514,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /planning/trajectory_generator/diffusion_planner_node/debug/lane_marker
+        Value: /planning/trajectory_generator/neural_network_based_planner/diffusion_planner_node/debug/lane_marker
       Value: true
     - Class: rviz_default_plugins/MarkerArray
       Enabled: true
@@ -4529,7 +4529,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /planning/trajectory_generator/diffusion_planner_node/debug/route_marker
+        Value: /planning/trajectory_generator/neural_network_based_planner/diffusion_planner_node/debug/route_marker
       Value: true
     - Class: rviz_plugins/CandidateTrajectories
       Enabled: false
@@ -4609,7 +4609,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /planning/trajectory_generator/diffusion_planner_node/output/predicted_objects
+        Value: /planning/trajectory_generator/neural_network_based_planner/diffusion_planner_node/output/predicted_objects
       UNKNOWN:
         Alpha: 0.9990000128746033
         Color: 255; 255; 255
@@ -4625,7 +4625,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /planning/trajectory_generator/diffusion_planner_node/output/trajectory
+        Value: /planning/trajectory_generator/neural_network_based_planner/diffusion_planner_node/output/trajectory
       Value: true
       View Footprint:
         Alpha: 1
@@ -4676,7 +4676,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /planning/trajectory_generator/diffusion_planner_node/debug/linestring_marker
+        Value: /planning/trajectory_generator/neural_network_based_planner/diffusion_planner_node/debug/linestring_marker
       Value: true
     - Class: tier4_planning_factor_rviz_plugin/PlanningFactorRvizPlugin
       Enabled: true
