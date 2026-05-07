@@ -182,3 +182,10 @@ sudo visudo
 sudo systemctl restart chrome-remote-desktop
 sudo systemctl status chrome-remote-desktop
 ```
+
+## PyPIの先を変更
+
+```bash
+export PIP_INDEX_URL=https://pypi.flatt.tech/simple/
+export UV_INDEX_URL=https://pypi.flatt.tech/simple/
+```
