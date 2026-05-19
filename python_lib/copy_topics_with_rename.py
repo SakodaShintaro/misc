@@ -5,6 +5,25 @@ from pathlib import Path
 from shutil import rmtree
 
 import rosbag2_py
+import yaml
+
+SUFFIX_TO_STORAGE_ID = {".mcap": "mcap", ".db3": "sqlite3"}
+
+
+def detect_storage_id(bag_path: Path) -> str:
+    metadata_path = bag_path / "metadata.yaml"
+    if metadata_path.is_file():
+        with metadata_path.open() as f:
+            metadata = yaml.safe_load(f)
+        bag_info = metadata["rosbag2_bagfile_information"]
+        if "storage_identifier" in bag_info:
+            return bag_info["storage_identifier"]
+
+    for child in sorted(bag_path.iterdir()):
+        if child.suffix in SUFFIX_TO_STORAGE_ID:
+            return SUFFIX_TO_STORAGE_ID[child.suffix]
+
+    raise RuntimeError(f"Could not detect storage_id for bag: {bag_path}")
 
 
 def parse_args() -> argparse.Namespace:
@@ -41,8 +60,12 @@ def main():
         else:
             save_path.unlink()
 
+    # Detect storage_id per bag (supports sqlite3 and mcap)
+    source_storage_id = detect_storage_id(source_bag)
+    destination_storage_id = detect_storage_id(destination_bag)
+    output_storage_id = destination_storage_id
+
     # Setup storage options
-    storage_id = "sqlite3"
     serialization_format = "cdr"
     converter_options = rosbag2_py.ConverterOptions(
         input_serialization_format=serialization_format,
@@ -52,7 +75,7 @@ def main():
     # Open source bag
     source_reader = rosbag2_py.SequentialReader()
     source_reader.open(
-        rosbag2_py.StorageOptions(uri=str(source_bag), storage_id=storage_id),
+        rosbag2_py.StorageOptions(uri=str(source_bag), storage_id=source_storage_id),
         converter_options,
     )
 
@@ -68,7 +91,7 @@ def main():
     # Open destination bag
     destination_reader = rosbag2_py.SequentialReader()
     destination_reader.open(
-        rosbag2_py.StorageOptions(uri=str(destination_bag), storage_id=storage_id),
+        rosbag2_py.StorageOptions(uri=str(destination_bag), storage_id=destination_storage_id),
         converter_options,
     )
 
@@ -86,7 +109,7 @@ def main():
     # Create output writer
     writer = rosbag2_py.SequentialWriter()
     writer.open(
-        rosbag2_py.StorageOptions(uri=str(save_path), storage_id=storage_id),
+        rosbag2_py.StorageOptions(uri=str(save_path), storage_id=output_storage_id),
         converter_options,
     )
 
