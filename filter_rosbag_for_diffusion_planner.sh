@@ -23,8 +23,6 @@ ros2 bag filter ${TARGET} -o ${TARGET}_filtered --include \
     "/planning/trajectory_generator/neural_network_based_planner/diffusion_planner_node/output/predicted_objects" \
     "/planning/trajectory_generator/neural_network_based_planner/diffusion_planner_node/output/trajectory" \
     "/tf" \
-    "/sensing/camera/camera6/image_raw/compressed" \
-    "/sensing/camera/camera5/image_raw/compressed" \
     "/perception/obstacle_segmentation/pointcloud" \
     "/autoware/state" \
     "/planning/planning_factors/diffusion_planner" \
