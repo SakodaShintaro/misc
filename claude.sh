@@ -11,5 +11,4 @@ fi
 latest_binary=$(echo "$binaries" | sort -V | tail -n 1)
 echo "Using Claude executable: $latest_binary"
 
-$latest_binary
-# $latest_binary --dangerously-skip-permissions
+$latest_binary --dangerously-skip-permissions
