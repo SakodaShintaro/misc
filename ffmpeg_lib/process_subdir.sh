@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eux
+set -u
 
 target_dir=$(readlink -f "$1")
 script_path=$(readlink -f "$(dirname "$0")/make_mp4_from_unsequential_png.sh")
@@ -15,4 +15,4 @@ while IFS= read -r -d '' png_file; do
     fi
     processed_dirs["$dir"]=1
     bash "$script_path" "$dir"
-done < <(find "$target_dir" -type f -name '*.png' -print0)
+done < <(find "$target_dir" -type f -name '*.png' -print0 | sort)
