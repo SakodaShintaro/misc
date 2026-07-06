@@ -4,6 +4,10 @@ set -eux
 # VSCodeにバンドルされているClaude Codeを使用する
 binaries=$(find ~/.vscode/extensions/ -name "claude" -type f -executable)
 if [ -z "$binaries" ]; then
+    binaries=$(find ~/.vscode-server/extensions/ -name "claude" -type f -executable)
+fi
+
+if [ -z "$binaries" ]; then
     echo "Claude executable not found in VSCode extensions."
     exit 1
 fi
