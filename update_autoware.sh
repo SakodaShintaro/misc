@@ -21,6 +21,8 @@ if [ $USE_NIGHTLY = true ]; then
     vcs import --recursive src < repositories/simulator-nightly.repos
     vcs import --recursive src < repositories/tools-nightly.repos
 fi
+# 公式 repositories/simulator.repos に含まれない perception_eval / driving_log_replayer 等を追加で取得する
+vcs import --recursive src < $(dirname $0)/simulator.repos
 vcs pull src
 vcs export src --exact > my_autoware_$(date +"%Y%m%d").repos
 rosdep update

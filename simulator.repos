@@ -1,3 +1,4 @@
+repositories:
   simulator/perception_eval:
     type: git
     url: https://github.com/tier4/autoware_perception_evaluation.git

@@ -23,8 +23,3 @@ done
 
 git reset --hard @{u}
 git clean -df
-
-# 変更ファイルを差し戻す
-if [[ $current_dir =~ ^(autoware) ]]; then
-    cat $(dirname $0)/simulator.repos >> ./simulator.repos
-fi
